@@ -18,8 +18,8 @@ type TextButton struct {
 	buttonText       string
 	backgroundColour string
 	fontInfo         *common.Font
-	uiFont        font.Face
-	Rect image.Rectangle
+	uiFont           font.Face
+	Rect             image.Rectangle
 }
 
 func NewTextButton(text string, x float64, y float64, width int, height int, backgroundColour string, fontInfo *common.Font) TextButton {
@@ -60,7 +60,7 @@ func (b *TextButton) Draw(screen *ebiten.Image) error {
 	op := &ebiten.DrawImageOptions{}
 	op.GeoM.Translate(b.X, b.Y)
 
-	text.Draw(b.rectImage, b.buttonText, b.uiFont, 20,50, color.Black)
+	text.Draw(b.rectImage, b.buttonText, b.uiFont, 20, 50, color.Black)
 	_ = screen.DrawImage(b.rectImage, op)
 
 	return nil

@@ -2,6 +2,8 @@ package widgets
 
 import (
 	"github.com/hajimehoshi/ebiten"
+	"github.com/kpfaulkner/goui/pkg/events"
+	log "github.com/sirupsen/logrus"
 	"image/color"
 )
 
@@ -36,7 +38,7 @@ func (p *Panel) AddButton(b IButton) error {
 func (p *Panel) Draw(screen *ebiten.Image) error {
 
 	// colour background of panel first, just so we can see it.
-	_ = p.rectImage.Fill(color.RGBA{0xff,0x00,0x00,0xff})
+	_ = p.rectImage.Fill(color.RGBA{0xff, 0x00, 0x00, 0xff})
 	for _, b := range p.buttons {
 		b.Draw(p.rectImage)
 	}
@@ -44,5 +46,12 @@ func (p *Panel) Draw(screen *ebiten.Image) error {
 	op := &ebiten.DrawImageOptions{}
 	op.GeoM.Translate(p.X, p.Y)
 	_ = screen.DrawImage(p.rectImage, op)
+	return nil
+}
+
+func (p *Panel) HandleEvent(event events.IEvent) error {
+	log.Debugf("Panel handled event %v", event)
+
+	// should propagate to children nodes?
 	return nil
 }

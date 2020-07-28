@@ -2,9 +2,10 @@ package pkg
 
 import (
 	"github.com/hajimehoshi/ebiten"
+	"github.com/kpfaulkner/goui/pkg/events"
 	"github.com/kpfaulkner/goui/pkg/widgets"
+	log "github.com/sirupsen/logrus"
 	"image/color"
-	"log"
 )
 
 // Window used to define the UI window for the application.
@@ -36,6 +37,40 @@ func (w *Window) AddPanel(panel widgets.Panel) error {
 
 /////////////////////// EBiten specifics below... /////////////////////////////////////////////
 func (w *Window) Update(screen *ebiten.Image) error {
+	if ebiten.IsMouseButtonPressed(ebiten.MouseButtonLeft) {
+		x, y := ebiten.CursorPosition()
+		log.Debugf("mouse click %d %d", x,y)
+		me := events.NewMouseEvent(x,y)
+		w.HandleEvent(me)
+	}
+	return nil
+}
+
+func (w *Window) HandleButtonUpEvent(event events.MouseEvent) error {
+
+	return nil
+}
+
+func (w *Window) HandleButtonDownEvent(event events.MouseEvent) error {
+  return nil
+}
+
+
+func (w *Window) HandleEvent(event events.IEvent) error {
+	log.Debugf("Window handled event %v", event)
+
+	switch event.EventType() {
+	case events.EventTypeButtonUp: {
+		err := w.HandleButtonUpEvent(event.(events.MouseEvent))
+		return err
+	}
+
+	case events.EventTypeButtonDown: {
+		err := w.HandleButtonUpEvent(event.(events.MouseEvent))
+		return err
+	}
+	}
+
 	return nil
 }
 

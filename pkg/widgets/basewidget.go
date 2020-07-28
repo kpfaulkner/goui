@@ -2,6 +2,7 @@ package widgets
 
 import (
 	"github.com/hajimehoshi/ebiten"
+	"github.com/kpfaulkner/goui/pkg/events"
 )
 
 // BaseWidget is the common element of ALL disable items. Widgets, buttons, panels etc.
@@ -43,4 +44,6 @@ func (b *BaseWidget) Draw(screen *ebiten.Image) error {
 // Hate using the I* notation... but will do for now.
 type IWidget interface {
 	Draw(screen *ebiten.Image) error
+
+	HandleEvent(event events.IEvent) error
 }
