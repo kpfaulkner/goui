@@ -2,15 +2,15 @@ package events
 
 type MouseEvent struct {
 	Event
-	X int
-	Y int
+	X float64
+	Y float64
 
 }
 
 func NewMouseEvent(x int, y int) MouseEvent {
 	e := MouseEvent{}
-	e.X = x
-	e.Y = x
+	e.X = float64(x)
+	e.Y = float64(y)
 	return e
 }
 

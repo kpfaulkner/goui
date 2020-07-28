@@ -47,11 +47,18 @@ func (w *Window) Update(screen *ebiten.Image) error {
 }
 
 func (w *Window) HandleButtonUpEvent(event events.MouseEvent) error {
-
+	log.Debugf("button up %f %f", event.X, event.Y)
 	return nil
 }
 
 func (w *Window) HandleButtonDownEvent(event events.MouseEvent) error {
+	log.Debugf("button down %f %f", event.X, event.Y)
+
+	// loop through panels and find a target!
+	for _,panel := range w.panels {
+		panel.HandleEvent(event)
+	}
+
   return nil
 }
 
@@ -66,7 +73,7 @@ func (w *Window) HandleEvent(event events.IEvent) error {
 	}
 
 	case events.EventTypeButtonDown: {
-		err := w.HandleButtonUpEvent(event.(events.MouseEvent))
+		err := w.HandleButtonDownEvent(event.(events.MouseEvent))
 		return err
 	}
 	}

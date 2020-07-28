@@ -25,6 +25,7 @@ func NewPanel(x float64, y float64, width int, height int) Panel {
 	p := Panel{}
 	p.BaseWidget = NewBaseWidget(x, y, width, height)
 	p.buttons = []IButton{}
+	p.RegisterEventHandler(events.EventTypeButtonDown, p.HandleMouseEvent)
 	return p
 }
 
@@ -49,9 +50,12 @@ func (p *Panel) Draw(screen *ebiten.Image) error {
 	return nil
 }
 
-func (p *Panel) HandleEvent(event events.IEvent) error {
-	log.Debugf("Panel handled event %v", event)
+func (p *Panel) HandleMouseEvent(event events.IEvent) error {
+	mouseEvent := event.(events.MouseEvent)
 
+	if p.ContainsCoords(mouseEvent.X, mouseEvent.Y) {
+		log.Debugf("Panel handled mouse event at %f %f", mouseEvent.X, mouseEvent.Y)
+	}
 	// should propagate to children nodes?
 	return nil
 }

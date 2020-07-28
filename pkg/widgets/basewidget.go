@@ -23,6 +23,9 @@ type BaseWidget struct {
 	// All child images will draw TO this image.
 	// Might be really inefficient or might be ok, will experiment. TODO(kpfaulkner) confirm if perf is ok.
 	rectImage *ebiten.Image
+
+	// register event types with widgets?
+	eventRegister map[int]func(event events.IEvent) error
 }
 
 func NewBaseWidget(x float64, y float64, width int, height int) BaseWidget {
@@ -33,11 +36,33 @@ func NewBaseWidget(x float64, y float64, width int, height int) BaseWidget {
 	bw.Height = height
 	bw.Disabled = false
 	bw.rectImage, _ = ebiten.NewImage(width, height, ebiten.FilterDefault)
+	bw.eventRegister = make(map[int]func(event events.IEvent) error)
 	return bw
+}
+
+func (b *BaseWidget) RegisterEventHandler(eventType int, eventHandler func(events.IEvent) error) error {
+	b.eventRegister[eventType] = eventHandler
+	return nil
 }
 
 func (b *BaseWidget) Draw(screen *ebiten.Image) error {
 	return nil
+}
+
+func (b *BaseWidget) HandleEvent(event events.IEvent) error {
+
+	eventType := event.EventType()
+	if handler,ok := b.eventRegister[eventType]; ok {
+		handler(event)
+	}
+	return nil
+}
+
+// ContainsCoords determines if co-ordinates (based off parent!)
+func (b *BaseWidget) ContainsCoords(x float64, y float64) bool {
+	localX := x - b.X
+	localY := y - b.Y
+	return localX >= 0 && localX <= b.X + float64(b.Width) && localY >= 0 && localY <= b.Y + float64(b.Height)
 }
 
 // IWidget defines what actions can be performed on a widget.
