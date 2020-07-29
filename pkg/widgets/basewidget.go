@@ -72,7 +72,7 @@ func (b *BaseWidget) ContainsCoords(x float64, y float64) bool {
 func (b *BaseWidget) GenerateLocalCoordMouseEvent(incomingEvent events.MouseEvent) events.MouseEvent {
 	localX := incomingEvent.X - b.X
 	localY := incomingEvent.Y - b.Y
-	outgoingMouseEvent := events.NewMouseEvent(int(localX), int(localY))
+	outgoingMouseEvent := events.NewMouseEvent(int(localX), int(localY), incomingEvent.EventType())
 	return outgoingMouseEvent
 }
 

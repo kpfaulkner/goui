@@ -19,6 +19,8 @@ type Window struct {
 	// slice of panels. Should probably do as a map???
 	// Then again, slice can be used for render order?
 	panels []widgets.Panel
+
+  leftMouseButtonPressed bool
 }
 
 func NewWindow(width int, height int, title string) Window {
@@ -27,6 +29,7 @@ func NewWindow(width int, height int, title string) Window {
 	w.width = width
 	w.title = title
 	w.panels = []widgets.Panel{}
+	w.leftMouseButtonPressed = false
 	return w
 }
 
@@ -38,44 +41,57 @@ func (w *Window) AddPanel(panel widgets.Panel) error {
 /////////////////////// EBiten specifics below... /////////////////////////////////////////////
 func (w *Window) Update(screen *ebiten.Image) error {
 	if ebiten.IsMouseButtonPressed(ebiten.MouseButtonLeft) {
+		w.leftMouseButtonPressed = true
 		x, y := ebiten.CursorPosition()
-		//log.Debugf("mouse click %d %d", x,y)
-		me := events.NewMouseEvent(x,y)
+		me := events.NewMouseEvent(x, y, events.EventTypeButtonDown)
 		w.HandleEvent(me)
+	} else {
+		if w.leftMouseButtonPressed {
+			w.leftMouseButtonPressed = false
+			// it *WAS* pressed previous frame... but isn't now... this means released!!!
+			x, y := ebiten.CursorPosition()
+			me := events.NewMouseEvent(x, y, events.EventTypeButtonUp)
+			w.HandleEvent(me)
+		}
 	}
 	return nil
 }
 
 func (w *Window) HandleButtonUpEvent(event events.MouseEvent) error {
-	//log.Debugf("button up %f %f", event.X, event.Y)
+	log.Debugf("button up %f %f", event.X, event.Y)
+	for _, panel := range w.panels {
+		panel.HandleEvent(event)
+	}
+
 	return nil
 }
 
 func (w *Window) HandleButtonDownEvent(event events.MouseEvent) error {
-	//log.Debugf("button down %f %f", event.X, event.Y)
+	log.Debugf("button down %f %f", event.X, event.Y)
 
 	// loop through panels and find a target!
-	for _,panel := range w.panels {
+	for _, panel := range w.panels {
 		panel.HandleEvent(event)
 	}
 
-  return nil
+	return nil
 }
-
 
 func (w *Window) HandleEvent(event events.IEvent) error {
 	//log.Debugf("Window handled event %v", event)
 
 	switch event.EventType() {
-	case events.EventTypeButtonUp: {
-		err := w.HandleButtonUpEvent(event.(events.MouseEvent))
-		return err
-	}
+	case events.EventTypeButtonUp:
+		{
+			err := w.HandleButtonUpEvent(event.(events.MouseEvent))
+			return err
+		}
 
-	case events.EventTypeButtonDown: {
-		err := w.HandleButtonDownEvent(event.(events.MouseEvent))
-		return err
-	}
+	case events.EventTypeButtonDown:
+		{
+			err := w.HandleButtonDownEvent(event.(events.MouseEvent))
+			return err
+		}
 	}
 
 	return nil
