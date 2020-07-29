@@ -7,10 +7,11 @@ type MouseEvent struct {
 
 }
 
-func NewMouseEvent(x int, y int) MouseEvent {
+func NewMouseEvent(x int, y int, eventType int) MouseEvent {
 	e := MouseEvent{}
 	e.X = float64(x)
 	e.Y = float64(y)
+	e.eventType = eventType
 	return e
 }
 

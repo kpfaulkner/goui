@@ -32,10 +32,10 @@ func main() {
 	//button := widgets.NewImageButton("c:/temp/test.png",0,0,100,100)
 
 	panel := widgets.NewPanel(100, 0, 200, 200)
-	button := widgets.NewTextButton("my button1", 0, 0, 100, 100, color.RGBA{0,0,0xff,0xff}, nil)
+	button := widgets.NewTextButton("my button1", 0, 0, 100, 100, color.RGBA{0,0xff,0xff,0xff}, nil)
 	button.RegisterEventHandler(events.EventTypeButtonDown, a.ButtonAction1)
 
-	button2 := widgets.NewTextButton("my button2", 100, 0, 100, 100, color.RGBA{0,0xff,0,0xff}, nil)
+	button2 := widgets.NewTextButton("my button2", 100, 0, 100, 100, color.RGBA{0xff,0xff,0,0xff}, nil)
 	button2.RegisterEventHandler(events.EventTypeButtonDown, a.ButtonAction2)
 
 	panel.AddButton(&button)

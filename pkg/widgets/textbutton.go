@@ -28,8 +28,8 @@ type TextButton struct {
 }
 
 func init() {
-	nonPressedButtonBorder = color.RGBA{0xff,0xff,0,0xff}
-	pressedButtonBorder = color.RGBA{0,0xff,0xff,0xff}
+	nonPressedButtonBorder = color.RGBA{0xff,0,0,0xff}
+	pressedButtonBorder = color.RGBA{0,0xff,0,0xff}
 }
 
 func NewTextButton(text string, x float64, y float64, width int, height int, backgroundColour color.RGBA, fontInfo *common.Font) TextButton {
