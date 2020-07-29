@@ -76,11 +76,11 @@ func (b *BaseWidget) GenerateLocalCoordMouseEvent(incomingEvent events.MouseEven
 	return outgoingMouseEvent
 }
 
-func (b *BaseWidget) HandleMouseEvent(event events.IEvent) (bool, error) {
+func (b *BaseWidget) CheckMouseEventCoords(event events.IEvent) (bool, error) {
 	mouseEvent := event.(events.MouseEvent)
 
 	if b.ContainsCoords(mouseEvent.X, mouseEvent.Y) {
-		log.Debugf("basewidget handled mouse event at %f %f", mouseEvent.X, mouseEvent.Y)
+		log.Debugf("CheckMouseEventCoords %f %f", mouseEvent.X, mouseEvent.Y)
 		return true, nil
 	}
 

@@ -51,7 +51,7 @@ func (b *TextButton) generateButtonImage() error {
 	return nil
 }
 
-func (b *TextButton) HandleEvent(event events.IEvent) error {
+func (b *TextButton) HandleEventXX(event events.IEvent) error {
 	eventType := event.EventType()
 	switch eventType {
 	case events.EventTypeButtonDown:
@@ -69,7 +69,7 @@ func (b *TextButton) HandleEvent(event events.IEvent) error {
 }
 
 func (b *TextButton) HandleMouseEvent(event events.IEvent) error {
-	inButton, _ := b.BaseWidget.HandleMouseEvent(event)
+	inButton, _ := b.BaseWidget.CheckMouseEventCoords(event)
 
 	if inButton {
 		mouseEvent := event.(events.MouseEvent)

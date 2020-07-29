@@ -25,3 +25,4 @@ func (m MouseEvent) EventType() int {
 func (m MouseEvent) Action() error {
 	return nil
 }
+

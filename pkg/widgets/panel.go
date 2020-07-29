@@ -68,7 +68,7 @@ func (p *Panel) HandleEvent(event events.IEvent) error {
 }
 
 func (p *Panel) HandleMouseEvent(event events.IEvent) error {
-	inPanel, _ := p.BaseWidget.HandleMouseEvent(event)
+	inPanel, _ := p.BaseWidget.CheckMouseEventCoords(event)
 
 	if inPanel {
 		mouseEvent := event.(events.MouseEvent)
