@@ -2,6 +2,7 @@ package widgets
 
 import (
 	"github.com/hajimehoshi/ebiten"
+	"github.com/kpfaulkner/goui/pkg/events"
 )
 
 type BaseButton struct {
@@ -19,6 +20,6 @@ func (b *BaseButton) Draw(screen *ebiten.Image) error {
 }
 
 type IButton interface {
-	OnPress() error
+	HandleEvent(event events.IEvent) error
 	Draw(screen *ebiten.Image) error
 }

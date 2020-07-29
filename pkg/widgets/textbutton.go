@@ -5,6 +5,7 @@ import (
 	"github.com/hajimehoshi/ebiten"
 	"github.com/hajimehoshi/ebiten/text"
 	"github.com/kpfaulkner/goui/pkg/common"
+	"github.com/kpfaulkner/goui/pkg/events"
 	log "github.com/sirupsen/logrus"
 	"golang.org/x/image/font"
 	"golang.org/x/image/font/gofont/goregular"
@@ -50,8 +51,36 @@ func (b *TextButton) generateButtonImage() error {
 	return nil
 }
 
-func (b *TextButton) OnPress() error {
-	log.Infof("TextButton pressed")
+func (b *TextButton) HandleEvent(event events.IEvent) error {
+	eventType := event.EventType()
+	switch eventType {
+	case events.EventTypeButtonDown:
+		{
+			b.HandleMouseEvent(event)
+
+		}
+	case events.EventTypeButtonUp:
+		{
+			b.HandleMouseEvent(event)
+		}
+	}
+
+	return nil
+}
+
+func (b *TextButton) HandleMouseEvent(event events.IEvent) error {
+	inButton, _ := b.BaseWidget.HandleMouseEvent(event)
+
+	if inButton {
+		mouseEvent := event.(events.MouseEvent)
+		log.Debugf("textbutton handled mouse event at %f %f", mouseEvent.X, mouseEvent.Y)
+
+		// registered event
+		if ev,ok := b.eventRegister[event.EventType()]; ok {
+			ev(event)
+		}
+	}
+	// should propagate to children nodes?
 	return nil
 }
 
