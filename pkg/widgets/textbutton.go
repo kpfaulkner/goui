@@ -17,19 +17,20 @@ import (
 type TextButton struct {
 	BaseButton
 	buttonText       string
-	backgroundColour string
+	backgroundColour color.RGBA
 	fontInfo         *common.Font
 	uiFont           font.Face
 	Rect             image.Rectangle
 }
 
-func NewTextButton(text string, x float64, y float64, width int, height int, backgroundColour string, fontInfo *common.Font) TextButton {
+func NewTextButton(text string, x float64, y float64, width int, height int, backgroundColour color.RGBA, fontInfo *common.Font) TextButton {
 	b := TextButton{}
 	b.BaseButton = NewBaseButton(x, y, width, height)
 	b.backgroundColour = backgroundColour
 	b.buttonText = text
 	b.fontInfo = fontInfo
 	b.generateButtonImage()
+
 	tt, err := truetype.Parse(goregular.TTF)
 	if err != nil {
 		log.Fatal(err)
@@ -46,7 +47,7 @@ func NewTextButton(text string, x float64, y float64, width int, height int, bac
 func (b *TextButton) generateButtonImage() error {
 	log.Infof("TextButton generateButtonImage")
 	emptyImage, _ := ebiten.NewImage(b.Width, b.Height, ebiten.FilterDefault)
-	_ = emptyImage.Fill(color.White)
+	_ = emptyImage.Fill(b.backgroundColour)
 	b.rectImage = emptyImage
 	return nil
 }
@@ -56,19 +57,19 @@ func (b *TextButton) HandleEventXX(event events.IEvent) error {
 	switch eventType {
 	case events.EventTypeButtonDown:
 		{
-			b.HandleMouseEvent(event)
+			b.HandleMouseEventXX(event)
 
 		}
 	case events.EventTypeButtonUp:
 		{
-			b.HandleMouseEvent(event)
+			b.HandleMouseEventXX(event)
 		}
 	}
 
 	return nil
 }
 
-func (b *TextButton) HandleMouseEvent(event events.IEvent) error {
+func (b *TextButton) HandleMouseEventXX(event events.IEvent) error {
 	inButton, _ := b.BaseWidget.CheckMouseEventCoords(event)
 
 	if inButton {
@@ -76,7 +77,7 @@ func (b *TextButton) HandleMouseEvent(event events.IEvent) error {
 		log.Debugf("textbutton handled mouse event at %f %f", mouseEvent.X, mouseEvent.Y)
 
 		// registered event
-		if ev,ok := b.eventRegister[event.EventType()]; ok {
+		if ev, ok := b.eventRegister[event.EventType()]; ok {
 			ev(event)
 		}
 	}

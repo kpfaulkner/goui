@@ -39,7 +39,7 @@ func (w *Window) AddPanel(panel widgets.Panel) error {
 func (w *Window) Update(screen *ebiten.Image) error {
 	if ebiten.IsMouseButtonPressed(ebiten.MouseButtonLeft) {
 		x, y := ebiten.CursorPosition()
-		log.Debugf("mouse click %d %d", x,y)
+		//log.Debugf("mouse click %d %d", x,y)
 		me := events.NewMouseEvent(x,y)
 		w.HandleEvent(me)
 	}
@@ -47,12 +47,12 @@ func (w *Window) Update(screen *ebiten.Image) error {
 }
 
 func (w *Window) HandleButtonUpEvent(event events.MouseEvent) error {
-	log.Debugf("button up %f %f", event.X, event.Y)
+	//log.Debugf("button up %f %f", event.X, event.Y)
 	return nil
 }
 
 func (w *Window) HandleButtonDownEvent(event events.MouseEvent) error {
-	log.Debugf("button down %f %f", event.X, event.Y)
+	//log.Debugf("button down %f %f", event.X, event.Y)
 
 	// loop through panels and find a target!
 	for _,panel := range w.panels {
@@ -64,7 +64,7 @@ func (w *Window) HandleButtonDownEvent(event events.MouseEvent) error {
 
 
 func (w *Window) HandleEvent(event events.IEvent) error {
-	log.Debugf("Window handled event %v", event)
+	//log.Debugf("Window handled event %v", event)
 
 	switch event.EventType() {
 	case events.EventTypeButtonUp: {
