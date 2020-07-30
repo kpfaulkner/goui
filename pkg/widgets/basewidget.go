@@ -29,6 +29,13 @@ type BaseWidget struct {
 
 	// register event types with widgets?
 	eventRegister map[int]func(event events.IEvent) error
+
+	// has focus....  so events should go to it?
+	hasFocus bool
+
+	// has it changed?
+	stateChangedSinceLastDraw bool
+
 }
 
 func NewBaseWidget(ID string, x float64, y float64, width int, height int) BaseWidget {
@@ -41,6 +48,7 @@ func NewBaseWidget(ID string, x float64, y float64, width int, height int) BaseW
 	bw.Disabled = false
 	bw.rectImage, _ = ebiten.NewImage(width, height, ebiten.FilterDefault)
 	bw.eventRegister = make(map[int]func(event events.IEvent) error)
+	bw.hasFocus = false
 	return bw
 }
 

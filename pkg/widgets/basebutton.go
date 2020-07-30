@@ -8,8 +8,7 @@ import (
 
 type BaseButton struct {
 	BaseWidget
-	pressed                   bool
-	stateChangedSinceLastDraw bool // dont want to recreating the button image if state hasn't changed.
+	pressed bool
 }
 
 func NewBaseButton(ID string, x float64, y float64, width int, height int) BaseButton {
@@ -34,6 +33,7 @@ func (b *BaseButton) HandleEvent(event events.IEvent) error {
 
 			// check click is in button boundary.
 			if b.ContainsCoords(mouseEvent.X, mouseEvent.Y, true) {
+				b.hasFocus = true
 				// if already pressed, then skip it.. .otherwise lots of repeats.
 				if !b.pressed {
 					b.pressed = true
@@ -53,6 +53,8 @@ func (b *BaseButton) HandleEvent(event events.IEvent) error {
 
 			// check click is in button boundary.
 			if b.ContainsCoords(mouseEvent.X, mouseEvent.Y, true) {
+				b.hasFocus = true
+
 				// do generic button stuff here.
 				b.pressed = false
 

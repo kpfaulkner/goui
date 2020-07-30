@@ -47,6 +47,7 @@ func (b *CheckBox) HandleEvent(event events.IEvent) error {
 
 			// check click is in button boundary.
 			if b.ContainsCoords(mouseEvent.X, mouseEvent.Y, true) {
+				b.hasFocus = true
 				// if already pressed, then skip it.. .otherwise lots of repeats.
 				b.checked = !b.checked
 

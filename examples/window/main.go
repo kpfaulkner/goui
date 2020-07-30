@@ -59,7 +59,10 @@ func main() {
 	cb := widgets.NewCheckBox("checkbox1", "./images/emptycheckbox.png", "./images/checkedcheckbox.png", 0, 100)
 	cb.RegisterEventHandler(events.EventTypeButtonDown, a.CheckboxChanged)
 
+	ti := widgets.NewTextInput("testinput1", 0,150,100,20,nil)
+
 	panel3.AddWidget(&cb)
+	panel3.AddWidget(&ti)
 
 	button.RegisterEventHandler(events.EventTypeButtonDown, a.ButtonAction1)
 

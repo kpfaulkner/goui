@@ -6,6 +6,7 @@ import (
 	"github.com/kpfaulkner/goui/pkg/widgets"
 	log "github.com/sirupsen/logrus"
 	"image/color"
+	"strings"
 )
 
 // Window used to define the UI window for the application.
@@ -54,6 +55,16 @@ func (w *Window) Update(screen *ebiten.Image) error {
 			w.HandleEvent(me)
 		}
 	}
+
+	keyboardInput := strings.TrimSpace(string(ebiten.InputChars()))
+
+	if keyboardInput != "" {
+		// create keyboard event
+		ke := events.NewKeyboardEvent(events.EventTypeKeyboard)
+		ke.Character = keyboardInput
+		w.HandleEvent(ke)
+	}
+
 	return nil
 }
 
@@ -77,6 +88,15 @@ func (w *Window) HandleButtonDownEvent(event events.MouseEvent) error {
 	return nil
 }
 
+func (w *Window) HandleKeyboardEvent(event events.KeyboardEvent) error {
+
+	// loop through panels and find a target!
+	for _, panel := range w.panels {
+		panel.HandleEvent(event, false)
+	}
+	return nil
+}
+
 func (w *Window) HandleEvent(event events.IEvent) error {
 	//log.Debugf("Window handled event %v", event)
 
@@ -90,6 +110,12 @@ func (w *Window) HandleEvent(event events.IEvent) error {
 	case events.EventTypeButtonDown:
 		{
 			err := w.HandleButtonDownEvent(event.(events.MouseEvent))
+			return err
+		}
+
+	case events.EventTypeKeyboard:
+		{
+			err := w.HandleKeyboardEvent(event.(events.KeyboardEvent))
 			return err
 		}
 	}

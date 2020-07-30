@@ -74,6 +74,11 @@ func (p *Panel) HandleEvent(event events.IEvent, local bool) error {
 		{
 			p.HandleMouseEvent(event, local)
 		}
+
+	case events.EventTypeKeyboard:
+		{
+			p.HandleKeyboardEvent(event, local)
+		}
 	}
 
 	return nil
@@ -90,6 +95,17 @@ func (p *Panel) HandleMouseEvent(event events.IEvent, local bool) error {
 		for _, widget := range p.widgets {
 			widget.HandleEvent(localCoordMouseEvent)
 		}
+	}
+
+	// should propagate to children nodes?
+	return nil
+}
+
+func (p *Panel) HandleKeyboardEvent(event events.IEvent, local bool) error {
+
+	keyboardEvent := event.(events.KeyboardEvent)
+	for _, widget := range p.widgets {
+		widget.HandleEvent(keyboardEvent)
 	}
 
 	// should propagate to children nodes?
