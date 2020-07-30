@@ -1,6 +1,7 @@
 package widgets
 
 import (
+	"errors"
 	"github.com/hajimehoshi/ebiten"
 	"github.com/kpfaulkner/goui/pkg/events"
 	log "github.com/sirupsen/logrus"
@@ -61,6 +62,12 @@ func (b *BaseWidget) HandleEvent(event events.IEvent) error {
 	return nil
 }
 
+// BroadcastEvent signals back to main application that something has happened.
+// unsure if actually needed, but see the probability of it.
+func (b *BaseWidget) BroadcastEvent(event events.IEvent) error {
+	return errors.New("BaseWidget shouldn't broadcast events!")
+}
+
 // ContainsCoords determines if co-ordinates (based off parent!)
 func (b *BaseWidget) ContainsCoords(x float64, y float64, local bool) bool {
 
@@ -99,6 +106,6 @@ func (b *BaseWidget) CheckMouseEventCoords(event events.IEvent, local bool) (boo
 // Hate using the I* notation... but will do for now.
 type IWidget interface {
 	Draw(screen *ebiten.Image) error
-
 	HandleEvent(event events.IEvent) error
+	BroadcastEvent(event events.IEvent) error
 }
