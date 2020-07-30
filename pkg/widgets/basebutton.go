@@ -55,14 +55,16 @@ func (b *BaseButton) HandleEvent(event events.IEvent) error {
 			if b.ContainsCoords(mouseEvent.X, mouseEvent.Y, true) {
 				b.hasFocus = true
 
-				// do generic button stuff here.
-				b.pressed = false
+				if b.pressed {
+					// do generic button stuff here.
+					b.pressed = false
 
-				// then do application specific stuff!!
-				if ev, ok := b.eventRegister[event.EventType()]; ok {
-					ev(event)
+					// then do application specific stuff!!
+					if ev, ok := b.eventRegister[event.EventType()]; ok {
+						ev(event)
+					}
+					b.stateChangedSinceLastDraw = true
 				}
-				b.stateChangedSinceLastDraw = true
 			}
 		}
 	}

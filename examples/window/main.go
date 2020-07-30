@@ -6,6 +6,8 @@ import (
 	"github.com/kpfaulkner/goui/pkg/widgets"
 	log "github.com/sirupsen/logrus"
 	"image/color"
+	"net/http"
+	_ "net/http/pprof"
 )
 
 type MyApp struct {
@@ -36,17 +38,22 @@ func addPanel(panelName string, x float64, y float64, width int, height int, win
 	panel.AddWidget(&button2)
 
 
-	win.AddPanel(panel)
+	win.AddPanel(&panel)
 
 	return nil
 }
 
 func main() {
+
+	go func() {
+		log.Println(http.ListenAndServe("localhost:6060", nil))
+	}()
+
 	log.SetLevel(log.DebugLevel)
 
 	a := MyApp{}
 
-	app := pkg.NewWindow(600, 600, "my title")
+	app := pkg.NewWindow(600, 600, "my title", true)
 	addPanel("panel1", 100, 0, 200, 200, &app, a.ButtonAction1, a.ButtonAction2)
 	addPanel("panel2", 300, 0, 200, 200, &app, a.ButtonAction1, a.ButtonAction2)
 
@@ -66,7 +73,7 @@ func main() {
 
 	button.RegisterEventHandler(events.EventTypeButtonDown, a.ButtonAction1)
 
-	app.AddPanel(panel3)
+	app.AddPanel(&panel3)
 
 	app.MainLoop()
 

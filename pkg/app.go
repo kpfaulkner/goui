@@ -19,22 +19,37 @@ type Window struct {
 
 	// slice of panels. Should probably do as a map???
 	// Then again, slice can be used for render order?
-	panels []widgets.Panel
+	panels []widgets.IPanel
 
 	leftMouseButtonPressed bool
+	rightMouseButtonPressed bool
+
+	haveMenuBar bool
 }
 
-func NewWindow(width int, height int, title string) Window {
+func NewWindow(width int, height int, title string, haveMenuBar bool) Window {
 	w := Window{}
 	w.height = height
 	w.width = width
 	w.title = title
-	w.panels = []widgets.Panel{}
+
+	// panels are ordered. They are drawn from first to last.
+	// So if we *have* to have a panel drawn last (eg, menu from a menu bar) then
+	// one approach might be to create a panel (representing the menu) and it gets displayed at the end?
+	// Mad idea..
+	w.panels = []widgets.IPanel{}
 	w.leftMouseButtonPressed = false
+	w.rightMouseButtonPressed = false
+	w.haveMenuBar = haveMenuBar
+
+	if w.haveMenuBar {
+		mb := widgets.NewMenuBar("menubar",0,0,width,30,nil )
+		w.AddPanel(&mb)
+	}
 	return w
 }
 
-func (w *Window) AddPanel(panel widgets.Panel) error {
+func (w *Window) AddPanel(panel widgets.IPanel) error {
 	w.panels = append(w.panels, panel)
 	return nil
 }
@@ -56,9 +71,11 @@ func (w *Window) Update(screen *ebiten.Image) error {
 		}
 	}
 
-	if len(ebiten.InputChars()) > 0 {
+
+	inp := ebiten.InputChars()
+	if len(inp) > 0 {
 		// create keyboard event
-		ke := events.NewKeyboardEvent( ebiten.Key(ebiten.InputChars()[0])) // only send first one?
+		ke := events.NewKeyboardEvent( ebiten.Key(inp[0])) // only send first one?
 		w.HandleEvent(ke)
 	}
 

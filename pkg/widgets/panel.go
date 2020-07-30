@@ -9,6 +9,12 @@ import (
 
 var defaultPanelColour color.RGBA
 
+type IPanel interface {
+	AddWidget(w IWidget) error
+	Draw(screen *ebiten.Image) error
+	HandleEvent(event events.IEvent, local bool) error
+}
+
 // Panel has a position, width and height.
 // Panels contain other widgets (and also other panels).
 type Panel struct {

@@ -22,6 +22,8 @@ type TextInput struct {
 	fontInfo         *common.Font
 	uiFont           font.Face
 
+	// just for cursor.
+  counter int
 }
 
 func NewTextInput(ID string, x float64, y float64, width int, height int, backgroundColour *color.RGBA) TextInput {
@@ -29,7 +31,7 @@ func NewTextInput(ID string, x float64, y float64, width int, height int, backgr
 	t.BaseWidget = NewBaseWidget(ID, x, y, width, height)
 	t.text = ""
   t.stateChangedSinceLastDraw = true
-
+  t.counter = 0
 	if backgroundColour != nil {
 		t.backgroundColour = *backgroundColour
 	} else {
@@ -82,7 +84,6 @@ func (t *TextInput) HandleEvent(event events.IEvent) error {
 						t.text = t.text[0:l-1]
 					}
 				}
-
 				t.stateChangedSinceLastDraw = true
 			}
 		}
@@ -100,7 +101,11 @@ func (t *TextInput) Draw(screen *ebiten.Image) error {
 		emptyImage, _ := ebiten.NewImage(t.Width, t.Height, ebiten.FilterDefault)
 		_ = emptyImage.Fill(t.backgroundColour)
 		t.rectImage = emptyImage
-		text.Draw(t.rectImage, t.text, t.uiFont, 0, 15, color.Black)
+
+		txt := t.text
+		txt += "|"
+
+		text.Draw(t.rectImage, txt, t.uiFont, 0, 15, color.Black)
 		t.stateChangedSinceLastDraw = false
 	}
 
