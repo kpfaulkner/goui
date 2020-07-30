@@ -100,7 +100,7 @@ func (t *TextInput) Draw(screen *ebiten.Image) error {
 		emptyImage, _ := ebiten.NewImage(t.Width, t.Height, ebiten.FilterDefault)
 		_ = emptyImage.Fill(t.backgroundColour)
 		t.rectImage = emptyImage
-		text.Draw(t.rectImage, t.text, t.uiFont, 10, 10, color.Black)
+		text.Draw(t.rectImage, t.text, t.uiFont, 0, 15, color.Black)
 		t.stateChangedSinceLastDraw = false
 	}
 
