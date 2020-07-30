@@ -32,11 +32,6 @@ func addPanel(panelName string, x float64, y float64, width int, height int, win
 	button.RegisterEventHandler(events.EventTypeButtonDown, buttonAction1)
 	button2 := widgets.NewTextButton("button2", "my button2", 100, 0, 100, 100, nil, nil, nil)
 	button2.RegisterEventHandler(events.EventTypeButtonDown, buttonAction2)
-
-	/*
-	panel.AddButton(&button)
-	panel.AddButton(&button2)
-	 */
 	panel.AddWidget(&button)
 	panel.AddWidget(&button2)
 
@@ -59,13 +54,11 @@ func main() {
 	panel3 := widgets.NewPanel("panel 3", 0, 300, 300, 300, &color.RGBA{0xff, 0xff, 0xff, 0xff})
 
 	button := widgets.NewImageButton("image button 1", "./images/pressedbutton.png", "./images/nonpressedbutton.png", 0, 0)
-//	panel3.AddButton(&button)
 	panel3.AddWidget(&button)
 
 	cb := widgets.NewCheckBox("checkbox1", "./images/emptycheckbox.png", "./images/checkedcheckbox.png", 0, 100)
 	cb.RegisterEventHandler(events.EventTypeButtonDown, a.CheckboxChanged)
 
-	//panel3.AddCheckbox(&cb)
 	panel3.AddWidget(&cb)
 
 	button.RegisterEventHandler(events.EventTypeButtonDown, a.ButtonAction1)

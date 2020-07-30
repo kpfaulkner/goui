@@ -20,12 +20,6 @@ type Panel struct {
 	// all widgets.... see if we can be super generic here.
 	widgets []IWidget
 
-	// panel can also contain widgets
-	// widgets []IWidget   figure out what interface will look like.
-	//buttons []IButton
-
-	//checkboxes []*CheckBox
-
 	panelColour color.RGBA
 }
 
@@ -36,7 +30,6 @@ func init() {
 func NewPanel(ID string, x float64, y float64, width int, height int, colour *color.RGBA) Panel {
 	p := Panel{}
 	p.BaseWidget = NewBaseWidget(ID, x, y, width, height)
-	//p.buttons = []IButton{}
 
 	if colour != nil {
 		p.panelColour = *colour
@@ -53,39 +46,15 @@ func (p *Panel) AddWidget(w IWidget) error {
 	return nil
 }
 
-/*
-// AddButton adds a already created button.
-func (p *Panel) AddButton(b IButton) error {
-	p.buttons = append(p.buttons, b)
-	return nil
-}
-
-// AddCheckbox adds a already created checkbox.
-func (p *Panel) AddCheckbox(b *CheckBox) error {
-	p.checkboxes = append(p.checkboxes, b)
-	return nil
-}
-*/
-
 // Draw renders all the widgets inside the panel (and the panel itself.. .if there is anything to it?)
 func (p *Panel) Draw(screen *ebiten.Image) error {
 
 	// colour background of panel first, just so we can see it.
 	_ = p.rectImage.Fill(p.panelColour)
-	/*
-	for _, b := range p.buttons {
-		b.Draw(p.rectImage)
-	}
-
-
-	for _, b := range p.checkboxes {
-		b.Draw(p.rectImage)
-	} */
 
 	for _, w := range p.widgets {
 		w.Draw(p.rectImage)
 	}
-
 
 	op := &ebiten.DrawImageOptions{}
 	op.GeoM.Translate(p.X, p.Y)
@@ -117,15 +86,6 @@ func (p *Panel) HandleMouseEvent(event events.IEvent, local bool) error {
 		mouseEvent := event.(events.MouseEvent)
 		log.Debugf("HandleMouseEvent panel %s :  %f %f", p.ID, mouseEvent.X, mouseEvent.Y)
 		localCoordMouseEvent := p.GenerateLocalCoordMouseEvent(mouseEvent)
-
-		/*
-		for _, button := range p.buttons {
-			button.HandleEvent(localCoordMouseEvent)
-		}
-
-		for _, checkbox := range p.checkboxes {
-			checkbox.HandleEvent(localCoordMouseEvent)
-		} */
 
 		for _, widget := range p.widgets {
 			widget.HandleEvent(localCoordMouseEvent)
