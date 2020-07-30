@@ -3,45 +3,48 @@ package widgets
 import (
 	"github.com/hajimehoshi/ebiten"
 	log "github.com/sirupsen/logrus"
-	"image"
 	_ "image/png"
-	"os"
 )
 
 type ImageButton struct {
 	BaseButton
 
 	// image for the button.
-	image image.Image
+	nonPressedImage *ebiten.Image
+	pressedImage    *ebiten.Image
 }
 
-func NewImageButton(imageName string, x float64, y float64, width int, height int) ImageButton {
+func NewImageButton(ID string, pressedImageName string, nonPressedImageName string, x float64, y float64) ImageButton {
 	b := ImageButton{}
-	b.BaseButton = NewBaseButton(x, y, width, height)
-	img, err := loadImage(imageName)
+
+	img1, err := loadImage(pressedImageName)
 	if err != nil {
-		log.Fatalf("Unable to load image %s", imageName)
+		log.Fatalf("Unable to load image %s", pressedImageName)
 	}
-	b.image = *img
+	b.pressedImage = img1
+	img2, err := loadImage(nonPressedImageName)
+	if err != nil {
+		log.Fatalf("Unable to load image %s", nonPressedImageName)
+	}
+	b.nonPressedImage = img2
+
+	width, height := b.nonPressedImage.Size()
+	b.BaseButton = NewBaseButton(ID, x, y, width, height)
+
 	return b
 }
 
-// loadImage, assuming its a png
-func loadImage(imageName string) (*image.Image, error) {
-	f, err := os.Open(imageName)
-	if err != nil {
-		return nil, err
-	}
-	defer f.Close()
-
-	img, _, err := image.Decode(f)
-	if err != nil {
-		return nil, err
-	}
-
-	return &img, nil
-}
-
 func (b *ImageButton) Draw(screen *ebiten.Image) error {
+	op := &ebiten.DrawImageOptions{}
+	op.GeoM.Translate(b.X, b.Y)
+
+	// if state changed since last draw, recreate colour etc.
+
+	if b.pressed {
+		_ = screen.DrawImage(b.pressedImage, op)
+	} else {
+		_ = screen.DrawImage(b.nonPressedImage, op)
+	}
+
 	return nil
 }

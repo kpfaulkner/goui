@@ -9,17 +9,33 @@ import (
 )
 
 type MyApp struct {
-
 }
 
-
-func (m MyApp) ButtonAction1( event events.IEvent) error {
-  log.Debugf("My button1 action!!!")
-  return nil
+func (m MyApp) ButtonAction1(event events.IEvent) error {
+	log.Debugf("My button1 action!!!")
+	return nil
 }
 
-func (m MyApp) ButtonAction2( event events.IEvent) error {
+func (m MyApp) ButtonAction2(event events.IEvent) error {
 	log.Debugf("My button2 action!!!")
+	return nil
+}
+
+func (m MyApp) CheckboxChanged(event events.IEvent) error {
+	log.Debugf("checkbox changed!!!")
+	return nil
+}
+
+func addPanel(panelName string, x float64, y float64, width int, height int, win *pkg.Window, buttonAction1 func(event events.IEvent) error, buttonAction2 func(event events.IEvent) error) error {
+	panel := widgets.NewPanel(panelName, x, y, width, height, nil)
+	button := widgets.NewTextButton("button1", "my button1", 0, 0, 100, 100, nil, nil, nil)
+	button.RegisterEventHandler(events.EventTypeButtonDown, buttonAction1)
+	button2 := widgets.NewTextButton("button2", "my button2", 100, 0, 100, 100, nil, nil, nil)
+	button2.RegisterEventHandler(events.EventTypeButtonDown, buttonAction2)
+	panel.AddButton(&button)
+	panel.AddButton(&button2)
+	win.AddPanel(panel)
+
 	return nil
 }
 
@@ -29,19 +45,24 @@ func main() {
 	a := MyApp{}
 
 	app := pkg.NewWindow(600, 600, "my title")
-	//button := widgets.NewImageButton("c:/temp/test.png",0,0,100,100)
+	addPanel("panel1", 100, 0, 200, 200, &app, a.ButtonAction1, a.ButtonAction2)
+	addPanel("panel2", 300, 0, 200, 200, &app, a.ButtonAction1, a.ButtonAction2)
 
-	panel := widgets.NewPanel(100, 0, 200, 200)
-	button := widgets.NewTextButton("my button1", 0, 0, 100, 100, color.RGBA{0,0xff,0xff,0xff}, nil)
+	// panel in panel
+	panel3 := widgets.NewPanel("panel 3", 0, 300, 300, 300, &color.RGBA{0xff, 0xff, 0xff, 0xff})
+
+	button := widgets.NewImageButton("image button 1", "./images/pressedbutton.png", "./images/nonpressedbutton.png", 0, 0)
+	panel3.AddButton(&button)
+
+	cb := widgets.NewCheckBox("checkbox1", "./images/emptycheckbox.png", "./images/checkedcheckbox.png", 0, 100)
+	cb.RegisterEventHandler(events.EventTypeButtonDown, a.CheckboxChanged)
+
+	panel3.AddCheckbox(&cb)
+
 	button.RegisterEventHandler(events.EventTypeButtonDown, a.ButtonAction1)
 
-	button2 := widgets.NewTextButton("my button2", 100, 0, 100, 100, color.RGBA{0xff,0xff,0,0xff}, nil)
-	button2.RegisterEventHandler(events.EventTypeButtonDown, a.ButtonAction2)
+	app.AddPanel(panel3)
 
-	panel.AddButton(&button)
-	panel.AddButton(&button2)
-
-	app.AddPanel(panel)
 	app.MainLoop()
 
 }

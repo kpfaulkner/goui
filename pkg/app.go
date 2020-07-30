@@ -20,7 +20,7 @@ type Window struct {
 	// Then again, slice can be used for render order?
 	panels []widgets.Panel
 
-  leftMouseButtonPressed bool
+	leftMouseButtonPressed bool
 }
 
 func NewWindow(width int, height int, title string) Window {
@@ -60,7 +60,7 @@ func (w *Window) Update(screen *ebiten.Image) error {
 func (w *Window) HandleButtonUpEvent(event events.MouseEvent) error {
 	log.Debugf("button up %f %f", event.X, event.Y)
 	for _, panel := range w.panels {
-		panel.HandleEvent(event)
+		panel.HandleEvent(event, false)
 	}
 
 	return nil
@@ -71,7 +71,7 @@ func (w *Window) HandleButtonDownEvent(event events.MouseEvent) error {
 
 	// loop through panels and find a target!
 	for _, panel := range w.panels {
-		panel.HandleEvent(event)
+		panel.HandleEvent(event, false)
 	}
 
 	return nil

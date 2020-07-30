@@ -4,7 +4,6 @@ type MouseEvent struct {
 	Event
 	X float64
 	Y float64
-
 }
 
 func NewMouseEvent(x int, y int, eventType int) MouseEvent {
@@ -16,7 +15,7 @@ func NewMouseEvent(x int, y int, eventType int) MouseEvent {
 }
 
 func (m MouseEvent) Name() string {
-  return m.eventName
+	return m.eventName
 }
 
 func (m MouseEvent) EventType() int {
@@ -26,4 +25,3 @@ func (m MouseEvent) EventType() int {
 func (m MouseEvent) Action() error {
 	return nil
 }
-

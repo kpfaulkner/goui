@@ -8,15 +8,15 @@ import (
 
 type BaseButton struct {
 	BaseWidget
-	pressed bool
-	stateChangedSinceLastDraw bool   // dont want to recreating the button image if state hasn't changed.
+	pressed                   bool
+	stateChangedSinceLastDraw bool // dont want to recreating the button image if state hasn't changed.
 }
 
-func NewBaseButton(x float64, y float64, width int, height int) BaseButton {
+func NewBaseButton(ID string, x float64, y float64, width int, height int) BaseButton {
 	bb := BaseButton{}
-	bb.BaseWidget = NewBaseWidget(x, y, width, height)
+	bb.BaseWidget = NewBaseWidget(ID, x, y, width, height)
 	bb.pressed = false
-	bb.stateChangedSinceLastDraw = false
+	bb.stateChangedSinceLastDraw = true
 	return bb
 }
 
@@ -33,23 +33,26 @@ func (b *BaseButton) HandleEvent(event events.IEvent) error {
 			mouseEvent := event.(events.MouseEvent)
 
 			// check click is in button boundary.
-			if b.ContainsCoords(mouseEvent.X, mouseEvent.Y) {
-				// do generic button stuff here.
-				b.pressed = true
-				// then do application specific stuff!!
-				if ev, ok := b.eventRegister[event.EventType()]; ok {
-					ev(event)
+			if b.ContainsCoords(mouseEvent.X, mouseEvent.Y, true) {
+				// if already pressed, then skip it.. .otherwise lots of repeats.
+				if !b.pressed {
+					b.pressed = true
+
+					// then do application specific stuff!!
+					if ev, ok := b.eventRegister[event.EventType()]; ok {
+						ev(event)
+					}
+					b.stateChangedSinceLastDraw = true
 				}
-				b.stateChangedSinceLastDraw = true
 			}
 		}
 	case events.EventTypeButtonUp:
 		{
-		  log.Debugf("BUTTON UP!!!")
+			log.Debugf("BUTTON UP!!!")
 			mouseEvent := event.(events.MouseEvent)
 
 			// check click is in button boundary.
-			if b.ContainsCoords(mouseEvent.X, mouseEvent.Y) {
+			if b.ContainsCoords(mouseEvent.X, mouseEvent.Y, true) {
 				// do generic button stuff here.
 				b.pressed = false
 

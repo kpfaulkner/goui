@@ -9,6 +9,7 @@ import (
 // BaseWidget is the common element of ALL disable items. Widgets, buttons, panels etc.
 // Should only handle some basic items like location, width, height and possibly events.
 type BaseWidget struct {
+	ID string
 
 	// Location of top left of widget.
 	// This is always relative to the parent widget.
@@ -29,8 +30,9 @@ type BaseWidget struct {
 	eventRegister map[int]func(event events.IEvent) error
 }
 
-func NewBaseWidget(x float64, y float64, width int, height int) BaseWidget {
+func NewBaseWidget(ID string, x float64, y float64, width int, height int) BaseWidget {
 	bw := BaseWidget{}
+	bw.ID = ID
 	bw.X = x
 	bw.Y = y
 	bw.Width = width
@@ -53,17 +55,22 @@ func (b *BaseWidget) Draw(screen *ebiten.Image) error {
 func (b *BaseWidget) HandleEvent(event events.IEvent) error {
 
 	eventType := event.EventType()
-	if handler,ok := b.eventRegister[eventType]; ok {
+	if handler, ok := b.eventRegister[eventType]; ok {
 		handler(event)
 	}
 	return nil
 }
 
 // ContainsCoords determines if co-ordinates (based off parent!)
-func (b *BaseWidget) ContainsCoords(x float64, y float64) bool {
-	localX := x - b.X
-	localY := y - b.Y
-	return localX >= 0 && localX <= b.X + float64(b.Width) && localY >= 0 && localY <= b.Y + float64(b.Height)
+func (b *BaseWidget) ContainsCoords(x float64, y float64, local bool) bool {
+
+	localX := x
+	localY := y
+	if local {
+		localX = x - b.X
+		localY = y - b.Y
+	}
+	return localX >= 0 && localX <= b.X+float64(b.Width) && localY >= 0 && localY <= b.Y+float64(b.Height)
 }
 
 // GenerateLocalCoordMouseEvent takes an incoming MouseEvent and converts the X,Y co-ordinates
@@ -76,10 +83,10 @@ func (b *BaseWidget) GenerateLocalCoordMouseEvent(incomingEvent events.MouseEven
 	return outgoingMouseEvent
 }
 
-func (b *BaseWidget) CheckMouseEventCoords(event events.IEvent) (bool, error) {
+func (b *BaseWidget) CheckMouseEventCoords(event events.IEvent, local bool) (bool, error) {
 	mouseEvent := event.(events.MouseEvent)
 
-	if b.ContainsCoords(mouseEvent.X, mouseEvent.Y) {
+	if b.ContainsCoords(mouseEvent.X, mouseEvent.Y, local) {
 		log.Debugf("CheckMouseEventCoords %f %f", mouseEvent.X, mouseEvent.Y)
 		return true, nil
 	}
@@ -87,8 +94,6 @@ func (b *BaseWidget) CheckMouseEventCoords(event events.IEvent) (bool, error) {
 	// should propagate to children nodes?
 	return false, nil
 }
-
-
 
 // IWidget defines what actions can be performed on a widget.
 // Hate using the I* notation... but will do for now.

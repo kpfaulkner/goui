@@ -8,9 +8,9 @@ type Button struct {
 	BaseButton
 }
 
-func NewButton(imageName string, x float64, y float64, width int, height int) Button {
+func NewButton(ID string, imageName string, x float64, y float64, width int, height int) Button {
 	b := Button{}
-	b.BaseButton = NewBaseButton(x, y, width, height)
+	b.BaseButton = NewBaseButton(ID, x, y, width, height)
 	return b
 }
 

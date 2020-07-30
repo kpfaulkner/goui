@@ -4,44 +4,57 @@ import (
 	"github.com/golang/freetype/truetype"
 	"github.com/hajimehoshi/ebiten"
 	"github.com/hajimehoshi/ebiten/ebitenutil"
+	"github.com/hajimehoshi/ebiten/examples/resources/fonts"
 	"github.com/hajimehoshi/ebiten/text"
 	"github.com/kpfaulkner/goui/pkg/common"
 	log "github.com/sirupsen/logrus"
 	"golang.org/x/image/font"
-	"golang.org/x/image/font/gofont/goregular"
 	"image"
 	"image/color"
 )
 
 var (
-	nonPressedButtonBorder color.RGBA
-	pressedButtonBorder color.RGBA
+	defaultNonPressedButtonColour color.RGBA
+	defaultPressedButtonColour    color.RGBA
 )
+
 // TextButton is a button that just has a background colour, text and text colour.
 type TextButton struct {
 	BaseButton
-	buttonText       string
-	backgroundColour color.RGBA
-	fontInfo         *common.Font
-	uiFont           font.Face
-	Rect             image.Rectangle
+	buttonText                 string
+	pressedBackgroundColour    color.RGBA
+	nonPressedBackgroundColour color.RGBA
+	fontInfo                   *common.Font
+	uiFont                     font.Face
+	Rect                       image.Rectangle
 }
 
 func init() {
-	nonPressedButtonBorder = color.RGBA{0xff,0,0,0xff}
-	pressedButtonBorder = color.RGBA{0,0xff,0,0xff}
+	defaultNonPressedButtonColour = color.RGBA{0x8A, 0x85, 0x81, 0xff}
+	defaultPressedButtonColour = color.RGBA{0x78, 0x75, 0x72, 0xff}
 }
 
-func NewTextButton(text string, x float64, y float64, width int, height int, backgroundColour color.RGBA, fontInfo *common.Font) TextButton {
+func NewTextButton(ID string, text string, x float64, y float64, width int, height int, nonPressedBackgroundColour *color.RGBA, pressedBackgroundColour *color.RGBA, fontInfo *common.Font) TextButton {
 	b := TextButton{}
-	b.BaseButton = NewBaseButton(x, y, width, height)
-	b.backgroundColour = backgroundColour
+	b.BaseButton = NewBaseButton(ID, x, y, width, height)
+
+	if pressedBackgroundColour != nil {
+		b.pressedBackgroundColour = *pressedBackgroundColour
+	} else {
+		b.pressedBackgroundColour = defaultPressedButtonColour
+	}
+
+	if nonPressedBackgroundColour != nil {
+		b.nonPressedBackgroundColour = *nonPressedBackgroundColour
+	} else {
+		b.nonPressedBackgroundColour = defaultNonPressedButtonColour
+	}
+
 	b.buttonText = text
 	b.fontInfo = fontInfo
-	b.generateButtonImage(b.backgroundColour, nonPressedButtonBorder)
+	b.generateButtonImage(b.pressedBackgroundColour, b.nonPressedBackgroundColour)
 
-
-	tt, err := truetype.Parse(goregular.TTF)
+	tt, err := truetype.Parse(fonts.MPlus1pRegular_ttf)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -59,10 +72,10 @@ func (b *TextButton) generateButtonImage(colour color.RGBA, border color.RGBA) e
 	emptyImage, _ := ebiten.NewImage(b.Width, b.Height, ebiten.FilterDefault)
 	_ = emptyImage.Fill(colour)
 
-	ebitenutil.DrawLine(emptyImage,0,0,0,float64(b.Width),border)
-	ebitenutil.DrawLine(emptyImage,0,float64(b.Width), float64(b.Width), float64(b.Height),border)
-	ebitenutil.DrawLine(emptyImage,float64(b.Width), float64(b.Height),0,float64(b.Height),border)
-	ebitenutil.DrawLine(emptyImage,0,float64(b.Height),0,0,border)
+	ebitenutil.DrawLine(emptyImage, 0, 0, 0, float64(b.Width), border)
+	ebitenutil.DrawLine(emptyImage, 0, float64(b.Width), float64(b.Width), float64(b.Height), border)
+	ebitenutil.DrawLine(emptyImage, float64(b.Width), float64(b.Height), 0, float64(b.Height), border)
+	ebitenutil.DrawLine(emptyImage, 0, float64(b.Height), 0, 0, border)
 
 	b.rectImage = emptyImage
 	return nil
@@ -76,15 +89,15 @@ func (b *TextButton) Draw(screen *ebiten.Image) error {
 	if b.stateChangedSinceLastDraw {
 		if b.pressed {
 			log.Debugf("changing to pressed colour")
-			b.generateButtonImage(b.backgroundColour, pressedButtonBorder)
+			b.generateButtonImage(b.pressedBackgroundColour, b.nonPressedBackgroundColour)
 		} else {
 			log.Debugf("changing to nonpressed colour")
-			b.generateButtonImage(b.backgroundColour, nonPressedButtonBorder)
+			b.generateButtonImage(b.nonPressedBackgroundColour, b.pressedBackgroundColour)
 		}
+		text.Draw(b.rectImage, b.buttonText, b.uiFont, 20, 50, color.Black)
 		b.stateChangedSinceLastDraw = false
 	}
 
-	text.Draw(b.rectImage, b.buttonText, b.uiFont, 20, 50, color.Black)
 	_ = screen.DrawImage(b.rectImage, op)
 
 	return nil
