@@ -1,13 +1,17 @@
 package events
 
+import "github.com/hajimehoshi/ebiten"
+
 type KeyboardEvent struct {
 	Event
-	Character string // yeah yeah, shouldn't really be a string.
+	Character ebiten.Key // yeah yeah, shouldn't really be a string.
 }
 
-func NewKeyboardEvent(eventType int) KeyboardEvent {
+func NewKeyboardEvent(key ebiten.Key) KeyboardEvent {
 	e := KeyboardEvent{}
-	e.eventType = eventType
+	e.eventType = EventTypeKeyboard
+	e.Character = key
+
 	return e
 }
 

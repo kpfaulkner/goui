@@ -72,7 +72,17 @@ func (t *TextInput) HandleEvent(event events.IEvent) error {
 			// check if has focus....  if so, can potentially add to string?
 			if t.hasFocus {
 				keyboardEvent := event.(events.KeyboardEvent)
-				t.text = t.text + keyboardEvent.Character
+
+				if keyboardEvent.Character != ebiten.KeyBackspace {
+					t.text = t.text + string(keyboardEvent.Character)
+				} else {
+					// back space one.
+					l := len(t.text)
+					if l > 0 {
+						t.text = t.text[0:l-1]
+					}
+				}
+
 				t.stateChangedSinceLastDraw = true
 			}
 		}

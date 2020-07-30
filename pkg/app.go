@@ -2,11 +2,11 @@ package pkg
 
 import (
 	"github.com/hajimehoshi/ebiten"
+	"github.com/hajimehoshi/ebiten/inpututil"
 	"github.com/kpfaulkner/goui/pkg/events"
 	"github.com/kpfaulkner/goui/pkg/widgets"
 	log "github.com/sirupsen/logrus"
 	"image/color"
-	"strings"
 )
 
 // Window used to define the UI window for the application.
@@ -56,12 +56,15 @@ func (w *Window) Update(screen *ebiten.Image) error {
 		}
 	}
 
-	keyboardInput := strings.TrimSpace(string(ebiten.InputChars()))
-
-	if keyboardInput != "" {
+	if len(ebiten.InputChars()) > 0 {
 		// create keyboard event
-		ke := events.NewKeyboardEvent(events.EventTypeKeyboard)
-		ke.Character = keyboardInput
+		ke := events.NewKeyboardEvent( ebiten.Key(ebiten.InputChars()[0])) // only send first one?
+		w.HandleEvent(ke)
+	}
+
+	// If the backspace key is pressed, remove one character.
+	if repeatingKeyPressed(ebiten.KeyBackspace) {
+		ke := events.NewKeyboardEvent(ebiten.KeyBackspace)
 		w.HandleEvent(ke)
 	}
 
@@ -144,4 +147,20 @@ func (w *Window) MainLoop() error {
 	}
 
 	return nil
+}
+
+// repeatingKeyPressed return true when key is pressed considering the repeat state.
+func repeatingKeyPressed(key ebiten.Key) bool {
+	const (
+		delay    = 30
+		interval = 3
+	)
+	d := inpututil.KeyPressDuration(key)
+	if d == 1 {
+		return true
+	}
+	if d >= delay && (d-delay)%interval == 0 {
+		return true
+	}
+	return false
 }
