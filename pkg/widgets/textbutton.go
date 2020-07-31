@@ -1,10 +1,8 @@
 package widgets
 
 import (
-	"github.com/golang/freetype/truetype"
 	"github.com/hajimehoshi/ebiten"
 	"github.com/hajimehoshi/ebiten/ebitenutil"
-	"github.com/hajimehoshi/ebiten/examples/resources/fonts"
 	"github.com/hajimehoshi/ebiten/text"
 	"github.com/kpfaulkner/goui/pkg/common"
 	log "github.com/sirupsen/logrus"
@@ -27,6 +25,7 @@ type TextButton struct {
 	fontInfo                   common.Font
 	uiFont                     font.Face
 	Rect                       image.Rectangle
+	vertPos                     int
 }
 
 func init() {
@@ -63,15 +62,9 @@ func NewTextButton(ID string, text string, x float64, y float64, width int, heig
 
 	b.generateButtonImage(b.pressedBackgroundColour, b.nonPressedBackgroundColour)
 
-	tt, err := truetype.Parse(fonts.MPlus1pRegular_ttf)
-	if err != nil {
-		log.Fatal(err)
-	}
-	b.uiFont = truetype.NewFace(tt, &truetype.Options{
-		Size:    12,
-		DPI:     72,
-		Hinting: font.HintingFull,
-	})
+	// vert pos is where does text go within button. Assuming we want it centred (for now)
+	// Need to just find something visually appealing.
+	b.vertPos = (height - (height-int(b.fontInfo.SizeInPixels))/2) - 2
 
 	return b
 }
@@ -103,7 +96,7 @@ func (b *TextButton) Draw(screen *ebiten.Image) error {
 			log.Debugf("changing to nonpressed colour")
 			b.generateButtonImage(b.nonPressedBackgroundColour, b.pressedBackgroundColour)
 		}
-		text.Draw(b.rectImage, b.buttonText, b.fontInfo.UIFont, 00, 20, color.Black)
+		text.Draw(b.rectImage, b.buttonText, b.fontInfo.UIFont, 00, b.vertPos, color.Black)
 		b.stateChangedSinceLastDraw = false
 	}
 
