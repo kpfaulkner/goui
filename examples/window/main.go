@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"github.com/kpfaulkner/goui/pkg"
+	"github.com/kpfaulkner/goui/pkg/common"
 	"github.com/kpfaulkner/goui/pkg/events"
 	"github.com/kpfaulkner/goui/pkg/widgets"
 	log "github.com/sirupsen/logrus"
@@ -77,7 +78,8 @@ func main() {
 	cb := widgets.NewCheckBox("checkbox1", "./images/emptycheckbox.png", "./images/checkedcheckbox.png", 0, 100)
 	cb.RegisterEventHandler(events.EventTypeButtonDown, a.CheckboxChanged)
 
-	ti := widgets.NewTextInput("testinput1", 0, 150, 100, 20, nil, nil)
+	f := common.LoadFont("",16, color.RGBA{0xff,0xff,0xff,0xff})
+	ti := widgets.NewTextInput("testinput1", 0, 150, 100, 20, &color.RGBA{0x55,0x55,0x55,0xff}, &f)
 
 	panel3.AddWidget(&cb)
 	panel3.AddWidget(&ti)

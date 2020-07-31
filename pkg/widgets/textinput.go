@@ -113,7 +113,7 @@ func (t *TextInput) Draw(screen *ebiten.Image) error {
 		txt := t.text
 		txt += "|"
 
-		text.Draw(t.rectImage, txt, t.fontInfo.UIFont, 0, 15, color.Black)
+		text.Draw(t.rectImage, txt, t.fontInfo.UIFont, 0, 15, t.fontInfo.Colour)
 		t.stateChangedSinceLastDraw = false
 	}
 

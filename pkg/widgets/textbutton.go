@@ -103,7 +103,7 @@ func (b *TextButton) Draw(screen *ebiten.Image) error {
 			log.Debugf("changing to nonpressed colour")
 			b.generateButtonImage(b.nonPressedBackgroundColour, b.pressedBackgroundColour)
 		}
-		text.Draw(b.rectImage, b.buttonText, b.fontInfo.UIFont, 20, 50, color.Black)
+		text.Draw(b.rectImage, b.buttonText, b.fontInfo.UIFont, 00, 20, color.Black)
 		b.stateChangedSinceLastDraw = false
 	}
 

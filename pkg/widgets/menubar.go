@@ -21,7 +21,6 @@ func NewMenuBar(ID string, x float64, y float64, width int, height int, colour *
 // AddMenuHeading adds the header for the menu eg. File, Edit, etc etc
 // Tt does NOT add the contents/panel of when we click on that menu heading
 func (mb *MenuBar) AddMenuHeading(menuName string) error {
-
 	menuButton := NewTextButton(menuName, menuName, 0, 0, 50, 20, nil, nil, nil)
 	err := mb.AddWidget(&menuButton)
 	return err
