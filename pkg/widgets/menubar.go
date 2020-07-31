@@ -6,15 +6,42 @@ import (
 	"image/color"
 )
 
+type MenuItem struct {
+
+	// Text on button.
+	Name string
+
+	// what to do if clicked.
+	Handler func(event events.IEvent) error
+}
+
+// MenuDescription... for simple menus.
+// Simple menu meaning a header... and items underneith it.
+// No submenus (for now).
+// These are purely used to describe what the menu system will look like.
+// These are then converted to Panels, buttons etc.
+type MenuDescription struct {
+	MenuHeader string
+
+	MenuItems []MenuItem
+}
+
+
 // MenuBar is just a custom panel....  (just an idea for now)
 type MenuBar struct {
 	Panel
+
+	// panels of the menus that appear.
+	// key is menu ID
+	menuPanels map[string]Panel
 }
 
 // NewMenuBar creates the menubar panel. *has* to be located at 0,0 and full length of the window.
 func NewMenuBar(ID string, x float64, y float64, width int, height int, colour *color.RGBA) MenuBar {
 	mb := MenuBar{}
 	mb.Panel = NewPanel(ID, x, y, width, height, colour)
+	mb.menuPanels = make(map[string]Panel)
+
 	return mb
 }
 
@@ -23,6 +50,34 @@ func NewMenuBar(ID string, x float64, y float64, width int, height int, colour *
 func (mb *MenuBar) AddMenuHeading(menuName string) error {
 	menuButton := NewTextButton(menuName, menuName, 0, 0, 50, 20, nil, nil, nil)
 	err := mb.AddWidget(&menuButton)
+
+	// add panel for menu panel
+	return err
+}
+
+func (mb *MenuBar) AddMenu(menuDesc MenuDescription) error {
+	menuButton := NewTextButton(menuDesc.MenuHeader, menuDesc.MenuHeader, 0, 0, 50, 20, nil, nil, nil)
+	err := mb.AddWidget(&menuButton)
+
+	// check number of menu entries
+	menuEntries := len(menuDesc.MenuItems)
+
+	// assume 30 pixele height for each menu option.
+	// will obviously need to make configurable later.
+	menuPanel := NewPanel(menuDesc.MenuHeader, 0,0,40,menuEntries * 30 ,nil)
+	menuPanel.Disabled = true // disabled.... dont display it!
+
+	for i, menuItem := range menuDesc.MenuItems {
+		tb := NewTextButton(menuItem.Name, menuItem.Name, 0, float64(i * 30), 50,30,nil,nil,nil  )
+		menuPanel.AddWidget(&tb)
+	}
+
+	mb.menuPanels[menuDesc.MenuHeader] = menuPanel
+
+
+
+
+	// add panel for menu panel
 	return err
 }
 
@@ -36,7 +91,7 @@ func (mb *MenuBar) HandleEvent(event events.IEvent, local bool) error {
 		}
 	case events.EventTypeButtonUp:
 		{
-			mb.HandleMouseEvent(event, local)
+		//	mb.HandleMouseEvent(event, local)
 		}
 
 	case events.EventTypeKeyboard:
