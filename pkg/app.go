@@ -21,7 +21,7 @@ type Window struct {
 	// Then again, slice can be used for render order?
 	panels []widgets.IPanel
 
-	leftMouseButtonPressed bool
+	leftMouseButtonPressed  bool
 	rightMouseButtonPressed bool
 
 	haveMenuBar bool
@@ -43,7 +43,8 @@ func NewWindow(width int, height int, title string, haveMenuBar bool) Window {
 	w.haveMenuBar = haveMenuBar
 
 	if w.haveMenuBar {
-		mb := widgets.NewMenuBar("menubar",0,0,width,30,nil )
+		mb := widgets.NewMenuBar("menubar", 0, 0, width, 30, &color.RGBA{0x71, 0x71, 0x71, 0xff})
+		mb.AddMenuHeading("test")
 		w.AddPanel(&mb)
 	}
 	return w
@@ -71,11 +72,10 @@ func (w *Window) Update(screen *ebiten.Image) error {
 		}
 	}
 
-
 	inp := ebiten.InputChars()
 	if len(inp) > 0 {
 		// create keyboard event
-		ke := events.NewKeyboardEvent( ebiten.Key(inp[0])) // only send first one?
+		ke := events.NewKeyboardEvent(ebiten.Key(inp[0])) // only send first one?
 		w.HandleEvent(ke)
 	}
 

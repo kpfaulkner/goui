@@ -3,8 +3,7 @@ package events
 const (
 	EventTypeButtonDown int = iota
 	EventTypeButtonUp
-  EventTypeKeyboard
-
+	EventTypeKeyboard
 )
 
 type IEventHandler interface {

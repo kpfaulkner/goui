@@ -35,7 +35,6 @@ type BaseWidget struct {
 
 	// has it changed?
 	stateChangedSinceLastDraw bool
-
 }
 
 func NewBaseWidget(ID string, x float64, y float64, width int, height int) BaseWidget {

@@ -9,13 +9,12 @@ import (
 // MenuBar is just a custom panel....  (just an idea for now)
 type MenuBar struct {
 	Panel
-
 }
 
 // NewMenuBar creates the menubar panel. *has* to be located at 0,0 and full length of the window.
 func NewMenuBar(ID string, x float64, y float64, width int, height int, colour *color.RGBA) MenuBar {
 	mb := MenuBar{}
-	mb.Panel = NewPanel(ID,x,y,width,height,colour)
+	mb.Panel = NewPanel(ID, x, y, width, height, colour)
 	return mb
 }
 
@@ -23,11 +22,10 @@ func NewMenuBar(ID string, x float64, y float64, width int, height int, colour *
 // Tt does NOT add the contents/panel of when we click on that menu heading
 func (mb *MenuBar) AddMenuHeading(menuName string) error {
 
-	menuButton := NewTextButton(menuName,menuName,0,0,50,20,nil,nil,nil)
+	menuButton := NewTextButton(menuName, menuName, 0, 0, 50, 20, nil, nil, nil)
 	err := mb.AddWidget(&menuButton)
 	return err
 }
-
 
 func (mb *MenuBar) HandleEvent(event events.IEvent, local bool) error {
 
@@ -67,4 +65,3 @@ func (mb *MenuBar) HandleMouseEvent(event events.IEvent, local bool) error {
 	// should propagate to children nodes?
 	return nil
 }
-

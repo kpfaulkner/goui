@@ -1,9 +1,8 @@
 package widgets
 
 import (
-	"github.com/golang/freetype/truetype"
 	"github.com/hajimehoshi/ebiten"
-	"github.com/hajimehoshi/ebiten/examples/resources/fonts"
+	"github.com/hajimehoshi/ebiten/ebitenutil"
 	"github.com/hajimehoshi/ebiten/text"
 	"github.com/kpfaulkner/goui/pkg/common"
 	"github.com/kpfaulkner/goui/pkg/events"
@@ -13,40 +12,42 @@ import (
 	_ "image/png"
 )
 
+var defaultFontInfo common.Font
 
 type TextInput struct {
 	BaseWidget
 
 	text             string
 	backgroundColour color.RGBA
-	fontInfo         *common.Font
+	fontInfo         common.Font
 	uiFont           font.Face
 
 	// just for cursor.
-  counter int
+	counter int
 }
 
-func NewTextInput(ID string, x float64, y float64, width int, height int, backgroundColour *color.RGBA) TextInput {
+func init() {
+	defaultFontInfo = common.LoadFont("", 16, color.RGBA{0xff, 0xff, 0xff, 0xff})
+}
+
+func NewTextInput(ID string, x float64, y float64, width int, height int, backgroundColour *color.RGBA, fontInfo *common.Font) TextInput {
 	t := TextInput{}
 	t.BaseWidget = NewBaseWidget(ID, x, y, width, height)
 	t.text = ""
-  t.stateChangedSinceLastDraw = true
-  t.counter = 0
+	t.stateChangedSinceLastDraw = true
+	t.counter = 0
+
 	if backgroundColour != nil {
 		t.backgroundColour = *backgroundColour
 	} else {
-		t.backgroundColour = color.RGBA{0,0xff,0,0xff}
+		t.backgroundColour = color.RGBA{0, 0xff, 0, 0xff}
 	}
 
-	tt, err := truetype.Parse(fonts.MPlus1pRegular_ttf)
-	if err != nil {
-		log.Fatal(err)
+	if fontInfo != nil {
+		t.fontInfo = *fontInfo
+	} else {
+		t.fontInfo = defaultFontInfo
 	}
-	t.uiFont = truetype.NewFace(tt, &truetype.Options{
-		Size:    12,
-		DPI:     72,
-		Hinting: font.HintingFull,
-	})
 
 	return t
 }
@@ -67,6 +68,8 @@ func (t *TextInput) HandleEvent(event events.IEvent) error {
 				if ev, ok := t.eventRegister[event.EventType()]; ok {
 					ev(event)
 				}
+			} else {
+				t.hasFocus = false
 			}
 		}
 	case events.EventTypeKeyboard:
@@ -81,7 +84,7 @@ func (t *TextInput) HandleEvent(event events.IEvent) error {
 					// back space one.
 					l := len(t.text)
 					if l > 0 {
-						t.text = t.text[0:l-1]
+						t.text = t.text[0 : l-1]
 					}
 				}
 				t.stateChangedSinceLastDraw = true
@@ -102,10 +105,15 @@ func (t *TextInput) Draw(screen *ebiten.Image) error {
 		_ = emptyImage.Fill(t.backgroundColour)
 		t.rectImage = emptyImage
 
+		ebitenutil.DrawLine(t.rectImage, 0, 0, float64(t.Width), 0, color.Black)
+		ebitenutil.DrawLine(t.rectImage, float64(t.Width), 0, float64(t.Width), float64(t.Height), color.Black)
+		ebitenutil.DrawLine(t.rectImage, float64(t.Width), float64(t.Height), 0, float64(t.Height), color.Black)
+		ebitenutil.DrawLine(t.rectImage, 0, float64(t.Height), 0, 0, color.Black)
+
 		txt := t.text
 		txt += "|"
 
-		text.Draw(t.rectImage, txt, t.uiFont, 0, 15, color.Black)
+		text.Draw(t.rectImage, txt, t.fontInfo.UIFont, 0, 15, color.Black)
 		t.stateChangedSinceLastDraw = false
 	}
 

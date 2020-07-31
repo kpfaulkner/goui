@@ -37,7 +37,6 @@ func addPanel(panelName string, x float64, y float64, width int, height int, win
 	panel.AddWidget(&button)
 	panel.AddWidget(&button2)
 
-
 	win.AddPanel(&panel)
 
 	return nil
@@ -54,8 +53,8 @@ func main() {
 	a := MyApp{}
 
 	app := pkg.NewWindow(600, 600, "my title", true)
-	addPanel("panel1", 100, 0, 200, 200, &app, a.ButtonAction1, a.ButtonAction2)
-	addPanel("panel2", 300, 0, 200, 200, &app, a.ButtonAction1, a.ButtonAction2)
+	addPanel("panel1", 100, 30, 200, 200, &app, a.ButtonAction1, a.ButtonAction2)
+	addPanel("panel2", 300, 30, 200, 200, &app, a.ButtonAction1, a.ButtonAction2)
 
 	// panel in panel
 	panel3 := widgets.NewPanel("panel 3", 0, 300, 300, 300, &color.RGBA{0xff, 0xff, 0xff, 0xff})
@@ -66,7 +65,7 @@ func main() {
 	cb := widgets.NewCheckBox("checkbox1", "./images/emptycheckbox.png", "./images/checkedcheckbox.png", 0, 100)
 	cb.RegisterEventHandler(events.EventTypeButtonDown, a.CheckboxChanged)
 
-	ti := widgets.NewTextInput("testinput1", 0,150,100,20,nil)
+	ti := widgets.NewTextInput("testinput1", 0, 150, 100, 20, nil, nil)
 
 	panel3.AddWidget(&cb)
 	panel3.AddWidget(&ti)

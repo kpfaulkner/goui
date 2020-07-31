@@ -24,7 +24,7 @@ type TextButton struct {
 	buttonText                 string
 	pressedBackgroundColour    color.RGBA
 	nonPressedBackgroundColour color.RGBA
-	fontInfo                   *common.Font
+	fontInfo                   common.Font
 	uiFont                     font.Face
 	Rect                       image.Rectangle
 }
@@ -34,7 +34,10 @@ func init() {
 	defaultPressedButtonColour = color.RGBA{0x78, 0x75, 0x72, 0xff}
 }
 
-func NewTextButton(ID string, text string, x float64, y float64, width int, height int, nonPressedBackgroundColour *color.RGBA, pressedBackgroundColour *color.RGBA, fontInfo *common.Font) TextButton {
+func NewTextButton(ID string, text string, x float64, y float64, width int, height int,
+	nonPressedBackgroundColour *color.RGBA,
+	pressedBackgroundColour *color.RGBA, fontInfo *common.Font) TextButton {
+
 	b := TextButton{}
 	b.BaseButton = NewBaseButton(ID, x, y, width, height)
 
@@ -51,7 +54,13 @@ func NewTextButton(ID string, text string, x float64, y float64, width int, heig
 	}
 
 	b.buttonText = text
-	b.fontInfo = fontInfo
+
+	if fontInfo != nil {
+		b.fontInfo = *fontInfo
+	} else {
+		b.fontInfo = defaultFontInfo
+	}
+
 	b.generateButtonImage(b.pressedBackgroundColour, b.nonPressedBackgroundColour)
 
 	tt, err := truetype.Parse(fonts.MPlus1pRegular_ttf)
@@ -94,7 +103,7 @@ func (b *TextButton) Draw(screen *ebiten.Image) error {
 			log.Debugf("changing to nonpressed colour")
 			b.generateButtonImage(b.nonPressedBackgroundColour, b.pressedBackgroundColour)
 		}
-		text.Draw(b.rectImage, b.buttonText, b.uiFont, 20, 50, color.Black)
+		text.Draw(b.rectImage, b.buttonText, b.fontInfo.UIFont, 20, 50, color.Black)
 		b.stateChangedSinceLastDraw = false
 	}
 
