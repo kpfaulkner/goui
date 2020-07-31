@@ -109,10 +109,15 @@ func (b *BaseWidget) CheckMouseEventCoords(event events.IEvent, local bool) (boo
 	return false, nil
 }
 
+func (b *BaseWidget) GetData() (interface{}, error) {
+	return nil, nil
+}
+
 // IWidget defines what actions can be performed on a widget.
 // Hate using the I* notation... but will do for now.
 type IWidget interface {
 	Draw(screen *ebiten.Image) error
 	HandleEvent(event events.IEvent) error
 	BroadcastEvent(event events.IEvent) error
+	GetData() (interface{}, error)    // absolutely HATE the empty interface, but this will need to be extremely generic I suppose?
 }

@@ -76,3 +76,7 @@ func (b *CheckBox) Draw(screen *ebiten.Image) error {
 
 	return nil
 }
+
+func (b *CheckBox) GetData() (interface{}, error) {
+	return b.checked, nil
+}

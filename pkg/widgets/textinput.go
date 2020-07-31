@@ -122,3 +122,8 @@ func (t *TextInput) Draw(screen *ebiten.Image) error {
 
 	return nil
 }
+
+func (t *TextInput) GetData() (interface{}, error) {
+	return t.text, nil
+}
+

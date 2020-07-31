@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"github.com/kpfaulkner/goui/pkg"
 	"github.com/kpfaulkner/goui/pkg/events"
 	"github.com/kpfaulkner/goui/pkg/widgets"
@@ -8,23 +9,34 @@ import (
 	"image/color"
 	"net/http"
 	_ "net/http/pprof"
+	"time"
 )
 
 type MyApp struct {
+
+	mytext string
 }
 
-func (m MyApp) ButtonAction1(event events.IEvent) error {
+func (m *MyApp) ButtonAction1(event events.IEvent) error {
 	log.Debugf("My button1 action!!!")
 	return nil
 }
 
-func (m MyApp) ButtonAction2(event events.IEvent) error {
+func (m *MyApp) ButtonAction2(event events.IEvent) error {
 	log.Debugf("My button2 action!!!")
 	return nil
 }
 
-func (m MyApp) CheckboxChanged(event events.IEvent) error {
+func (m *MyApp) CheckboxChanged(event events.IEvent) error {
 	log.Debugf("checkbox changed!!!")
+	return nil
+}
+
+func (m *MyApp) HandleTextInput(event events.IEvent) error {
+	log.Debugf("text input changed.!!!")
+
+	kbEvent := event.(events.KeyboardEvent)
+	m.mytext += string(kbEvent.Character)
 	return nil
 }
 
@@ -73,6 +85,20 @@ func main() {
 	button.RegisterEventHandler(events.EventTypeButtonDown, a.ButtonAction1)
 
 	app.AddPanel(&panel3)
+
+	go func(){
+		for {
+			time.Sleep(2 * time.Second)
+			data, _ := ti.GetData()
+			sData := data.(string)
+			fmt.Printf("text is %s\n", sData)
+
+			data2,_ := cb.GetData()
+			cbData := data2.(bool)
+			fmt.Printf("checkbox is %v\n", cbData)
+		}
+	}()
+
 
 	app.MainLoop()
 
