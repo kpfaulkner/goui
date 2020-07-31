@@ -24,6 +24,9 @@ type TextInput struct {
 
 	// just for cursor.
 	counter int
+
+	// vertical position for text
+	vertPos int
 }
 
 func init() {
@@ -49,6 +52,9 @@ func NewTextInput(ID string, x float64, y float64, width int, height int, backgr
 		t.fontInfo = defaultFontInfo
 	}
 
+	// vert pos is where does text go within button. Assuming we want it centred (for now)
+	// Need to just find something visually appealing.
+  t.vertPos = (height - (height - int(t.fontInfo.SizeInPixels)) /2) -2
 	return t
 }
 
@@ -113,7 +119,7 @@ func (t *TextInput) Draw(screen *ebiten.Image) error {
 		txt := t.text
 		txt += "|"
 
-		text.Draw(t.rectImage, txt, t.fontInfo.UIFont, 0, 15, t.fontInfo.Colour)
+		text.Draw(t.rectImage, txt, t.fontInfo.UIFont, 0, t.vertPos, t.fontInfo.Colour)
 		t.stateChangedSinceLastDraw = false
 	}
 

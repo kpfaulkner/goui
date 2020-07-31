@@ -1,15 +1,18 @@
 package common
 
 import (
+	"github.com/golang/freetype"
 	"github.com/golang/freetype/truetype"
 	"github.com/hajimehoshi/ebiten/examples/resources/fonts"
 	log "github.com/sirupsen/logrus"
 	"golang.org/x/image/font"
 	"image/color"
+
 )
 
 type Font struct {
 	Size   float64
+	SizeInPixels int
 	Colour color.RGBA
 	UIFont font.Face
 }
@@ -30,6 +33,10 @@ func LoadFont(name string, size float64, colour color.RGBA) Font {
 	} else {
 		log.Fatal("Cannot select own font yet. Please leave empty.")
 	}
+
+	c := freetype.NewContext()
+	x := c.PointToFixed(size)
+	f.SizeInPixels = x.Round()
 
 	f.UIFont = truetype.NewFace(tt, &truetype.Options{
 		Size:    size,
