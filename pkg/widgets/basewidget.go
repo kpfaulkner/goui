@@ -60,7 +60,7 @@ func NewBaseWidget(ID string, x float64, y float64, width int, height int) *Base
 	bw.TopLevel = false
 
 	// just go off and listen for all events.
-	//go bw.ListenToIncomingEvents()
+	//go bw.ListenToIncomingEvents( bw.eventHandler)
 
 	return &bw
 }

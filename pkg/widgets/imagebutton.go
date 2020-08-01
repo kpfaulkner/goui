@@ -29,8 +29,8 @@ func NewImageButton(ID string, pressedImageName string, nonPressedImageName stri
 	b.nonPressedImage = img2
 
 	width, height := b.nonPressedImage.Size()
-	b.BaseButton = *NewBaseButton(ID, x, y, width, height)
-	b.eventHandler = b.HandleEvent
+	b.BaseButton = *NewBaseButton(ID, x, y, width, height, b.HandleEvent)
+	//b.eventHandler = b.HandleEvent
 	return &b
 }
 

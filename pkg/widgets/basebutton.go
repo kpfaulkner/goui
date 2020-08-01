@@ -11,12 +11,12 @@ type BaseButton struct {
 	pressed bool
 }
 
-func NewBaseButton(ID string, x float64, y float64, width int, height int) *BaseButton {
+func NewBaseButton(ID string, x float64, y float64, width int, height int, handler func(event events.IEvent)(bool, error)) *BaseButton {
 	bb := BaseButton{}
 	bb.BaseWidget = *NewBaseWidget(ID, x, y, width, height)
 	bb.pressed = false
 	bb.stateChangedSinceLastDraw = true
-	bb.eventHandler = bb.HandleEvent
+	bb.eventHandler = handler
 	return &bb
 }
 
