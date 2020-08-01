@@ -5,6 +5,7 @@ import (
 	"github.com/kpfaulkner/goui/pkg/events"
 	log "github.com/sirupsen/logrus"
 	_ "image/png"
+	"time"
 )
 
 type CheckBox struct {
@@ -14,6 +15,8 @@ type CheckBox struct {
 	// image for the checkbox
 	emptyImage   *ebiten.Image
 	checkedImage *ebiten.Image
+
+	lastClickedTime time.Time
 }
 
 func NewCheckBox(ID string, emptyImage string, checkedImage string, x float64, y float64) *CheckBox {
@@ -35,6 +38,7 @@ func NewCheckBox(ID string, emptyImage string, checkedImage string, x float64, y
 
 	cb.checked = false
 	cb.eventHandler = cb.HandleEvent
+  cb.lastClickedTime = time.Now().UTC()
 
 	go cb.ListenToIncomingEvents()
 	return &cb
@@ -46,13 +50,17 @@ func (b *CheckBox) HandleEvent(event events.IEvent) (bool, error) {
 	switch eventType {
 	case events.EventTypeButtonDown:
 		{
-			mouseEvent := event.(events.MouseEvent)
-
-			// check click is in button boundary.
-			if b.ContainsCoords(mouseEvent.X, mouseEvent.Y) {
-				b.hasFocus = true
-				// if already pressed, then skip it.. .otherwise lots of repeats.
-				b.checked = !b.checked
+			// if recent click, then ignore it (otherwise just constant on/off)
+			now := time.Now().UTC()
+			if now.Sub(b.lastClickedTime) > 100*time.Millisecond {
+				b.lastClickedTime = now
+				mouseEvent := event.(events.MouseEvent)
+				// check click is in button boundary.
+				if b.ContainsCoords(mouseEvent.X, mouseEvent.Y) {
+					b.hasFocus = true
+					// if already pressed, then skip it.. .otherwise lots of repeats.
+					b.checked = !b.checked
+				}
 			}
 		}
 	}
