@@ -50,6 +50,7 @@ func addPanel(panelName string, x float64, y float64, width int, height int, win
 
 	button2 := widgets.NewTextButton("button2", "my button2", 100, 0, 100, 100, nil, nil, nil)
 	panel.AddWidget(button2, []int{events.EventTypeButtonDown, events.EventTypeButtonUp})
+
 	win.AddPanel(panel, []int{events.EventTypeButtonDown, events.EventTypeButtonUp})
 
 	return nil
@@ -72,7 +73,6 @@ func main() {
 	panel := widgets.NewPanel("panel3", 0,300,200,200, nil)
 	button := widgets.NewImageButton("image button 1", "./images/pressedbutton.png", "./images/nonpressedbutton.png", 0, 0)
 	panel.AddWidget(button, []int{events.EventTypeButtonDown,events.EventTypeButtonUp})
-
 
 	cb := widgets.NewCheckBox("checkbox1", "./images/emptycheckbox.png", "./images/checkedcheckbox.png", 0, 100)
 	panel.AddWidget(cb, []int{events.EventTypeButtonDown})
