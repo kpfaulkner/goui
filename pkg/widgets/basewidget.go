@@ -210,4 +210,5 @@ type IWidget interface {
 	HandleEvent(event events.IEvent) (bool, error)
 	BroadcastEvent(event events.IEvent) error
 	GetData() (interface{}, error) // absolutely HATE the empty interface, but this will need to be extremely generic I suppose?
+	GetEventListenerChannel() chan events.IEvent
 }

@@ -48,7 +48,7 @@ func NewMenuBar(ID string, x float64, y float64, width int, height int, colour *
 // Tt does NOT add the contents/panel of when we click on that menu heading
 func (mb *MenuBar) AddMenuHeading(menuName string) error {
 	menuButton := *NewTextButton(menuName, menuName, 0, 0, 50, 20, nil, nil, nil)
-	err := mb.AddWidget(&menuButton)
+	err := mb.AddWidget(&menuButton, []int{})
 
 	// add panel for menu panel
 	return err
@@ -56,7 +56,7 @@ func (mb *MenuBar) AddMenuHeading(menuName string) error {
 
 func (mb *MenuBar) AddMenu(menuDesc MenuDescription) error {
 	menuButton := *NewTextButton(menuDesc.MenuHeader, menuDesc.MenuHeader, 0, 0, 50, 20, nil, nil, nil)
-	err := mb.AddWidget(&menuButton)
+	err := mb.AddWidget(&menuButton, []int{})
 
 	// check number of menu entries
 	menuEntries := len(menuDesc.MenuItems)
@@ -68,7 +68,7 @@ func (mb *MenuBar) AddMenu(menuDesc MenuDescription) error {
 
 	for i, menuItem := range menuDesc.MenuItems {
 		tb := *NewTextButton(menuItem.Name, menuItem.Name, 0, float64(i*30), 50, 30, nil, nil, nil)
-		menuPanel.AddWidget(&tb)
+		menuPanel.AddWidget(&tb, []int{})
 	}
 
 	mb.menuPanels[menuDesc.MenuHeader] = menuPanel

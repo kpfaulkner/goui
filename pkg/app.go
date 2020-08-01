@@ -54,7 +54,7 @@ func NewWindow(width int, height int, title string, haveMenuBar bool) Window {
 	if w.haveMenuBar {
 		mb := *widgets.NewMenuBar("menubar", 0, 0, width, 30, &color.RGBA{0x71, 0x71, 0x71, 0xff})
 		mb.AddMenuHeading("test")
-		w.AddPanel(&mb)
+		w.AddPanel(&mb, []int{})
 	}
 	return w
 }
@@ -98,8 +98,13 @@ func (w *Window) EmitEvent(event events.IEvent) error {
 	return nil
 }
 
-func (w *Window) AddPanel(panel widgets.IPanel) error {
+func (w *Window) AddPanel(panel widgets.IPanel, subscribedEventTypes []int) error {
 	panel.SetTopLevel(true)
+
+	ch := panel.GetEventListenerChannel()
+	for _, et := range subscribedEventTypes{
+		w.AddEventListener(et, ch )
+	}
 	w.panels = append(w.panels, panel)
 	return nil
 }

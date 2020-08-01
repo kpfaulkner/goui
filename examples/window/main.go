@@ -43,20 +43,14 @@ func (m *MyApp) HandleTextInput(event events.IEvent) error {
 
 func addPanel(panelName string, x float64, y float64, width int, height int, win *pkg.Window, buttonAction1 func(event events.IEvent) error, buttonAction2 func(event events.IEvent) error) error {
 	panel := widgets.NewPanel(panelName, x, y, width, height, nil)
+
+
 	button := widgets.NewTextButton("button1", "my button1", 0, 0, 100, 100, nil, nil, nil)
-	panel.AddEventListener(events.EventTypeButtonDown, button.GetEventListenerChannel() )
-	panel.AddEventListener(events.EventTypeButtonUp, button.GetEventListenerChannel() )
-	panel.AddWidget(button)
+	panel.AddWidget(button, []int{events.EventTypeButtonDown, events.EventTypeButtonUp})
 
 	button2 := widgets.NewTextButton("button2", "my button2", 100, 0, 100, 100, nil, nil, nil)
-	panel.AddEventListener(events.EventTypeButtonDown, button2.GetEventListenerChannel() )
-	panel.AddEventListener(events.EventTypeButtonUp, button2.GetEventListenerChannel() )
-
-	panel.AddWidget(button2)
-
-	win.AddEventListener(events.EventTypeButtonDown, panel.GetEventListenerChannel())
-	win.AddEventListener(events.EventTypeButtonUp, panel.GetEventListenerChannel())
-	win.AddPanel(panel)
+	panel.AddWidget(button2, []int{events.EventTypeButtonDown, events.EventTypeButtonUp})
+	win.AddPanel(panel, []int{events.EventTypeButtonDown, events.EventTypeButtonUp})
 
 	return nil
 }
@@ -77,27 +71,19 @@ func main() {
 
 	panel := widgets.NewPanel("panel3", 0,300,200,200, nil)
 	button := widgets.NewImageButton("image button 1", "./images/pressedbutton.png", "./images/nonpressedbutton.png", 0, 0)
-	panel.AddEventListener(events.EventTypeButtonDown, button.GetEventListenerChannel() )
-	panel.AddEventListener(events.EventTypeButtonUp, button.GetEventListenerChannel() )
-	panel.AddWidget(button)
+	panel.AddWidget(button, []int{events.EventTypeButtonDown,events.EventTypeButtonUp})
 
 
 	cb := widgets.NewCheckBox("checkbox1", "./images/emptycheckbox.png", "./images/checkedcheckbox.png", 0, 100)
-	panel.AddEventListener(events.EventTypeButtonDown, cb.GetEventListenerChannel())
-	panel.AddWidget(cb)
+	panel.AddWidget(cb, []int{events.EventTypeButtonDown})
 
 	//cb.RegisterEventHandler(events.EventTypeButtonDown, a.CheckboxChanged)
 
 	f := common.LoadFont("", 16, color.RGBA{0xff, 0xff, 0xff, 0xff})
 	ti := widgets.NewTextInput("testinput1", 0, 150, 100, 20, &color.RGBA{0x55, 0x55, 0x55, 0xff}, &f)
-	panel.AddEventListener(events.EventTypeKeyboard, ti.GetEventListenerChannel())
-	panel.AddEventListener(events.EventTypeButtonDown, ti.GetEventListenerChannel())
-	panel.AddWidget(ti)
+	panel.AddWidget(ti,[]int{events.EventTypeKeyboard,events.EventTypeButtonDown})
 
-	app.AddEventListener(events.EventTypeButtonDown, panel.GetEventListenerChannel())
-	app.AddEventListener(events.EventTypeButtonUp, panel.GetEventListenerChannel())
-	app.AddEventListener(events.EventTypeKeyboard, panel.GetEventListenerChannel())
-	app.AddPanel(panel)
+	app.AddPanel(panel, []int{events.EventTypeButtonDown,events.EventTypeButtonUp,events.EventTypeKeyboard})
 
 	go func() {
 		for {

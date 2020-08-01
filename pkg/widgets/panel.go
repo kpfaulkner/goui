@@ -9,10 +9,11 @@ import (
 var defaultPanelColour color.RGBA
 
 type IPanel interface {
-	AddWidget(w IWidget) error
+	AddWidget(w IWidget, subscribedEventTypes []int ) error
 	Draw(screen *ebiten.Image) error
 	HandleEvent(event events.IEvent) (bool, error)
 	SetTopLevel(bool)
+	GetEventListenerChannel() chan events.IEvent
 }
 
 // Panel has a position, width and height.
@@ -49,8 +50,15 @@ func NewPanel(ID string, x float64, y float64, width int, height int, colour *co
 	return &p
 }
 
-// AddWidget adds a already created checkbox.
-func (p *Panel) AddWidget(w IWidget) error {
+// AddWidget adds a widget to a panel and subscribes the widget
+// to a number of events (generated from the panel)
+func (p *Panel) AddWidget(w IWidget, subscribedEventTypes []int) error {
+	ch := w.GetEventListenerChannel()
+
+	for _, et := range subscribedEventTypes{
+		p.AddEventListener(et, ch )
+	}
+
 	p.widgets = append(p.widgets, w)
 	return nil
 }
