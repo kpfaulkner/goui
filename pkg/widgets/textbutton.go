@@ -5,6 +5,7 @@ import (
 	"github.com/hajimehoshi/ebiten/ebitenutil"
 	"github.com/hajimehoshi/ebiten/text"
 	"github.com/kpfaulkner/goui/pkg/common"
+	"github.com/kpfaulkner/goui/pkg/events"
 	log "github.com/sirupsen/logrus"
 	"golang.org/x/image/font"
 	"image"
@@ -25,7 +26,7 @@ type TextButton struct {
 	fontInfo                   common.Font
 	uiFont                     font.Face
 	Rect                       image.Rectangle
-	vertPos                     int
+	vertPos                    int
 }
 
 func init() {
@@ -35,10 +36,10 @@ func init() {
 
 func NewTextButton(ID string, text string, x float64, y float64, width int, height int,
 	nonPressedBackgroundColour *color.RGBA,
-	pressedBackgroundColour *color.RGBA, fontInfo *common.Font) TextButton {
+	pressedBackgroundColour *color.RGBA, fontInfo *common.Font) *TextButton {
 
 	b := TextButton{}
-	b.BaseButton = NewBaseButton(ID, x, y, width, height)
+	b.BaseButton = *NewBaseButton(ID, x, y, width, height)
 
 	if pressedBackgroundColour != nil {
 		b.pressedBackgroundColour = *pressedBackgroundColour
@@ -66,11 +67,59 @@ func NewTextButton(ID string, text string, x float64, y float64, width int, heig
 	// Need to just find something visually appealing.
 	b.vertPos = (height - (height-int(b.fontInfo.SizeInPixels))/2) - 2
 
-	return b
+	b.eventHandler = b.HandleEvent
+
+	// just go off and listen for all events.
+	go b.ListenToIncomingEvents()
+	return &b
 }
 
+func (b *TextButton) HandleEvent(event events.IEvent) (bool, error) {
+
+	log.Debugf("TextButton::HandleEvent %s", b.ID)
+	eventType := event.EventType()
+	switch eventType {
+	case events.EventTypeButtonDown:
+		{
+
+			mouseEvent := event.(events.MouseEvent)
+
+			// check click is in button boundary.
+			if b.ContainsCoords(mouseEvent.X, mouseEvent.Y) {
+				log.Debugf("TextButton BUTTON DOWN!!!")
+				b.hasFocus = true
+				// if already pressed, then skip it.. .otherwise lots of repeats.
+				//if !b.pressed {
+				if true {
+					b.pressed = true
+					b.stateChangedSinceLastDraw = true
+				}
+			}
+		}
+	case events.EventTypeButtonUp:
+		{
+
+			mouseEvent := event.(events.MouseEvent)
+
+			// check click is in button boundary.
+			if b.ContainsCoords(mouseEvent.X, mouseEvent.Y) {
+				log.Debugf("TextButton BUTTON UP!!!")
+				b.hasFocus = true
+				//if b.pressed {
+				if true {
+					// do generic button stuff here.
+					b.pressed = false
+					b.stateChangedSinceLastDraw = true
+				}
+			}
+		}
+	}
+	return false, nil
+}
+
+
 func (b *TextButton) generateButtonImage(colour color.RGBA, border color.RGBA) error {
-	log.Infof("TextButton generateButtonImage")
+	//log.Infof("TextButton generateButtonImage")
 	emptyImage, _ := ebiten.NewImage(b.Width, b.Height, ebiten.FilterDefault)
 	_ = emptyImage.Fill(colour)
 
@@ -88,12 +137,13 @@ func (b *TextButton) Draw(screen *ebiten.Image) error {
 	op.GeoM.Translate(b.X, b.Y)
 
 	// if state changed since last draw, recreate colour etc.
-	if b.stateChangedSinceLastDraw {
+	//if b.stateChangedSinceLastDraw {
+	if true {
 		if b.pressed {
-			log.Debugf("changing to pressed colour")
+			log.Debugf("XXXXXXXXXX changing to pressed colour")
 			b.generateButtonImage(b.pressedBackgroundColour, b.nonPressedBackgroundColour)
 		} else {
-			log.Debugf("changing to nonpressed colour")
+			log.Debugf("YYYYYYYYY changing to nonpressed colour")
 			b.generateButtonImage(b.nonPressedBackgroundColour, b.pressedBackgroundColour)
 		}
 		text.Draw(b.rectImage, b.buttonText, b.fontInfo.UIFont, 00, b.vertPos, color.Black)

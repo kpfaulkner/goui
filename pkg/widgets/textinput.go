@@ -33,9 +33,9 @@ func init() {
 	defaultFontInfo = common.LoadFont("", 16, color.RGBA{0xff, 0xff, 0xff, 0xff})
 }
 
-func NewTextInput(ID string, x float64, y float64, width int, height int, backgroundColour *color.RGBA, fontInfo *common.Font) TextInput {
+func NewTextInput(ID string, x float64, y float64, width int, height int, backgroundColour *color.RGBA, fontInfo *common.Font) *TextInput {
 	t := TextInput{}
-	t.BaseWidget = NewBaseWidget(ID, x, y, width, height)
+	t.BaseWidget = *NewBaseWidget(ID, x, y, width, height)
 	t.text = ""
 	t.stateChangedSinceLastDraw = true
 	t.counter = 0
@@ -54,11 +54,12 @@ func NewTextInput(ID string, x float64, y float64, width int, height int, backgr
 
 	// vert pos is where does text go within button. Assuming we want it centred (for now)
 	// Need to just find something visually appealing.
-  t.vertPos = (height - (height - int(t.fontInfo.SizeInPixels)) /2) -2
-	return t
+	t.vertPos = (height - (height-int(t.fontInfo.SizeInPixels))/2) - 2
+	t.eventHandler = t.HandleEvent
+	return &t
 }
 
-func (t *TextInput) HandleEvent(event events.IEvent) error {
+func (t *TextInput) HandleEvent(event events.IEvent) (bool, error) {
 
 	eventType := event.EventType()
 	switch eventType {
@@ -67,13 +68,11 @@ func (t *TextInput) HandleEvent(event events.IEvent) error {
 			mouseEvent := event.(events.MouseEvent)
 
 			// check click is in button boundary.
-			if t.ContainsCoords(mouseEvent.X, mouseEvent.Y, true) {
+			if t.ContainsCoords(mouseEvent.X, mouseEvent.Y) {
 				t.hasFocus = true
 				t.stateChangedSinceLastDraw = true
 				// then do application specific stuff!!
-				if ev, ok := t.eventRegister[event.EventType()]; ok {
-					ev(event)
-				}
+
 			} else {
 				t.hasFocus = false
 			}
@@ -97,7 +96,8 @@ func (t *TextInput) HandleEvent(event events.IEvent) error {
 			}
 		}
 	}
-	return nil
+
+	return false, nil
 }
 
 func (t *TextInput) Draw(screen *ebiten.Image) error {
@@ -132,4 +132,3 @@ func (t *TextInput) Draw(screen *ebiten.Image) error {
 func (t *TextInput) GetData() (interface{}, error) {
 	return t.text, nil
 }
-

@@ -3,7 +3,6 @@ package widgets
 import (
 	"github.com/hajimehoshi/ebiten"
 	"github.com/kpfaulkner/goui/pkg/events"
-	log "github.com/sirupsen/logrus"
 	"image/color"
 )
 
@@ -12,7 +11,8 @@ var defaultPanelColour color.RGBA
 type IPanel interface {
 	AddWidget(w IWidget) error
 	Draw(screen *ebiten.Image) error
-	HandleEvent(event events.IEvent, local bool) error
+	HandleEvent(event events.IEvent) (bool, error)
+	SetTopLevel(bool)
 }
 
 // Panel has a position, width and height.
@@ -33,9 +33,9 @@ func init() {
 	defaultPanelColour = color.RGBA{0xff, 0x00, 0x00, 0xff}
 }
 
-func NewPanel(ID string, x float64, y float64, width int, height int, colour *color.RGBA) Panel {
+func NewPanel(ID string, x float64, y float64, width int, height int, colour *color.RGBA) *Panel {
 	p := Panel{}
-	p.BaseWidget = NewBaseWidget(ID, x, y, width, height)
+	p.BaseWidget = *NewBaseWidget(ID, x, y, width, height)
 
 	if colour != nil {
 		p.panelColour = *colour
@@ -43,7 +43,12 @@ func NewPanel(ID string, x float64, y float64, width int, height int, colour *co
 		p.panelColour = defaultPanelColour
 	}
 
-	return p
+	p.eventHandler = p.HandleEvent
+
+	// just go off and listen for all events.
+	go p.ListenToIncomingEvents()
+
+	return &p
 }
 
 // AddWidget adds a already created checkbox.
@@ -68,52 +73,68 @@ func (p *Panel) Draw(screen *ebiten.Image) error {
 	return nil
 }
 
-func (p *Panel) HandleEvent(event events.IEvent, local bool) error {
+// HandlEvent returns true if related to this panel. eg, mouse was in its borders etc.
+// Keyboard... well, will accept anyway (need to figure out focusing for that).
+func (p *Panel) HandleEvent(event events.IEvent) (bool, error) {
+
+	inPanel := false
 
 	eventType := event.EventType()
 	switch eventType {
 	case events.EventTypeButtonDown:
 		{
-			p.HandleMouseEvent(event, local)
+			inPanel, _ = p.HandleMouseEvent(event)
 		}
 	case events.EventTypeButtonUp:
 		{
-			p.HandleMouseEvent(event, local)
+			inPanel, _ = p.HandleMouseEvent(event)
 		}
 
 	case events.EventTypeKeyboard:
 		{
-			p.HandleKeyboardEvent(event, local)
+			inPanel, _ = p.HandleKeyboardEvent(event)
 		}
 	}
 
-	return nil
+	return inPanel, nil
 }
 
-func (p *Panel) HandleMouseEvent(event events.IEvent, local bool) error {
-	inPanel, _ := p.BaseWidget.CheckMouseEventCoords(event, local)
+func (p *Panel) SetTopLevel(topLevel bool){
+  p.TopLevel = topLevel
+}
+
+func (p *Panel) HandleMouseEvent(event events.IEvent) (bool, error) {
+	inPanel, _ := p.BaseWidget.CheckMouseEventCoords(event)
 
 	if inPanel {
+
+    p.hasFocus = true
+		// in theory do any mouse related stuff specific to the panel....
+		/*
 		mouseEvent := event.(events.MouseEvent)
 		log.Debugf("HandleMouseEvent panel %s :  %f %f", p.ID, mouseEvent.X, mouseEvent.Y)
 		localCoordMouseEvent := p.GenerateLocalCoordMouseEvent(mouseEvent)
 
 		for _, widget := range p.widgets {
 			widget.HandleEvent(localCoordMouseEvent)
-		}
+		} */
+	} else {
+		p.hasFocus = false
 	}
 
 	// should propagate to children nodes?
-	return nil
+	return inPanel, nil
 }
 
-func (p *Panel) HandleKeyboardEvent(event events.IEvent, local bool) error {
+func (p *Panel) HandleKeyboardEvent(event events.IEvent) (bool, error) {
 
+	/*
 	keyboardEvent := event.(events.KeyboardEvent)
 	for _, widget := range p.widgets {
 		widget.HandleEvent(keyboardEvent)
 	}
+ */
 
-	// should propagate to children nodes?
-	return nil
+	// only propagate to children if this panel had focus.
+	return p.hasFocus, nil
 }

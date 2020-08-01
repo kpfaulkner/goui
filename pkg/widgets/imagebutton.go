@@ -14,7 +14,7 @@ type ImageButton struct {
 	pressedImage    *ebiten.Image
 }
 
-func NewImageButton(ID string, pressedImageName string, nonPressedImageName string, x float64, y float64) ImageButton {
+func NewImageButton(ID string, pressedImageName string, nonPressedImageName string, x float64, y float64) *ImageButton {
 	b := ImageButton{}
 
 	img1, err := loadImage(pressedImageName)
@@ -29,9 +29,9 @@ func NewImageButton(ID string, pressedImageName string, nonPressedImageName stri
 	b.nonPressedImage = img2
 
 	width, height := b.nonPressedImage.Size()
-	b.BaseButton = NewBaseButton(ID, x, y, width, height)
-
-	return b
+	b.BaseButton = *NewBaseButton(ID, x, y, width, height)
+	b.eventHandler = b.HandleEvent
+	return &b
 }
 
 func (b *ImageButton) Draw(screen *ebiten.Image) error {

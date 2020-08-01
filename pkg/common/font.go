@@ -7,14 +7,13 @@ import (
 	log "github.com/sirupsen/logrus"
 	"golang.org/x/image/font"
 	"image/color"
-
 )
 
 type Font struct {
-	Size   float64
+	Size         float64
 	SizeInPixels int
-	Colour color.RGBA
-	UIFont font.Face
+	Colour       color.RGBA
+	UIFont       font.Face
 }
 
 func LoadFont(name string, size float64, colour color.RGBA) Font {

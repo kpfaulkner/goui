@@ -11,37 +11,35 @@ type BaseButton struct {
 	pressed bool
 }
 
-func NewBaseButton(ID string, x float64, y float64, width int, height int) BaseButton {
+func NewBaseButton(ID string, x float64, y float64, width int, height int) *BaseButton {
 	bb := BaseButton{}
-	bb.BaseWidget = NewBaseWidget(ID, x, y, width, height)
+	bb.BaseWidget = *NewBaseWidget(ID, x, y, width, height)
 	bb.pressed = false
 	bb.stateChangedSinceLastDraw = true
-	return bb
+	bb.eventHandler = bb.HandleEvent
+	return &bb
 }
 
 func (b *BaseButton) Draw(screen *ebiten.Image) error {
 	return nil
 }
 
-func (b *BaseButton) HandleEvent(event events.IEvent) error {
+func (b *BaseButton) HandleEvent(event events.IEvent) (bool, error) {
 
+	log.Debugf("BaseButton::HandleEvent %s", b.ID)
 	eventType := event.EventType()
 	switch eventType {
 	case events.EventTypeButtonDown:
 		{
+			log.Debugf("BUTTON DOWN!!!")
 			mouseEvent := event.(events.MouseEvent)
 
 			// check click is in button boundary.
-			if b.ContainsCoords(mouseEvent.X, mouseEvent.Y, true) {
+			if b.ContainsCoords(mouseEvent.X, mouseEvent.Y) {
 				b.hasFocus = true
 				// if already pressed, then skip it.. .otherwise lots of repeats.
 				if !b.pressed {
 					b.pressed = true
-
-					// then do application specific stuff!!
-					if ev, ok := b.eventRegister[event.EventType()]; ok {
-						ev(event)
-					}
 					b.stateChangedSinceLastDraw = true
 				}
 			}
@@ -52,23 +50,17 @@ func (b *BaseButton) HandleEvent(event events.IEvent) error {
 			mouseEvent := event.(events.MouseEvent)
 
 			// check click is in button boundary.
-			if b.ContainsCoords(mouseEvent.X, mouseEvent.Y, true) {
+			if b.ContainsCoords(mouseEvent.X, mouseEvent.Y) {
 				b.hasFocus = true
-
 				if b.pressed {
 					// do generic button stuff here.
 					b.pressed = false
-
-					// then do application specific stuff!!
-					if ev, ok := b.eventRegister[event.EventType()]; ok {
-						ev(event)
-					}
 					b.stateChangedSinceLastDraw = true
 				}
 			}
 		}
 	}
-	return nil
+	return false, nil
 }
 
 type IButton interface {

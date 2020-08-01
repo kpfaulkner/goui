@@ -25,6 +25,12 @@ type Window struct {
 	rightMouseButtonPressed bool
 
 	haveMenuBar bool
+
+	// These are other widgets/components that are listening to THiS widget. Ie we will broadcast to them!
+	eventListeners map[int][]chan events.IEvent
+
+	// incoming events to THIS widget (ie stuff we're listening to!)
+	incomingEvents chan events.IEvent
 }
 
 func NewWindow(width int, height int, title string, haveMenuBar bool) Window {
@@ -42,15 +48,58 @@ func NewWindow(width int, height int, title string, haveMenuBar bool) Window {
 	w.rightMouseButtonPressed = false
 	w.haveMenuBar = haveMenuBar
 
+	w.eventListeners = make(map[int][]chan events.IEvent)
+	w.incomingEvents = make(chan events.IEvent, 1000) // too much?
+
 	if w.haveMenuBar {
-		mb := widgets.NewMenuBar("menubar", 0, 0, width, 30, &color.RGBA{0x71, 0x71, 0x71, 0xff})
+		mb := *widgets.NewMenuBar("menubar", 0, 0, width, 30, &color.RGBA{0x71, 0x71, 0x71, 0xff})
 		mb.AddMenuHeading("test")
 		w.AddPanel(&mb)
 	}
 	return w
 }
 
+func (w *Window) AddEventListener(eventType int, ch chan events.IEvent) error {
+	if _, ok := w.eventListeners[eventType]; ok {
+		w.eventListeners[eventType] = append(w.eventListeners[eventType], ch)
+	} else {
+		w.eventListeners[eventType] = []chan events.IEvent{ch}
+	}
+
+	return nil
+}
+
+func (w *Window) RemoveEventListener(eventType int, ch chan events.IEvent) error {
+	if _, ok := w.eventListeners[eventType]; ok {
+		for i := range w.eventListeners[eventType] {
+			if w.eventListeners[eventType][i] == ch {
+				w.eventListeners[eventType] = append(w.eventListeners[eventType][:i], w.eventListeners[eventType][i+1:]...)
+				break
+			}
+		}
+	}
+	return nil
+}
+
+func (w *Window) GetEventListenerChannel() chan events.IEvent {
+	return w.incomingEvents
+}
+
+// Emit event for  all listeners to receive
+func (w *Window) EmitEvent(event events.IEvent) error {
+	if _, ok := w.eventListeners[event.EventType()]; ok {
+		for _, handler := range w.eventListeners[event.EventType()] {
+			go func(handler chan events.IEvent) {
+				handler <- event
+			}(handler)
+		}
+	}
+
+	return nil
+}
+
 func (w *Window) AddPanel(panel widgets.IPanel) error {
+	panel.SetTopLevel(true)
 	w.panels = append(w.panels, panel)
 	return nil
 }
@@ -61,14 +110,14 @@ func (w *Window) Update(screen *ebiten.Image) error {
 		w.leftMouseButtonPressed = true
 		x, y := ebiten.CursorPosition()
 		me := events.NewMouseEvent(x, y, events.EventTypeButtonDown)
-		w.HandleEvent(me)
+		w.EmitEvent(me)
 	} else {
 		if w.leftMouseButtonPressed {
 			w.leftMouseButtonPressed = false
 			// it *WAS* pressed previous frame... but isn't now... this means released!!!
 			x, y := ebiten.CursorPosition()
 			me := events.NewMouseEvent(x, y, events.EventTypeButtonUp)
-			w.HandleEvent(me)
+			w.EmitEvent(me)
 		}
 	}
 
@@ -76,13 +125,13 @@ func (w *Window) Update(screen *ebiten.Image) error {
 	if len(inp) > 0 {
 		// create keyboard event
 		ke := events.NewKeyboardEvent(ebiten.Key(inp[0])) // only send first one?
-		w.HandleEvent(ke)
+		w.EmitEvent(ke)
 	}
 
 	// If the backspace key is pressed, remove one character.
 	if repeatingKeyPressed(ebiten.KeyBackspace) {
 		ke := events.NewKeyboardEvent(ebiten.KeyBackspace)
-		w.HandleEvent(ke)
+		w.EmitEvent(ke)
 	}
 
 	return nil
@@ -91,7 +140,7 @@ func (w *Window) Update(screen *ebiten.Image) error {
 func (w *Window) HandleButtonUpEvent(event events.MouseEvent) error {
 	log.Debugf("button up %f %f", event.X, event.Y)
 	for _, panel := range w.panels {
-		panel.HandleEvent(event, false)
+		panel.HandleEvent(event)
 	}
 
 	return nil
@@ -102,7 +151,7 @@ func (w *Window) HandleButtonDownEvent(event events.MouseEvent) error {
 
 	// loop through panels and find a target!
 	for _, panel := range w.panels {
-		panel.HandleEvent(event, false)
+		panel.HandleEvent(event)
 	}
 
 	return nil
@@ -112,7 +161,7 @@ func (w *Window) HandleKeyboardEvent(event events.KeyboardEvent) error {
 
 	// loop through panels and find a target!
 	for _, panel := range w.panels {
-		panel.HandleEvent(event, false)
+		panel.HandleEvent(event)
 	}
 	return nil
 }

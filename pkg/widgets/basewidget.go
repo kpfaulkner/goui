@@ -27,17 +27,25 @@ type BaseWidget struct {
 	// Might be really inefficient or might be ok, will experiment. TODO(kpfaulkner) confirm if perf is ok.
 	rectImage *ebiten.Image
 
-	// register event types with widgets?
-	eventRegister map[int]func(event events.IEvent) error
-
 	// has focus....  so events should go to it?
 	hasFocus bool
 
 	// has it changed?
 	stateChangedSinceLastDraw bool
+
+	// These are other widgets/components that are listening to THiS widget. Ie we will broadcast to them!
+	eventListeners map[int][]chan events.IEvent
+
+	// incoming events to THIS widget (ie stuff we're listening to!)
+	incomingEvents chan events.IEvent
+
+	// direct parent of window.... hack to sort out mouse positioning...
+	TopLevel bool
+
+	eventHandler func(event events.IEvent) (bool, error)
 }
 
-func NewBaseWidget(ID string, x float64, y float64, width int, height int) BaseWidget {
+func NewBaseWidget(ID string, x float64, y float64, width int, height int) *BaseWidget {
 	bw := BaseWidget{}
 	bw.ID = ID
 	bw.X = x
@@ -46,13 +54,72 @@ func NewBaseWidget(ID string, x float64, y float64, width int, height int) BaseW
 	bw.Height = height
 	bw.Disabled = false
 	bw.rectImage, _ = ebiten.NewImage(width, height, ebiten.FilterDefault)
-	bw.eventRegister = make(map[int]func(event events.IEvent) error)
 	bw.hasFocus = false
-	return bw
+	bw.eventListeners = make(map[int][]chan events.IEvent)
+	bw.incomingEvents = make(chan events.IEvent, 1000) // too much?
+	bw.TopLevel = false
+
+	// just go off and listen for all events.
+	//go bw.ListenToIncomingEvents()
+
+	return &bw
 }
 
-func (b *BaseWidget) RegisterEventHandler(eventType int, eventHandler func(events.IEvent) error) error {
-	b.eventRegister[eventType] = eventHandler
+func (b *BaseWidget) GetEventListenerChannel() chan events.IEvent {
+	return b.incomingEvents
+}
+
+func (b *BaseWidget) AddEventListener(eventType int, ch chan events.IEvent) error {
+	if _, ok := b.eventListeners[eventType]; ok {
+		b.eventListeners[eventType] = append(b.eventListeners[eventType], ch)
+	} else {
+		b.eventListeners[eventType] = []chan events.IEvent{ch}
+	}
+
+	return nil
+}
+
+func (b *BaseWidget) RemoveEventListener(eventType int, ch chan events.IEvent) error {
+	if _, ok := b.eventListeners[eventType]; ok {
+		for i := range b.eventListeners[eventType] {
+			if b.eventListeners[eventType][i] == ch {
+				b.eventListeners[eventType] = append(b.eventListeners[eventType][:i], b.eventListeners[eventType][i+1:]...)
+				break
+			}
+		}
+	}
+	return nil
+}
+
+func isMouseEvent(event events.IEvent) bool {
+
+	if event.EventType() == events.EventTypeButtonDown ||
+		event.EventType() == events.EventTypeButtonUp  {
+		return true
+	}
+
+	return false
+}
+
+// Emit event for  all listeners to receive
+func (b *BaseWidget) EmitEvent(event events.IEvent) error {
+
+	eventToUse := event
+
+	// if event is mouse related, then convert co-ords to LOCAL (ie panel) co-ords for all listeners/children.
+	if isMouseEvent(event) {
+		mouseEvent := event.(events.MouseEvent)
+		eventToUse = b.GenerateLocalCoordMouseEvent(mouseEvent)
+	}
+
+	if _, ok := b.eventListeners[eventToUse.EventType()]; ok {
+		for _, handler := range b.eventListeners[eventToUse.EventType()] {
+			go func(handler chan events.IEvent) {
+				handler <- eventToUse
+			}(handler)
+		}
+	}
+
 	return nil
 }
 
@@ -60,13 +127,42 @@ func (b *BaseWidget) Draw(screen *ebiten.Image) error {
 	return nil
 }
 
-func (b *BaseWidget) HandleEvent(event events.IEvent) error {
+func (b *BaseWidget) ListenToIncomingEvents() error {
 
-	eventType := event.EventType()
-	if handler, ok := b.eventRegister[eventType]; ok {
-		handler(event)
+	for {
+		ev := <-b.incomingEvents
+		// do something with event!
+		log.Debugf("EVENT %v : type %d\n", ev, ev.EventType())
+
+		// do our local event processing (HandleEvent) then pass onto other listeners (assuming order would be important here).
+	//	used, err := b.HandleEvent(ev)
+	  used, err := b.eventHandler(ev)
+	  //used, err := eventHandler(ev)
+	  //used, err := w.HandleEvent(ev)
+		if err != nil {
+			log.Errorf("Unable to HandleEvent from widget: %s", err.Error())
+			continue
+		}
+
+		// if USED by this widget... then pass it onto the child widgets.
+		// if NOT used by this widget.... its nothing to do with us... dont
+		// propagate.
+		if used {
+			// if mouse event, convert to local co-ord system?
+			err := b.EmitEvent(ev)
+			if err != nil {
+				log.Errorf("Unable to emit event from widget: %s", err.Error())
+				// wont break out here... assuming/hoping that this is just a once off :)
+			}
+		}
 	}
 	return nil
+}
+
+func (b *BaseWidget) HandleEventXX(event events.IEvent) (bool, error) {
+
+	// shouldn't be used.
+	return false, nil
 }
 
 // BroadcastEvent signals back to main application that something has happened.
@@ -76,11 +172,13 @@ func (b *BaseWidget) BroadcastEvent(event events.IEvent) error {
 }
 
 // ContainsCoords determines if co-ordinates (based off parent!)
-func (b *BaseWidget) ContainsCoords(x float64, y float64, local bool) bool {
+func (b *BaseWidget) ContainsCoords(x float64, y float64) bool {
 
 	localX := x
 	localY := y
-	if local {
+
+	// if top level, dont try and shift offset.
+	if !b.TopLevel {
 		localX = x - b.X
 		localY = y - b.Y
 	}
@@ -97,10 +195,10 @@ func (b *BaseWidget) GenerateLocalCoordMouseEvent(incomingEvent events.MouseEven
 	return outgoingMouseEvent
 }
 
-func (b *BaseWidget) CheckMouseEventCoords(event events.IEvent, local bool) (bool, error) {
+func (b *BaseWidget) CheckMouseEventCoords(event events.IEvent) (bool, error) {
 	mouseEvent := event.(events.MouseEvent)
 
-	if b.ContainsCoords(mouseEvent.X, mouseEvent.Y, local) {
+	if b.ContainsCoords(mouseEvent.X, mouseEvent.Y) {
 		log.Debugf("CheckMouseEventCoords %f %f", mouseEvent.X, mouseEvent.Y)
 		return true, nil
 	}
@@ -117,7 +215,7 @@ func (b *BaseWidget) GetData() (interface{}, error) {
 // Hate using the I* notation... but will do for now.
 type IWidget interface {
 	Draw(screen *ebiten.Image) error
-	HandleEvent(event events.IEvent) error
+	HandleEvent(event events.IEvent) (bool, error)
 	BroadcastEvent(event events.IEvent) error
-	GetData() (interface{}, error)    // absolutely HATE the empty interface, but this will need to be extremely generic I suppose?
+	GetData() (interface{}, error) // absolutely HATE the empty interface, but this will need to be extremely generic I suppose?
 }

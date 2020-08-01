@@ -16,7 +16,7 @@ type CheckBox struct {
 	checkedImage *ebiten.Image
 }
 
-func NewCheckBox(ID string, emptyImage string, checkedImage string, x float64, y float64) CheckBox {
+func NewCheckBox(ID string, emptyImage string, checkedImage string, x float64, y float64) *CheckBox {
 	cb := CheckBox{}
 
 	img1, err := loadImage(emptyImage)
@@ -31,13 +31,14 @@ func NewCheckBox(ID string, emptyImage string, checkedImage string, x float64, y
 	cb.checkedImage = img2
 
 	width, height := cb.emptyImage.Size()
-	cb.BaseWidget = NewBaseWidget(ID, x, y, width, height)
+	cb.BaseWidget = *NewBaseWidget(ID, x, y, width, height)
 
 	cb.checked = false
-	return cb
+	cb.eventHandler = cb.HandleEvent
+	return &cb
 }
 
-func (b *CheckBox) HandleEvent(event events.IEvent) error {
+func (b *CheckBox) HandleEvent(event events.IEvent) (bool, error) {
 
 	eventType := event.EventType()
 	switch eventType {
@@ -46,20 +47,14 @@ func (b *CheckBox) HandleEvent(event events.IEvent) error {
 			mouseEvent := event.(events.MouseEvent)
 
 			// check click is in button boundary.
-			if b.ContainsCoords(mouseEvent.X, mouseEvent.Y, true) {
+			if b.ContainsCoords(mouseEvent.X, mouseEvent.Y) {
 				b.hasFocus = true
 				// if already pressed, then skip it.. .otherwise lots of repeats.
 				b.checked = !b.checked
-
-				// then do application specific stuff!!
-				if ev, ok := b.eventRegister[event.EventType()]; ok {
-					ev(event)
-				}
-
 			}
 		}
 	}
-	return nil
+	return false, nil
 }
 
 func (b *CheckBox) Draw(screen *ebiten.Image) error {
