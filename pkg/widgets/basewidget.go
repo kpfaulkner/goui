@@ -45,7 +45,7 @@ type BaseWidget struct {
 	eventHandler func(event events.IEvent) (bool, error)
 }
 
-func NewBaseWidget(ID string, x float64, y float64, width int, height int) *BaseWidget {
+func NewBaseWidget(ID string, x float64, y float64, width int, height int, handler func(event events.IEvent)(bool, error)) *BaseWidget {
 	bw := BaseWidget{}
 	bw.ID = ID
 	bw.X = x
@@ -58,9 +58,7 @@ func NewBaseWidget(ID string, x float64, y float64, width int, height int) *Base
 	bw.eventListeners = make(map[int][]chan events.IEvent)
 	bw.incomingEvents = make(chan events.IEvent, 1000) // too much?
 	bw.TopLevel = false
-
-	// just go off and listen for all events.
-	//go bw.ListenToIncomingEvents( bw.eventHandler)
+  bw.eventHandler = handler
 
 	return &bw
 }
@@ -131,14 +129,8 @@ func (b *BaseWidget) ListenToIncomingEvents() error {
 
 	for {
 		ev := <-b.incomingEvents
-		// do something with event!
-		log.Debugf("EVENT %v : type %d\n", ev, ev.EventType())
-
 		// do our local event processing (HandleEvent) then pass onto other listeners (assuming order would be important here).
-	//	used, err := b.HandleEvent(ev)
 	  used, err := b.eventHandler(ev)
-	  //used, err := eventHandler(ev)
-	  //used, err := w.HandleEvent(ev)
 		if err != nil {
 			log.Errorf("Unable to HandleEvent from widget: %s", err.Error())
 			continue

@@ -35,15 +35,13 @@ func init() {
 
 func NewPanel(ID string, x float64, y float64, width int, height int, colour *color.RGBA) *Panel {
 	p := Panel{}
-	p.BaseWidget = *NewBaseWidget(ID, x, y, width, height)
+	p.BaseWidget = *NewBaseWidget(ID, x, y, width, height, p.HandleEvent)
 
 	if colour != nil {
 		p.panelColour = *colour
 	} else {
 		p.panelColour = defaultPanelColour
 	}
-
-	p.eventHandler = p.HandleEvent
 
 	// just go off and listen for all events.
 	go p.ListenToIncomingEvents()
@@ -107,17 +105,7 @@ func (p *Panel) HandleMouseEvent(event events.IEvent) (bool, error) {
 	inPanel, _ := p.BaseWidget.CheckMouseEventCoords(event)
 
 	if inPanel {
-
     p.hasFocus = true
-		// in theory do any mouse related stuff specific to the panel....
-		/*
-		mouseEvent := event.(events.MouseEvent)
-		log.Debugf("HandleMouseEvent panel %s :  %f %f", p.ID, mouseEvent.X, mouseEvent.Y)
-		localCoordMouseEvent := p.GenerateLocalCoordMouseEvent(mouseEvent)
-
-		for _, widget := range p.widgets {
-			widget.HandleEvent(localCoordMouseEvent)
-		} */
 	} else {
 		p.hasFocus = false
 	}

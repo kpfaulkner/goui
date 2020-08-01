@@ -66,7 +66,7 @@ func NewTextButton(ID string, text string, x float64, y float64, width int, heig
 	b.vertPos = (height - (height-int(b.fontInfo.SizeInPixels))/2) - 2
 
 	// just go off and listen for all events.
-	go b.ListenToIncomingEvents()
+	//go b.ListenToIncomingEvents()
 	return &b
 }
 

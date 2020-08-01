@@ -13,10 +13,12 @@ type BaseButton struct {
 
 func NewBaseButton(ID string, x float64, y float64, width int, height int, handler func(event events.IEvent)(bool, error)) *BaseButton {
 	bb := BaseButton{}
-	bb.BaseWidget = *NewBaseWidget(ID, x, y, width, height)
+	bb.BaseWidget = *NewBaseWidget(ID, x, y, width, height,handler)
 	bb.pressed = false
 	bb.stateChangedSinceLastDraw = true
-	bb.eventHandler = handler
+	//bb.eventHandler = handler
+
+	go bb.ListenToIncomingEvents()
 	return &bb
 }
 
@@ -26,16 +28,16 @@ func (b *BaseButton) Draw(screen *ebiten.Image) error {
 
 func (b *BaseButton) HandleEvent(event events.IEvent) (bool, error) {
 
-	log.Debugf("BaseButton::HandleEvent %s", b.ID)
+
 	eventType := event.EventType()
 	switch eventType {
 	case events.EventTypeButtonDown:
 		{
-			log.Debugf("BUTTON DOWN!!!")
 			mouseEvent := event.(events.MouseEvent)
-
 			// check click is in button boundary.
 			if b.ContainsCoords(mouseEvent.X, mouseEvent.Y) {
+				log.Debugf("BaseButton::HandleEvent %s", b.ID)
+				log.Debugf("BUTTON DOWN!!!")
 				b.hasFocus = true
 				// if already pressed, then skip it.. .otherwise lots of repeats.
 				if !b.pressed {
@@ -46,11 +48,12 @@ func (b *BaseButton) HandleEvent(event events.IEvent) (bool, error) {
 		}
 	case events.EventTypeButtonUp:
 		{
-			log.Debugf("BUTTON UP!!!")
 			mouseEvent := event.(events.MouseEvent)
 
 			// check click is in button boundary.
 			if b.ContainsCoords(mouseEvent.X, mouseEvent.Y) {
+				log.Debugf("BUTTON UP!!!")
+				log.Debugf("BaseButton::HandleEvent %s", b.ID)
 				b.hasFocus = true
 				if b.pressed {
 					// do generic button stuff here.

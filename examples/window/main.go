@@ -46,10 +46,13 @@ func addPanel(panelName string, x float64, y float64, width int, height int, win
 	button := widgets.NewTextButton("button1", "my button1", 0, 0, 100, 100, nil, nil, nil)
 	panel.AddEventListener(events.EventTypeButtonDown, button.GetEventListenerChannel() )
 	panel.AddEventListener(events.EventTypeButtonUp, button.GetEventListenerChannel() )
-	//button2 := widgets.NewTextButton("button2", "my button2", 100, 0, 100, 100, nil, nil, nil)
-	//panel.AddEventListener(events.EventTypeButtonDown, button2.GetEventListenerChannel() )
 	panel.AddWidget(button)
-	//panel.AddWidget(&button2)
+
+	button2 := widgets.NewTextButton("button2", "my button2", 100, 0, 100, 100, nil, nil, nil)
+	panel.AddEventListener(events.EventTypeButtonDown, button2.GetEventListenerChannel() )
+	panel.AddEventListener(events.EventTypeButtonUp, button2.GetEventListenerChannel() )
+
+	panel.AddWidget(button2)
 
 	win.AddEventListener(events.EventTypeButtonDown, panel.GetEventListenerChannel())
 	win.AddEventListener(events.EventTypeButtonUp, panel.GetEventListenerChannel())
@@ -121,6 +124,31 @@ func main() {
 
 	app := pkg.NewWindow(600, 600, "my title", false)
 	addPanel("panel1", 100, 30, 200, 200, &app, a.ButtonAction1, a.ButtonAction2)
+	addPanel("panel2", 100, 30, 200, 200, &app, a.ButtonAction1, a.ButtonAction2)
+
+	panel := widgets.NewPanel("panel3", 0,300,200,200, nil)
+	button := widgets.NewImageButton("image button 1", "./images/pressedbutton.png", "./images/nonpressedbutton.png", 0, 0)
+	panel.AddEventListener(events.EventTypeButtonDown, button.GetEventListenerChannel() )
+	panel.AddEventListener(events.EventTypeButtonUp, button.GetEventListenerChannel() )
+	panel.AddWidget(button)
+
+
+	cb := widgets.NewCheckBox("checkbox1", "./images/emptycheckbox.png", "./images/checkedcheckbox.png", 0, 100)
+	panel.AddEventListener(events.EventTypeButtonDown, cb.GetEventListenerChannel())
+	panel.AddWidget(cb)
+
+	//cb.RegisterEventHandler(events.EventTypeButtonDown, a.CheckboxChanged)
+
+	f := common.LoadFont("", 16, color.RGBA{0xff, 0xff, 0xff, 0xff})
+	ti := widgets.NewTextInput("testinput1", 0, 150, 100, 20, &color.RGBA{0x55, 0x55, 0x55, 0xff}, &f)
+	panel.AddEventListener(events.EventTypeKeyboard, ti.GetEventListenerChannel())
+	panel.AddEventListener(events.EventTypeButtonDown, ti.GetEventListenerChannel())
+	panel.AddWidget(ti)
+
+	app.AddEventListener(events.EventTypeButtonDown, panel.GetEventListenerChannel())
+	app.AddEventListener(events.EventTypeButtonUp, panel.GetEventListenerChannel())
+	app.AddEventListener(events.EventTypeKeyboard, panel.GetEventListenerChannel())
+	app.AddPanel(panel)
 
 	ebiten.SetRunnableInBackground(true)
 	app.MainLoop()

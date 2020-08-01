@@ -31,10 +31,12 @@ func NewCheckBox(ID string, emptyImage string, checkedImage string, x float64, y
 	cb.checkedImage = img2
 
 	width, height := cb.emptyImage.Size()
-	cb.BaseWidget = *NewBaseWidget(ID, x, y, width, height)
+	cb.BaseWidget = *NewBaseWidget(ID, x, y, width, height, cb.HandleEvent)
 
 	cb.checked = false
 	cb.eventHandler = cb.HandleEvent
+
+	go cb.ListenToIncomingEvents()
 	return &cb
 }
 

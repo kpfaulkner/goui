@@ -35,7 +35,7 @@ func init() {
 
 func NewTextInput(ID string, x float64, y float64, width int, height int, backgroundColour *color.RGBA, fontInfo *common.Font) *TextInput {
 	t := TextInput{}
-	t.BaseWidget = *NewBaseWidget(ID, x, y, width, height)
+	t.BaseWidget = *NewBaseWidget(ID, x, y, width, height, t.HandleEvent)
 	t.text = ""
 	t.stateChangedSinceLastDraw = true
 	t.counter = 0
@@ -55,7 +55,8 @@ func NewTextInput(ID string, x float64, y float64, width int, height int, backgr
 	// vert pos is where does text go within button. Assuming we want it centred (for now)
 	// Need to just find something visually appealing.
 	t.vertPos = (height - (height-int(t.fontInfo.SizeInPixels))/2) - 2
-	t.eventHandler = t.HandleEvent
+
+	go t.ListenToIncomingEvents()
 	return &t
 }
 
