@@ -61,57 +61,6 @@ func addPanel(panelName string, x float64, y float64, width int, height int, win
 	return nil
 }
 
-func mainOLD() {
-
-	go func() {
-		log.Println(http.ListenAndServe("localhost:6060", nil))
-	}()
-
-	log.SetLevel(log.DebugLevel)
-
-	a := MyApp{}
-
-	app := pkg.NewWindow(600, 600, "my title", true)
-	addPanel("panel1", 100, 30, 200, 200, &app, a.ButtonAction1, a.ButtonAction2)
-	addPanel("panel2", 300, 30, 200, 200, &app, a.ButtonAction1, a.ButtonAction2)
-
-	// panel in panel
-	panel3 := widgets.NewPanel("panel 3", 0, 300, 300, 300, &color.RGBA{0xff, 0xff, 0xff, 0xff})
-
-	button := widgets.NewImageButton("image button 1", "./images/pressedbutton.png", "./images/nonpressedbutton.png", 0, 0)
-	panel3.AddWidget(button)
-
-	cb := widgets.NewCheckBox("checkbox1", "./images/emptycheckbox.png", "./images/checkedcheckbox.png", 0, 100)
-	panel3.AddEventListener(events.EventTypeButtonDown, cb.GetEventListenerChannel())
-	//cb.RegisterEventHandler(events.EventTypeButtonDown, a.CheckboxChanged)
-
-	f := common.LoadFont("", 16, color.RGBA{0xff, 0xff, 0xff, 0xff})
-	ti := widgets.NewTextInput("testinput1", 0, 150, 100, 20, &color.RGBA{0x55, 0x55, 0x55, 0xff}, &f)
-
-	panel3.AddWidget(cb)
-	panel3.AddWidget(ti)
-
-	app.AddPanel(panel3)
-
-	go func() {
-		for {
-			time.Sleep(2 * time.Second)
-			data, _ := ti.GetData()
-			sData := data.(string)
-			fmt.Printf("text is %s\n", sData)
-
-			data2, _ := cb.GetData()
-			cbData := data2.(bool)
-			fmt.Printf("checkbox is %v\n", cbData)
-		}
-	}()
-
-	app.AddEventListener( events.EventTypeButtonDown, panel3.GetEventListenerChannel())
-	app.MainLoop()
-
-}
-
-
 func main() {
 
 	go func() {
@@ -149,6 +98,19 @@ func main() {
 	app.AddEventListener(events.EventTypeButtonUp, panel.GetEventListenerChannel())
 	app.AddEventListener(events.EventTypeKeyboard, panel.GetEventListenerChannel())
 	app.AddPanel(panel)
+
+	go func() {
+		for {
+			time.Sleep(2 * time.Second)
+			data, _ := ti.GetData()
+			sData := data.(string)
+			fmt.Printf("text is %s\n", sData)
+
+			data2, _ := cb.GetData()
+			cbData := data2.(bool)
+			fmt.Printf("checkbox is %v\n", cbData)
+		}
+	}()
 
 	ebiten.SetRunnableInBackground(true)
 	app.MainLoop()
