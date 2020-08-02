@@ -173,7 +173,6 @@ func (w *Window) Update(screen *ebiten.Image) error {
 	} else {
 		if w.leftMouseButtonPressed {
 			w.leftMouseButtonPressed = false
-			w.leftMouseButtonPressed = true
 
 			x, y := ebiten.CursorPosition()
 			usedWidget, err := w.FindWidgetForInput(float64(x), float64(y))
