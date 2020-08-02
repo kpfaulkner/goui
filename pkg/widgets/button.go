@@ -10,7 +10,7 @@ type Button struct {
 
 func NewButton(ID string, imageName string, x float64, y float64, width int, height int) Button {
 	b := Button{}
-	b.BaseButton = *NewBaseButton(ID, x, y, width, height,nil)
+	b.BaseButton = *NewBaseButton(ID, x, y, width, height, nil)
 	return b
 }
 

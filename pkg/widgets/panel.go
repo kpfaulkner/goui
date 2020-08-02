@@ -4,16 +4,21 @@ import (
 	"github.com/hajimehoshi/ebiten"
 	"github.com/kpfaulkner/goui/pkg/events"
 	"image/color"
+	"math/rand"
 )
 
 var defaultPanelColour color.RGBA
 
 type IPanel interface {
-	AddWidget(w IWidget, subscribedEventTypes []int ) error
+	AddWidget(w IWidget, subscribedEventTypes []int) error
 	Draw(screen *ebiten.Image) error
 	HandleEvent(event events.IEvent) (bool, error)
 	SetTopLevel(bool)
 	GetEventListenerChannel() chan events.IEvent
+	ContainsCoords(x float64, y float64) bool // contains co-ords... co-ords are based on immediate parents location/size.
+	ListWidgets() []IWidget
+	ListPanels() []Panel
+	GetCoords() (float64, float64)
 }
 
 // Panel has a position, width and height.
@@ -50,15 +55,29 @@ func NewPanel(ID string, x float64, y float64, width int, height int, colour *co
 	return &p
 }
 
+func (p *Panel) ListWidgets() []IWidget {
+	return p.widgets
+}
+
+func (p *Panel) ListPanels() []Panel {
+	return p.panels
+}
+
+func (p *Panel) GetCoords() (float64,float64) {
+	return p.X, p.Y
+}
+
+
 // AddWidget adds a widget to a panel and subscribes the widget
 // to a number of events (generated from the panel)
 func (p *Panel) AddWidget(w IWidget, subscribedEventTypes []int) error {
-	ch := w.GetEventListenerChannel()
+	ch := p.GetEventListenerChannel()
 
-	for _, et := range subscribedEventTypes{
-		p.AddEventListener(et, ch )
+	for _, et := range subscribedEventTypes {
+		w.AddEventListener(et, ch)
 	}
 
+	w.AddParentPanel(p)
 	p.widgets = append(p.widgets, w)
 	return nil
 }
@@ -105,15 +124,20 @@ func (p *Panel) HandleEvent(event events.IEvent) (bool, error) {
 	return inPanel, nil
 }
 
-func (p *Panel) SetTopLevel(topLevel bool){
-  p.TopLevel = topLevel
+func (p *Panel) SetTopLevel(topLevel bool) {
+	p.TopLevel = topLevel
 }
 
 func (p *Panel) HandleMouseEvent(event events.IEvent) (bool, error) {
 	inPanel, _ := p.BaseWidget.CheckMouseEventCoords(event)
 
 	if inPanel {
-    p.hasFocus = true
+		p.hasFocus = true
+
+		r := rand.Intn(255)
+		g := rand.Intn(255)
+		b := rand.Intn(255)
+		p.panelColour = color.RGBA{uint8(r),uint8(g),uint8(b),0xff}
 	} else {
 		p.hasFocus = false
 	}
@@ -125,11 +149,11 @@ func (p *Panel) HandleMouseEvent(event events.IEvent) (bool, error) {
 func (p *Panel) HandleKeyboardEvent(event events.IEvent) (bool, error) {
 
 	/*
-	keyboardEvent := event.(events.KeyboardEvent)
-	for _, widget := range p.widgets {
-		widget.HandleEvent(keyboardEvent)
-	}
- */
+		keyboardEvent := event.(events.KeyboardEvent)
+		for _, widget := range p.widgets {
+			widget.HandleEvent(keyboardEvent)
+		}
+	*/
 
 	// only propagate to children if this panel had focus.
 	return p.hasFocus, nil

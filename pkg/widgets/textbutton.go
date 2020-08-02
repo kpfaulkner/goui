@@ -102,5 +102,3 @@ func (b *TextButton) Draw(screen *ebiten.Image) error {
 	_ = screen.DrawImage(b.rectImage, op)
 	return nil
 }
-
-

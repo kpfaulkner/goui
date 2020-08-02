@@ -1,8 +1,11 @@
 package pkg
 
 import (
+	"fmt"
 	"github.com/hajimehoshi/ebiten"
 	"github.com/hajimehoshi/ebiten/inpututil"
+	"github.com/hajimehoshi/ebiten/text"
+	"github.com/kpfaulkner/goui/pkg/common"
 	"github.com/kpfaulkner/goui/pkg/events"
 	"github.com/kpfaulkner/goui/pkg/widgets"
 	log "github.com/sirupsen/logrus"
@@ -31,6 +34,9 @@ type Window struct {
 
 	// incoming events to THIS widget (ie stuff we're listening to!)
 	incomingEvents chan events.IEvent
+
+	// widget that has focus...  I think that will do?
+	FocusedWidget *widgets.IWidget
 }
 
 func NewWindow(width int, height int, title string, haveMenuBar bool) Window {
@@ -102,11 +108,49 @@ func (w *Window) AddPanel(panel widgets.IPanel, subscribedEventTypes []int) erro
 	panel.SetTopLevel(true)
 
 	ch := panel.GetEventListenerChannel()
-	for _, et := range subscribedEventTypes{
-		w.AddEventListener(et, ch )
+	for _, et := range subscribedEventTypes {
+		w.AddEventListener(et, ch)
 	}
 	w.panels = append(w.panels, panel)
 	return nil
+}
+
+// FindWidgetForInput
+// Need to make recursive for panels in panels etc... but just leave pretty linear for now.
+func (w *Window) FindWidgetForInput(x float64, y float64) (*widgets.IWidget, error) {
+
+	// all things are panels at this level.
+	for _, panel := range w.panels {
+		if panel.ContainsCoords(x, y) {
+
+			for _, subPanel := range panel.ListPanels() {
+				if subPanel.ContainsCoords(x, y) {
+					for _, widget := range subPanel.ListWidgets() {
+						if widget.ContainsCoords(x, y) {
+							// have match
+							w.FocusedWidget = &widget
+							return &widget,nil
+						}
+					}
+				}
+			}
+
+			// check widgets in panel.
+			for _, widget := range panel.ListWidgets() {
+				//px,py := panel.GetCoords()
+				//xx := x - px
+				//yy := y - py
+				if widget.ContainsCoords(x,y) {
+					// have match
+					w.FocusedWidget = &widget
+					return &widget,nil
+				}
+			}
+		}
+	}
+
+	//return nil, errors.New("Unable to panel/widget that was clicked on....  impossible!!!")
+	return nil,nil
 }
 
 /////////////////////// EBiten specifics below... /////////////////////////////////////////////
@@ -114,29 +158,81 @@ func (w *Window) Update(screen *ebiten.Image) error {
 	if ebiten.IsMouseButtonPressed(ebiten.MouseButtonLeft) {
 		w.leftMouseButtonPressed = true
 		x, y := ebiten.CursorPosition()
-		me := events.NewMouseEvent(x, y, events.EventTypeButtonDown)
-		w.EmitEvent(me)
+		usedWidget, err := w.FindWidgetForInput(float64(x), float64(y))
+		if err != nil {
+			log.Errorf("Unable to find widget for click!! %s", err.Error())
+		}
+
+		if usedWidget != nil {
+			me := events.NewMouseEvent(fmt.Sprintf("widget %s button down", (*usedWidget).GetID()), x,y, events.EventTypeButtonDown)
+			//w.EmitEvent(me)
+			//(*usedWidget).HandleEvent(me)
+			ch := (*usedWidget).GetEventListenerChannel()
+			ch <- me
+		}
 	} else {
 		if w.leftMouseButtonPressed {
 			w.leftMouseButtonPressed = false
-			// it *WAS* pressed previous frame... but isn't now... this means released!!!
+			w.leftMouseButtonPressed = true
+
 			x, y := ebiten.CursorPosition()
-			me := events.NewMouseEvent(x, y, events.EventTypeButtonUp)
-			w.EmitEvent(me)
+			usedWidget, err := w.FindWidgetForInput(float64(x), float64(y))
+			if err != nil {
+				log.Errorf("Unable to find widget for click!! %s", err.Error())
+			}
+
+			if usedWidget != nil {
+				me := events.NewMouseEvent(fmt.Sprintf("widget %s button up", (*usedWidget).GetID()), x,y, events.EventTypeButtonUp)
+				//w.EmitEvent(me)
+				//(*usedWidget).HandleEvent(me)
+				ch := (*usedWidget).GetEventListenerChannel()
+				ch <- me
+			}
+
+			// it *WAS* pressed previous frame... but isn't now... this means released!!!
+			//x, y := ebiten.CursorPosition()
+			//me := events.NewMouseEvent(x, y, events.EventTypeButtonUp)
+			//w.EmitEvent(me)
 		}
 	}
 
 	inp := ebiten.InputChars()
 	if len(inp) > 0 {
 		// create keyboard event
-		ke := events.NewKeyboardEvent(ebiten.Key(inp[0])) // only send first one?
-		w.EmitEvent(ke)
+
+		//w.EmitEvent(ke)
+		x, y := ebiten.CursorPosition()
+		usedWidget, err := w.FindWidgetForInput(float64(x), float64(y))
+		if err != nil {
+			log.Errorf("Unable to find widget for click!! %s", err.Error())
+		}
+
+		if usedWidget != nil {
+			//ke := events.NewMouseEvent(x,y, events.EventTypeKeyboard)
+			ke := events.NewKeyboardEvent(ebiten.Key(inp[0])) // only send first one?
+			//w.EmitEvent(me)
+			//(*usedWidget).HandleEvent(ke)
+			ch := (*usedWidget).GetEventListenerChannel()
+			ch <- ke
+		}
 	}
 
 	// If the backspace key is pressed, remove one character.
 	if repeatingKeyPressed(ebiten.KeyBackspace) {
-		ke := events.NewKeyboardEvent(ebiten.KeyBackspace)
-		w.EmitEvent(ke)
+		x, y := ebiten.CursorPosition()
+		usedWidget, err := w.FindWidgetForInput(float64(x), float64(y))
+		if err != nil {
+			log.Errorf("Unable to find widget for click!! %s", err.Error())
+		}
+
+		if usedWidget != nil {
+			//ke := events.NewMouseEvent(x,y, events.EventTypeKeyboard)
+			ke := events.NewKeyboardEvent(ebiten.KeyBackspace)
+			//w.EmitEvent(me)
+			//(*usedWidget).HandleEvent(ke)
+			ch := (*usedWidget).GetEventListenerChannel()
+			ch <- ke
+		}
 	}
 
 	return nil
@@ -203,6 +299,11 @@ func (w *Window) Draw(screen *ebiten.Image) {
 	for _, panel := range w.panels {
 		panel.Draw(screen)
 	}
+
+	x, y := ebiten.CursorPosition()
+	defaultFontInfo := common.LoadFont("", 16, color.RGBA{0xff, 0xff, 0xff, 0xff})
+	text.Draw(screen, fmt.Sprintf("%d %d", x,y), defaultFontInfo.UIFont, 00, 500, color.White)
+
 }
 
 func (w *Window) Layout(outsideWidth, outsideHeight int) (int, int) {

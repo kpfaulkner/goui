@@ -38,7 +38,7 @@ func NewCheckBox(ID string, emptyImage string, checkedImage string, x float64, y
 
 	cb.checked = false
 	cb.eventHandler = cb.HandleEvent
-  cb.lastClickedTime = time.Now().UTC()
+	cb.lastClickedTime = time.Now().UTC()
 
 	go cb.ListenToIncomingEvents()
 	return &cb

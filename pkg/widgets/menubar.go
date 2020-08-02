@@ -96,7 +96,7 @@ func (mb *MenuBar) HandleEvent(event events.IEvent) (bool, error) {
 		}
 	}
 
-	return true,nil
+	return true, nil
 }
 
 func (mb *MenuBar) HandleMouseEvent(event events.IEvent) error {

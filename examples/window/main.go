@@ -44,7 +44,6 @@ func (m *MyApp) HandleTextInput(event events.IEvent) error {
 func addPanel(panelName string, x float64, y float64, width int, height int, win *pkg.Window, buttonAction1 func(event events.IEvent) error, buttonAction2 func(event events.IEvent) error) error {
 	panel := widgets.NewPanel(panelName, x, y, width, height, nil)
 
-
 	button := widgets.NewTextButton("button1", "my button1", 0, 0, 100, 100, nil, nil, nil)
 	panel.AddWidget(button, []int{events.EventTypeButtonDown, events.EventTypeButtonUp})
 
@@ -68,11 +67,12 @@ func main() {
 
 	app := pkg.NewWindow(600, 600, "my title", false)
 	addPanel("panel1", 100, 30, 200, 200, &app, a.ButtonAction1, a.ButtonAction2)
-	addPanel("panel2", 100, 30, 200, 200, &app, a.ButtonAction1, a.ButtonAction2)
 
-	panel := widgets.NewPanel("panel3", 0,300,200,200, nil)
+	addPanel("panel2", 300, 30, 200, 200, &app, a.ButtonAction1, a.ButtonAction2)
+
+	panel := widgets.NewPanel("panel3", 0, 300, 200, 200, nil)
 	button := widgets.NewImageButton("image button 1", "./images/pressedbutton.png", "./images/nonpressedbutton.png", 0, 0)
-	panel.AddWidget(button, []int{events.EventTypeButtonDown,events.EventTypeButtonUp})
+	panel.AddWidget(button, []int{events.EventTypeButtonDown, events.EventTypeButtonUp})
 
 	cb := widgets.NewCheckBox("checkbox1", "./images/emptycheckbox.png", "./images/checkedcheckbox.png", 0, 100)
 	panel.AddWidget(cb, []int{events.EventTypeButtonDown})
@@ -81,9 +81,9 @@ func main() {
 
 	f := common.LoadFont("", 16, color.RGBA{0xff, 0xff, 0xff, 0xff})
 	ti := widgets.NewTextInput("testinput1", 0, 150, 100, 20, &color.RGBA{0x55, 0x55, 0x55, 0xff}, &f)
-	panel.AddWidget(ti,[]int{events.EventTypeKeyboard,events.EventTypeButtonDown})
+	panel.AddWidget(ti, []int{events.EventTypeKeyboard, events.EventTypeButtonDown})
 
-	app.AddPanel(panel, []int{events.EventTypeButtonDown,events.EventTypeButtonUp,events.EventTypeKeyboard})
+	app.AddPanel(panel, []int{events.EventTypeButtonDown, events.EventTypeButtonUp, events.EventTypeKeyboard})
 
 	go func() {
 		for {
