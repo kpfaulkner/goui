@@ -44,7 +44,7 @@ type BaseWidget struct {
 	populatedGlobalDelta bool
 
 	// parent... to get relative positioning.
-	parentPanel *Panel
+	parentPanel IPanel
 }
 
 func NewBaseWidget(ID string, width int, height int, handler func(event events.IEvent) (bool, error)) *BaseWidget {
@@ -124,8 +124,8 @@ func (b *BaseWidget) GlobalToLocalCoords(x float64, y float64) (float64, float64
 		if b.parentPanel != nil {
 			//dx,dy:= (*b.parentWidget).GetCoords()
 			//_,_ = (*b.parentPanel).GlobalToLocalCoords(x,y)
-			dx := (*b.parentPanel).globalDX
-			dy := (*b.parentPanel).globalDY
+
+			dx,dy := (b.parentPanel).GetDeltaOffset()
 			b.globalDX = dx + b.X
 			b.globalDY = dy + b.Y
 			b.populatedGlobalDelta = true
@@ -140,7 +140,7 @@ func (b *BaseWidget) GlobalToLocalCoords(x float64, y float64) (float64, float64
 	return x - b.globalDX, y - b.globalDY
 }
 
-func (b *BaseWidget) AddParentPanel(parentPanel *Panel) error {
+func (b *BaseWidget) AddParentPanel(parentPanel IPanel) error {
 	b.parentPanel = parentPanel
 	return nil
 }
@@ -149,6 +149,19 @@ func (b *BaseWidget) GetID() string {
 	return b.ID
 }
 
+func (b *BaseWidget) SetXY(x float64, y float64) error {
+	b.X = x
+	b.Y = y
+	return nil
+}
+
+func (b *BaseWidget) GetXY() (float64, float64) {
+	return b.X, b.Y
+}
+
+func (b *BaseWidget) GetSize() (float64, float64) {
+	return float64(b.Width), float64(b.Height)
+}
 
 // IWidget defines what actions can be performed on a widget.
 // Hate using the I* notation... but will do for now.
@@ -159,7 +172,9 @@ type IWidget interface {
 
 	ContainsCoords(x float64, y float64) bool // contains co-ords... co-ords are based on immediate parents location/size.
 	GlobalToLocalCoords(x float64, y float64) (float64, float64)
-	AddParentPanel(parentPanel *Panel) error
-
+	AddParentPanel(parentPanel IPanel) error
+  SetXY(x float64, y float64) error
+	GetXY() (float64,float64)
+	GetSize() (float64,float64)
 	GetID() string
 }

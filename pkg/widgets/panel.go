@@ -17,6 +17,7 @@ type IPanel interface {
 	ListWidgets() []IWidget
 	ListPanels() []Panel
 	GetCoords() (float64, float64)
+	GetDeltaOffset() (float64, float64)
 }
 
 // Panel has a position, width and height.
@@ -147,4 +148,9 @@ func (p *Panel) HandleKeyboardEvent(event events.IEvent) (bool, error) {
 
 	// only propagate to children if this panel had focus.
 	return p.hasFocus, nil
+}
+
+
+func (p *Panel) GetDeltaOffset() (float64, float64) {
+	return p.globalDX, p.globalDY
 }

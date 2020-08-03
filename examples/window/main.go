@@ -55,7 +55,7 @@ func addPanel(panelName string, width int, height int, win *pkg.Window, buttonAc
 	return nil
 }
 
-func main() {
+func mainOLD() {
 
 	go func() {
 		log.Println(http.ListenAndServe("localhost:6060", nil))
@@ -102,3 +102,25 @@ func main() {
 	app.MainLoop()
 
 }
+
+func main() {
+
+	go func() {
+		log.Println(http.ListenAndServe("localhost:6060", nil))
+	}()
+
+	log.SetLevel(log.DebugLevel)
+
+	app := pkg.NewWindow(600, 600, "my title", false)
+
+	panel := widgets.NewVPanel("panel3",  200, 200, nil)
+	button := widgets.NewImageButton("image button 1", "./images/pressedbutton.png", "./images/nonpressedbutton.png")
+	panel.AddWidget(button)
+
+	app.AddPanel(panel)
+
+	ebiten.SetRunnableInBackground(true)
+	app.MainLoop()
+
+}
+
