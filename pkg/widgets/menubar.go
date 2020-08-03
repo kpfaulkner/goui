@@ -38,7 +38,7 @@ type MenuBar struct {
 // NewMenuBar creates the menubar panel. *has* to be located at 0,0 and full length of the window.
 func NewMenuBar(ID string, x float64, y float64, width int, height int, colour *color.RGBA) *MenuBar {
 	mb := MenuBar{}
-	mb.Panel = *NewPanel(ID, x, y, width, height, colour)
+	mb.Panel = *NewPanel(ID, width, height, colour)
 	mb.menuPanels = make(map[string]Panel)
 
 	return &mb
@@ -47,28 +47,28 @@ func NewMenuBar(ID string, x float64, y float64, width int, height int, colour *
 // AddMenuHeading adds the header for the menu eg. File, Edit, etc etc
 // Tt does NOT add the contents/panel of when we click on that menu heading
 func (mb *MenuBar) AddMenuHeading(menuName string) error {
-	menuButton := *NewTextButton(menuName, menuName, 0, 0, 50, 20, nil, nil, nil)
-	err := mb.AddWidget(&menuButton, []int{})
+	menuButton := *NewTextButton(menuName, menuName,50, 20, nil, nil, nil)
+	err := mb.AddWidget(&menuButton)
 
 	// add panel for menu panel
 	return err
 }
 
 func (mb *MenuBar) AddMenu(menuDesc MenuDescription) error {
-	menuButton := *NewTextButton(menuDesc.MenuHeader, menuDesc.MenuHeader, 0, 0, 50, 20, nil, nil, nil)
-	err := mb.AddWidget(&menuButton, []int{})
+	menuButton := *NewTextButton(menuDesc.MenuHeader, menuDesc.MenuHeader, 50, 20, nil, nil, nil)
+	err := mb.AddWidget(&menuButton)
 
 	// check number of menu entries
 	menuEntries := len(menuDesc.MenuItems)
 
 	// assume 30 pixele height for each menu option.
 	// will obviously need to make configurable later.
-	menuPanel := *NewPanel(menuDesc.MenuHeader, 0, 0, 40, menuEntries*30, nil)
+	menuPanel := *NewPanel(menuDesc.MenuHeader, 40, menuEntries*30, nil)
 	menuPanel.Disabled = true // disabled.... dont display it!
 
-	for i, menuItem := range menuDesc.MenuItems {
-		tb := *NewTextButton(menuItem.Name, menuItem.Name, 0, float64(i*30), 50, 30, nil, nil, nil)
-		menuPanel.AddWidget(&tb, []int{})
+	for _, menuItem := range menuDesc.MenuItems {
+		tb := *NewTextButton(menuItem.Name, menuItem.Name, 50, 30, nil, nil, nil)
+		menuPanel.AddWidget(&tb)
 	}
 
 	mb.menuPanels[menuDesc.MenuHeader] = menuPanel

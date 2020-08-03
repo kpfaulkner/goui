@@ -33,9 +33,9 @@ func init() {
 	defaultFontInfo = common.LoadFont("", 16, color.RGBA{0xff, 0xff, 0xff, 0xff})
 }
 
-func NewTextInput(ID string, x float64, y float64, width int, height int, backgroundColour *color.RGBA, fontInfo *common.Font) *TextInput {
+func NewTextInput(ID string,width int, height int, backgroundColour *color.RGBA, fontInfo *common.Font) *TextInput {
 	t := TextInput{}
-	t.BaseWidget = *NewBaseWidget(ID, x, y, width, height, t.HandleEvent)
+	t.BaseWidget = *NewBaseWidget(ID, width, height, t.HandleEvent)
 	t.text = ""
 	t.stateChangedSinceLastDraw = true
 	t.counter = 0
@@ -56,7 +56,6 @@ func NewTextInput(ID string, x float64, y float64, width int, height int, backgr
 	// Need to just find something visually appealing.
 	t.vertPos = (height - (height-int(t.fontInfo.SizeInPixels))/2) - 2
 
-	go t.ListenToIncomingEvents()
 	return &t
 }
 

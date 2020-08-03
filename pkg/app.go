@@ -60,7 +60,7 @@ func NewWindow(width int, height int, title string, haveMenuBar bool) Window {
 	if w.haveMenuBar {
 		mb := *widgets.NewMenuBar("menubar", 0, 0, width, 30, &color.RGBA{0x71, 0x71, 0x71, 0xff})
 		mb.AddMenuHeading("test")
-		w.AddPanel(&mb, []int{})
+		w.AddPanel(&mb)
 	}
 	return w
 }
@@ -104,13 +104,8 @@ func (w *Window) EmitEvent(event events.IEvent) error {
 	return nil
 }
 
-func (w *Window) AddPanel(panel widgets.IPanel, subscribedEventTypes []int) error {
+func (w *Window) AddPanel(panel widgets.IPanel) error {
 	panel.SetTopLevel(true)
-
-	ch := panel.GetEventListenerChannel()
-	for _, et := range subscribedEventTypes {
-		w.AddEventListener(et, ch)
-	}
 	w.panels = append(w.panels, panel)
 	return nil
 }
@@ -167,8 +162,7 @@ func (w *Window) Update(screen *ebiten.Image) error {
 			me := events.NewMouseEvent(fmt.Sprintf("widget %s button down", (*usedWidget).GetID()), x,y, events.EventTypeButtonDown)
 			//w.EmitEvent(me)
 			//(*usedWidget).HandleEvent(me)
-			ch := (*usedWidget).GetEventListenerChannel()
-			ch <- me
+			(*usedWidget).HandleEvent(me)
 		}
 	} else {
 		if w.leftMouseButtonPressed {
@@ -184,8 +178,7 @@ func (w *Window) Update(screen *ebiten.Image) error {
 				me := events.NewMouseEvent(fmt.Sprintf("widget %s button up", (*usedWidget).GetID()), x,y, events.EventTypeButtonUp)
 				//w.EmitEvent(me)
 				//(*usedWidget).HandleEvent(me)
-				ch := (*usedWidget).GetEventListenerChannel()
-				ch <- me
+				(*usedWidget).HandleEvent(me)
 			}
 
 			// it *WAS* pressed previous frame... but isn't now... this means released!!!
@@ -210,9 +203,7 @@ func (w *Window) Update(screen *ebiten.Image) error {
 			//ke := events.NewMouseEvent(x,y, events.EventTypeKeyboard)
 			ke := events.NewKeyboardEvent(ebiten.Key(inp[0])) // only send first one?
 			//w.EmitEvent(me)
-			//(*usedWidget).HandleEvent(ke)
-			ch := (*usedWidget).GetEventListenerChannel()
-			ch <- ke
+			(*usedWidget).HandleEvent(ke)
 		}
 	}
 
@@ -229,8 +220,7 @@ func (w *Window) Update(screen *ebiten.Image) error {
 			ke := events.NewKeyboardEvent(ebiten.KeyBackspace)
 			//w.EmitEvent(me)
 			//(*usedWidget).HandleEvent(ke)
-			ch := (*usedWidget).GetEventListenerChannel()
-			ch <- ke
+			(*usedWidget).HandleEvent(ke)
 		}
 	}
 

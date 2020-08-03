@@ -9,11 +9,10 @@ import (
 var defaultPanelColour color.RGBA
 
 type IPanel interface {
-	AddWidget(w IWidget, subscribedEventTypes []int) error
+	AddWidget(w IWidget) error
 	Draw(screen *ebiten.Image) error
 	HandleEvent(event events.IEvent) (bool, error)
 	SetTopLevel(bool)
-	GetEventListenerChannel() chan events.IEvent
 	ContainsCoords(x float64, y float64) bool // contains co-ords... co-ords are based on immediate parents location/size.
 	ListWidgets() []IWidget
 	ListPanels() []Panel
@@ -38,18 +37,15 @@ func init() {
 	defaultPanelColour = color.RGBA{0xff, 0x00, 0x00, 0xff}
 }
 
-func NewPanel(ID string, x float64, y float64, width int, height int, colour *color.RGBA) *Panel {
+func NewPanel(ID string, width int, height int, colour *color.RGBA) *Panel {
 	p := Panel{}
-	p.BaseWidget = *NewBaseWidget(ID, x, y, width, height, p.HandleEvent)
+	p.BaseWidget = *NewBaseWidget(ID,width, height, p.HandleEvent)
 
 	if colour != nil {
 		p.panelColour = *colour
 	} else {
 		p.panelColour = defaultPanelColour
 	}
-
-	// just go off and listen for all events.
-	go p.ListenToIncomingEvents()
 
 	return &p
 }
@@ -69,13 +65,7 @@ func (p *Panel) GetCoords() (float64,float64) {
 
 // AddWidget adds a widget to a panel and subscribes the widget
 // to a number of events (generated from the panel)
-func (p *Panel) AddWidget(w IWidget, subscribedEventTypes []int) error {
-	ch := p.GetEventListenerChannel()
-
-	for _, et := range subscribedEventTypes {
-		w.AddEventListener(et, ch)
-	}
-
+func (p *Panel) AddWidget(w IWidget) error {
 	w.AddParentPanel(p)
 	p.widgets = append(p.widgets, w)
 	return nil

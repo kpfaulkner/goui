@@ -1,7 +1,6 @@
 package widgets
 
 import (
-	"errors"
 	"github.com/hajimehoshi/ebiten"
 	"github.com/kpfaulkner/goui/pkg/events"
 	log "github.com/sirupsen/logrus"
@@ -34,12 +33,6 @@ type BaseWidget struct {
 	// has it changed?
 	stateChangedSinceLastDraw bool
 
-	// These are other widgets/components that are listening to THiS widget. Ie we will broadcast to them!
-	eventListeners map[int][]chan events.IEvent
-
-	// incoming events to THIS widget (ie stuff we're listening to!)
-	incomingEvents chan events.IEvent
-
 	// direct parent of window.... hack to sort out mouse positioning...
 	TopLevel bool
 
@@ -54,48 +47,20 @@ type BaseWidget struct {
 	parentPanel *Panel
 }
 
-func NewBaseWidget(ID string, x float64, y float64, width int, height int, handler func(event events.IEvent) (bool, error)) *BaseWidget {
+func NewBaseWidget(ID string, width int, height int, handler func(event events.IEvent) (bool, error)) *BaseWidget {
 	bw := BaseWidget{}
 	bw.ID = ID
-	bw.X = x
-	bw.Y = y
+	bw.X = 0
+	bw.Y = 0
 	bw.Width = width
 	bw.Height = height
 	bw.Disabled = false
 	bw.rectImage, _ = ebiten.NewImage(width, height, ebiten.FilterDefault)
 	bw.hasFocus = false
-	bw.eventListeners = make(map[int][]chan events.IEvent)
-	bw.incomingEvents = make(chan events.IEvent, 1000) // too much?
 	bw.TopLevel = false
 	bw.eventHandler = handler
   bw.populatedGlobalDelta = false // haven't asked parent for offer.
 	return &bw
-}
-
-func (b *BaseWidget) GetEventListenerChannel() chan events.IEvent {
-	return b.incomingEvents
-}
-
-func (b *BaseWidget) AddEventListener(eventType int, ch chan events.IEvent) error {
-	if _, ok := b.eventListeners[eventType]; ok {
-		b.eventListeners[eventType] = append(b.eventListeners[eventType], ch)
-	} else {
-		b.eventListeners[eventType] = []chan events.IEvent{ch}
-	}
-
-	return nil
-}
-
-func (b *BaseWidget) RemoveEventListener(eventType int, ch chan events.IEvent) error {
-	if _, ok := b.eventListeners[eventType]; ok {
-		for i := range b.eventListeners[eventType] {
-			if b.eventListeners[eventType][i] == ch {
-				b.eventListeners[eventType] = append(b.eventListeners[eventType][:i], b.eventListeners[eventType][i+1:]...)
-				break
-			}
-		}
-	}
-	return nil
 }
 
 func isMouseEvent(event events.IEvent) bool {
@@ -108,80 +73,10 @@ func isMouseEvent(event events.IEvent) bool {
 	return false
 }
 
-// Emit event for  all listeners to receive
-func (b *BaseWidget) EmitEvent(event events.IEvent) error {
-
-	eventToUse := event
-
-	// if event is mouse related, then convert co-ords to LOCAL (ie panel) co-ords for all listeners/children.
-	if isMouseEvent(event) {
-		mouseEvent := event.(events.MouseEvent)
-		eventToUse = b.GenerateLocalCoordMouseEvent(mouseEvent)
-	}
-
-	if _, ok := b.eventListeners[eventToUse.EventType()]; ok {
-		for _, handler := range b.eventListeners[eventToUse.EventType()] {
-			go func(handler chan events.IEvent) {
-				handler <- eventToUse
-			}(handler)
-		}
-	}
-
-	return nil
-}
-
 func (b *BaseWidget) Draw(screen *ebiten.Image) error {
 	return nil
 }
 
-func (b *BaseWidget) ListenToIncomingEvents() error {
-
-	for {
-		ev := <-b.incomingEvents
-
-
-		if b.ID == "panel1" {
-			log.Debugf("break here")
-		}
-
-		if b.ID == "button1" {
-			log.Debugf("break here")
-		}
-
-
-		// do our local event processing (HandleEvent) then pass onto other listeners (assuming order would be important here).
-		used, err := b.eventHandler(ev)
-		if err != nil {
-			log.Errorf("Unable to HandleEvent from widget: %s", err.Error())
-			continue
-		}
-
-		// if USED by this widget... then pass it onto the child widgets.
-		// if NOT used by this widget.... its nothing to do with us... dont
-		// propagate.
-		if used {
-			// if mouse event, convert to local co-ord system?
-			err := b.EmitEvent(ev)
-			if err != nil {
-				log.Errorf("Unable to emit event from widget: %s", err.Error())
-				// wont break out here... assuming/hoping that this is just a once off :)
-			}
-		}
-	}
-	return nil
-}
-
-func (b *BaseWidget) HandleEventXX(event events.IEvent) (bool, error) {
-
-	// shouldn't be used.
-	return false, nil
-}
-
-// BroadcastEvent signals back to main application that something has happened.
-// unsure if actually needed, but see the probability of it.
-func (b *BaseWidget) BroadcastEventXX(event events.IEvent) error {
-	return errors.New("BaseWidget shouldn't broadcast events!")
-}
 
 // ContainsCoords determines if co-ordinates... co-ords passed are GLOBAL
 // and need to be converted.
@@ -261,10 +156,10 @@ type IWidget interface {
 	Draw(screen *ebiten.Image) error
 	HandleEvent(event events.IEvent) (bool, error)
 	GetData() (interface{}, error) // absolutely HATE the empty interface, but this will need to be extremely generic I suppose?
-	GetEventListenerChannel() chan events.IEvent
+
 	ContainsCoords(x float64, y float64) bool // contains co-ords... co-ords are based on immediate parents location/size.
 	GlobalToLocalCoords(x float64, y float64) (float64, float64)
 	AddParentPanel(parentPanel *Panel) error
-	AddEventListener(eventType int, ch chan events.IEvent) error
+
 	GetID() string
 }

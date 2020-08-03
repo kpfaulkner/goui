@@ -32,12 +32,12 @@ func init() {
 	defaultPressedButtonColour = color.RGBA{0x78, 0x75, 0x72, 0xff}
 }
 
-func NewTextButton(ID string, text string, x float64, y float64, width int, height int,
+func NewTextButton(ID string, text string, width int, height int,
 	nonPressedBackgroundColour *color.RGBA,
 	pressedBackgroundColour *color.RGBA, fontInfo *common.Font) *TextButton {
 
 	b := TextButton{}
-	b.BaseButton = *NewBaseButton(ID, x, y, width, height, b.HandleEvent)
+	b.BaseButton = *NewBaseButton(ID, width, height, b.HandleEvent)
 
 	if pressedBackgroundColour != nil {
 		b.pressedBackgroundColour = *pressedBackgroundColour
