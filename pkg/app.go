@@ -65,54 +65,60 @@ func NewWindow(width int, height int, title string, haveMenuBar bool) Window {
 	return w
 }
 
-func (w *Window) AddEventListener(eventType int, ch chan events.IEvent) error {
-	if _, ok := w.eventListeners[eventType]; ok {
-		w.eventListeners[eventType] = append(w.eventListeners[eventType], ch)
-	} else {
-		w.eventListeners[eventType] = []chan events.IEvent{ch}
-	}
-
-	return nil
-}
-
-func (w *Window) RemoveEventListener(eventType int, ch chan events.IEvent) error {
-	if _, ok := w.eventListeners[eventType]; ok {
-		for i := range w.eventListeners[eventType] {
-			if w.eventListeners[eventType][i] == ch {
-				w.eventListeners[eventType] = append(w.eventListeners[eventType][:i], w.eventListeners[eventType][i+1:]...)
-				break
-			}
-		}
-	}
-	return nil
-}
-
-func (w *Window) GetEventListenerChannel() chan events.IEvent {
-	return w.incomingEvents
-}
-
-// Emit event for  all listeners to receive
-func (w *Window) EmitEvent(event events.IEvent) error {
-	if _, ok := w.eventListeners[event.EventType()]; ok {
-		for _, handler := range w.eventListeners[event.EventType()] {
-			go func(handler chan events.IEvent) {
-				handler <- event
-			}(handler)
-		}
-	}
-
-	return nil
-}
-
 func (w *Window) AddPanel(panel widgets.IPanel) error {
 	panel.SetTopLevel(true)
 	w.panels = append(w.panels, panel)
 	return nil
 }
 
+func (w *Window) FindWidgetRecursive( x float64, y float64, widget widgets.IWidget) widgets.IWidget {
+
+	if widget == nil {
+		return nil
+	}
+
+	// check recursive.
+	panel, ok := widget.( widgets.IPanel )
+  if ok {
+  	for _, ww := range panel.ListWidgets() {
+  		res := w.FindWidgetRecursive(x,y,ww)
+  		if res != nil {
+  			return res
+		  }
+	  }
+  } else {
+	  if widget.ContainsCoords(x, y) {
+		  // have match
+		  w.FocusedWidget = &widget
+		  return widget
+	  }
+  }
+  return nil
+}
+
 // FindWidgetForInput
 // Need to make recursive for panels in panels etc... but just leave pretty linear for now.
 func (w *Window) FindWidgetForInput(x float64, y float64) (*widgets.IWidget, error) {
+
+	// all things are panels at this level.
+	for _, panel := range w.panels {
+		if panel.ContainsCoords(x, y) {
+
+			for _, widget := range panel.ListWidgets() {
+				res := w.FindWidgetRecursive(x, y, widget)
+				if res != nil {
+					return &res, nil
+				}
+			}
+		}
+	}
+	//return nil, errors.New("Unable to panel/widget that was clicked on....  impossible!!!")
+	return nil, nil
+}
+
+// FindWidgetForInput
+// Need to make recursive for panels in panels etc... but just leave pretty linear for now.
+func (w *Window) FindWidgetForInputOLD(x float64, y float64) (*widgets.IWidget, error) {
 
 	// all things are panels at this level.
 	for _, panel := range w.panels {
@@ -132,9 +138,6 @@ func (w *Window) FindWidgetForInput(x float64, y float64) (*widgets.IWidget, err
 
 			// check widgets in panel.
 			for _, widget := range panel.ListWidgets() {
-				//px,py := panel.GetCoords()
-				//xx := x - px
-				//yy := y - py
 				if widget.ContainsCoords(x, y) {
 					// have match
 					w.FocusedWidget = &widget

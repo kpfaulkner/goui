@@ -124,7 +124,11 @@ func (b *BaseWidget) GlobalToLocalCoords(x float64, y float64) (float64, float64
 			//dx,dy:= (*b.parentWidget).GetCoords()
 			//_,_ = (*b.parentPanel).GlobalToLocalCoords(x,y)
 
-			dx, dy := (b.parentPanel).GetDeltaOffset()
+			populated, dx, dy := (b.parentPanel).GetDeltaOffset()
+			if !populated {
+				b.parentPanel.GlobalToLocalCoords(x,y)
+			}
+			populated, dx, dy = (b.parentPanel).GetDeltaOffset()
 			b.globalDX = dx + b.X
 			b.globalDY = dy + b.Y
 			b.populatedGlobalDelta = true

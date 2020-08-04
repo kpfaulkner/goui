@@ -121,21 +121,21 @@ func main() {
 	button := widgets.NewImageButton("image button 1", "./images/pressedbutton.png", "./images/nonpressedbutton.png", a.ButtonAction1)
 	panel.AddWidget(button)
 
-	button2 := widgets.NewImageButton("image button 2", "./images/pressedbutton.png", "./images/nonpressedbutton.png", a.ButtonAction2)
-	panel.AddWidget(button2)
-
-	emptySpace := widgets.NewEmptySpace("empty space 1", 100,100)
-	panel.AddWidget(emptySpace)
-
 	button3 := widgets.NewTextButton("text button 1", "my button", 100, 40, nil, nil, nil, a.ButtonAction2)
 	panel.AddWidget(button3)
 
-	emptySpace2 := widgets.NewEmptySpace("empty space 2", 500,100)
-	panel.AddWidget(emptySpace2)
-
-
 	cb := widgets.NewCheckBox("my checkbox", "./images/emptycheckbox.png", "./images/checkedcheckbox.png", a.CheckboxChanged)
-  panel.AddWidget(cb)
+	panel.AddWidget(cb)
+
+	hPanel := widgets.NewHPanel("hpanel1", 500, 50, &color.RGBA{0, 100, 0, 255})
+
+	button4 := widgets.NewTextButton("text button 2", "my button2", 100, 40, nil, nil, nil, a.ButtonAction2)
+	hPanel.AddWidget(button4)
+	button5 := widgets.NewTextButton("text button 3", "my button3", 100, 40, nil, nil, nil, a.ButtonAction2)
+	hPanel.AddWidget(button5)
+
+	panel.AddWidget(hPanel)
+
 
 	app.AddPanel(panel)
 
