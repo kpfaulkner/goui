@@ -5,6 +5,7 @@ import (
 	"github.com/hajimehoshi/ebiten/ebitenutil"
 	"github.com/hajimehoshi/ebiten/text"
 	"github.com/kpfaulkner/goui/pkg/common"
+	"github.com/kpfaulkner/goui/pkg/events"
 	"golang.org/x/image/font"
 	"image"
 	"image/color"
@@ -34,10 +35,10 @@ func init() {
 
 func NewTextButton(ID string, text string, width int, height int,
 	nonPressedBackgroundColour *color.RGBA,
-	pressedBackgroundColour *color.RGBA, fontInfo *common.Font) *TextButton {
+	pressedBackgroundColour *color.RGBA, fontInfo *common.Font, handler func(event events.IEvent) error) *TextButton {
 
 	b := TextButton{}
-	b.BaseButton = *NewBaseButton(ID, width, height, b.HandleEvent)
+	b.BaseButton = *NewBaseButton(ID, width, height, handler)
 
 	if pressedBackgroundColour != nil {
 		b.pressedBackgroundColour = *pressedBackgroundColour

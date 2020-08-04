@@ -47,15 +47,25 @@ func NewMenuBar(ID string, x float64, y float64, width int, height int, colour *
 // AddMenuHeading adds the header for the menu eg. File, Edit, etc etc
 // Tt does NOT add the contents/panel of when we click on that menu heading
 func (mb *MenuBar) AddMenuHeading(menuName string) error {
-	menuButton := *NewTextButton(menuName, menuName,50, 20, nil, nil, nil)
+	menuButton := *NewTextButton(menuName, menuName, 50, 20, nil, nil, nil, mb.MenuHeadingHandler)
 	err := mb.AddWidget(&menuButton)
 
 	// add panel for menu panel
 	return err
 }
 
+func (mb *MenuBar) MenuHeadingHandler(event events.IEvent) error {
+	log.Debugf("MenuHeading button handler for %s", mb.ID)
+	return nil
+}
+
+func (mb *MenuBar) MenuHandler(event events.IEvent) error {
+	log.Debugf("MenuBar button handler for %s", mb.ID)
+	return nil
+}
+
 func (mb *MenuBar) AddMenu(menuDesc MenuDescription) error {
-	menuButton := *NewTextButton(menuDesc.MenuHeader, menuDesc.MenuHeader, 50, 20, nil, nil, nil)
+	menuButton := *NewTextButton(menuDesc.MenuHeader, menuDesc.MenuHeader, 50, 20, nil, nil, nil, mb.MenuHandler)
 	err := mb.AddWidget(&menuButton)
 
 	// check number of menu entries
@@ -67,7 +77,7 @@ func (mb *MenuBar) AddMenu(menuDesc MenuDescription) error {
 	menuPanel.Disabled = true // disabled.... dont display it!
 
 	for _, menuItem := range menuDesc.MenuItems {
-		tb := *NewTextButton(menuItem.Name, menuItem.Name, 50, 30, nil, nil, nil)
+		tb := *NewTextButton(menuItem.Name, menuItem.Name, 50, 30, nil, nil, nil, mb.MenuHandler)
 		menuPanel.AddWidget(&tb)
 	}
 
@@ -77,7 +87,7 @@ func (mb *MenuBar) AddMenu(menuDesc MenuDescription) error {
 	return err
 }
 
-func (mb *MenuBar) HandleEvent(event events.IEvent) (bool, error) {
+func (mb *MenuBar) HandleEvent(event events.IEvent) error {
 
 	eventType := event.EventType()
 	switch eventType {
@@ -96,7 +106,7 @@ func (mb *MenuBar) HandleEvent(event events.IEvent) (bool, error) {
 		}
 	}
 
-	return true, nil
+	return nil
 }
 
 func (mb *MenuBar) HandleMouseEvent(event events.IEvent) error {

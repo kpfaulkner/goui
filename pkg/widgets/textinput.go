@@ -33,9 +33,9 @@ func init() {
 	defaultFontInfo = common.LoadFont("", 16, color.RGBA{0xff, 0xff, 0xff, 0xff})
 }
 
-func NewTextInput(ID string,width int, height int, backgroundColour *color.RGBA, fontInfo *common.Font) *TextInput {
+func NewTextInput(ID string, width int, height int, backgroundColour *color.RGBA, fontInfo *common.Font, handler func(event events.IEvent) error) *TextInput {
 	t := TextInput{}
-	t.BaseWidget = *NewBaseWidget(ID, width, height, t.HandleEvent)
+	t.BaseWidget = *NewBaseWidget(ID, width, height, handler)
 	t.text = ""
 	t.stateChangedSinceLastDraw = true
 	t.counter = 0
@@ -59,7 +59,7 @@ func NewTextInput(ID string,width int, height int, backgroundColour *color.RGBA,
 	return &t
 }
 
-func (t *TextInput) HandleEvent(event events.IEvent) (bool, error) {
+func (t *TextInput) HandleEvent(event events.IEvent) error {
 
 	eventType := event.EventType()
 	switch eventType {
@@ -97,7 +97,7 @@ func (t *TextInput) HandleEvent(event events.IEvent) (bool, error) {
 		}
 	}
 
-	return false, nil
+	return nil
 }
 
 func (t *TextInput) Draw(screen *ebiten.Image) error {

@@ -44,10 +44,10 @@ func (m *MyApp) HandleTextInput(event events.IEvent) error {
 func addPanel(panelName string, width int, height int, win *pkg.Window, buttonAction1 func(event events.IEvent) error, buttonAction2 func(event events.IEvent) error) error {
 	panel := widgets.NewPanel(panelName, width, height, nil)
 
-	button := widgets.NewTextButton("button1", "my button1",  100, 100, nil, nil, nil)
+	button := widgets.NewTextButton("button1", "my button1", 100, 100, nil, nil, nil, buttonAction1)
 	panel.AddWidget(button)
 
-	button2 := widgets.NewTextButton("button2", "my button2",  100, 100, nil, nil, nil)
+	button2 := widgets.NewTextButton("button2", "my button2", 100, 100, nil, nil, nil, buttonAction2)
 	panel.AddWidget(button2)
 
 	win.AddPanel(panel)
@@ -66,21 +66,21 @@ func mainOLD() {
 	a := MyApp{}
 
 	app := pkg.NewWindow(600, 600, "my title", false)
-	addPanel("panel1",  200, 200, &app, a.ButtonAction1, a.ButtonAction2)
+	addPanel("panel1", 200, 200, &app, a.ButtonAction1, a.ButtonAction2)
 
-	addPanel("panel2",  200, 200, &app, a.ButtonAction1, a.ButtonAction2)
+	addPanel("panel2", 200, 200, &app, a.ButtonAction1, a.ButtonAction2)
 
-	panel := widgets.NewPanel("panel3",  200, 200, nil)
-	button := widgets.NewImageButton("image button 1", "./images/pressedbutton.png", "./images/nonpressedbutton.png")
+	panel := widgets.NewPanel("panel3", 200, 200, nil)
+	button := widgets.NewImageButton("image button 1", "./images/pressedbutton.png", "./images/nonpressedbutton.png", a.ButtonAction1)
 	panel.AddWidget(button)
 
-	cb := widgets.NewCheckBox("checkbox1", "./images/emptycheckbox.png", "./images/checkedcheckbox.png", 0, 100)
+	cb := widgets.NewCheckBox("checkbox1", "./images/emptycheckbox.png", "./images/checkedcheckbox.png", a.ButtonAction2)
 	panel.AddWidget(cb)
 
 	//cb.RegisterEventHandler(events.EventTypeButtonDown, a.CheckboxChanged)
 
 	f := common.LoadFont("", 16, color.RGBA{0xff, 0xff, 0xff, 0xff})
-	ti := widgets.NewTextInput("testinput1",100, 20, &color.RGBA{0x55, 0x55, 0x55, 0xff}, &f)
+	ti := widgets.NewTextInput("testinput1", 100, 20, &color.RGBA{0x55, 0x55, 0x55, 0xff}, &f, a.HandleTextInput)
 	panel.AddWidget(ti)
 
 	app.AddPanel(panel)
@@ -111,11 +111,18 @@ func main() {
 
 	log.SetLevel(log.DebugLevel)
 
+	a := MyApp{}
 	app := pkg.NewWindow(600, 600, "my title", false)
 
-	panel := widgets.NewVPanel("panel3",  200, 200, nil)
-	button := widgets.NewImageButton("image button 1", "./images/pressedbutton.png", "./images/nonpressedbutton.png")
+	panel := widgets.NewVPanel("panel3", 200, 200, nil)
+	button := widgets.NewImageButton("image button 1", "./images/pressedbutton.png", "./images/nonpressedbutton.png", a.ButtonAction1)
 	panel.AddWidget(button)
+
+	button2 := widgets.NewImageButton("image button 2", "./images/pressedbutton.png", "./images/nonpressedbutton.png", a.ButtonAction2)
+	panel.AddWidget(button2)
+
+	button3 := widgets.NewTextButton("text button 1", "my button", 100, 40, nil, nil, nil, a.ButtonAction2)
+	panel.AddWidget(button3)
 
 	app.AddPanel(panel)
 
@@ -123,4 +130,3 @@ func main() {
 	app.MainLoop()
 
 }
-

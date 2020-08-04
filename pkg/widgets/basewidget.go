@@ -36,18 +36,18 @@ type BaseWidget struct {
 	// direct parent of window.... hack to sort out mouse positioning...
 	TopLevel bool
 
-	eventHandler func(event events.IEvent) (bool, error)
+	eventHandler func(event events.IEvent) error
 
 	// global to local offset.
-	globalDX float64
-	globalDY float64
+	globalDX             float64
+	globalDY             float64
 	populatedGlobalDelta bool
 
 	// parent... to get relative positioning.
 	parentPanel IPanel
 }
 
-func NewBaseWidget(ID string, width int, height int, handler func(event events.IEvent) (bool, error)) *BaseWidget {
+func NewBaseWidget(ID string, width int, height int, handler func(event events.IEvent) error) *BaseWidget {
 	bw := BaseWidget{}
 	bw.ID = ID
 	bw.X = 0
@@ -59,7 +59,7 @@ func NewBaseWidget(ID string, width int, height int, handler func(event events.I
 	bw.hasFocus = false
 	bw.TopLevel = false
 	bw.eventHandler = handler
-  bw.populatedGlobalDelta = false // haven't asked parent for offer.
+	bw.populatedGlobalDelta = false // haven't asked parent for offer.
 	return &bw
 }
 
@@ -77,11 +77,10 @@ func (b *BaseWidget) Draw(screen *ebiten.Image) error {
 	return nil
 }
 
-
 // ContainsCoords determines if co-ordinates... co-ords passed are GLOBAL
 // and need to be converted.
 func (b *BaseWidget) ContainsCoords(x float64, y float64) bool {
-	localX, localY := b.GlobalToLocalCoords(x,y)
+	localX, localY := b.GlobalToLocalCoords(x, y)
 	//return localX >= 0 && localX <= b.X+float64(b.Width) && localY >= 0 && localY <= b.Y+float64(b.Height)
 	return localX >= 0 && localX <= float64(b.Width) && localY >= 0 && localY <= float64(b.Height)
 }
@@ -125,7 +124,7 @@ func (b *BaseWidget) GlobalToLocalCoords(x float64, y float64) (float64, float64
 			//dx,dy:= (*b.parentWidget).GetCoords()
 			//_,_ = (*b.parentPanel).GlobalToLocalCoords(x,y)
 
-			dx,dy := (b.parentPanel).GetDeltaOffset()
+			dx, dy := (b.parentPanel).GetDeltaOffset()
 			b.globalDX = dx + b.X
 			b.globalDY = dy + b.Y
 			b.populatedGlobalDelta = true
@@ -167,14 +166,14 @@ func (b *BaseWidget) GetSize() (float64, float64) {
 // Hate using the I* notation... but will do for now.
 type IWidget interface {
 	Draw(screen *ebiten.Image) error
-	HandleEvent(event events.IEvent) (bool, error)
+	HandleEvent(event events.IEvent) error
 	GetData() (interface{}, error) // absolutely HATE the empty interface, but this will need to be extremely generic I suppose?
 
 	ContainsCoords(x float64, y float64) bool // contains co-ords... co-ords are based on immediate parents location/size.
 	GlobalToLocalCoords(x float64, y float64) (float64, float64)
 	AddParentPanel(parentPanel IPanel) error
-  SetXY(x float64, y float64) error
-	GetXY() (float64,float64)
-	GetSize() (float64,float64)
+	SetXY(x float64, y float64) error
+	GetXY() (float64, float64)
+	GetSize() (float64, float64)
 	GetID() string
 }

@@ -3,6 +3,7 @@ package widgets
 import (
 	"github.com/hajimehoshi/ebiten"
 	"github.com/kpfaulkner/goui/pkg/events"
+	log "github.com/sirupsen/logrus"
 	"image/color"
 )
 
@@ -11,7 +12,7 @@ var defaultPanelColour color.RGBA
 type IPanel interface {
 	AddWidget(w IWidget) error
 	Draw(screen *ebiten.Image) error
-	HandleEvent(event events.IEvent) (bool, error)
+	HandleEvent(event events.IEvent) error
 	SetTopLevel(bool)
 	ContainsCoords(x float64, y float64) bool // contains co-ords... co-ords are based on immediate parents location/size.
 	ListWidgets() []IWidget
@@ -40,14 +41,13 @@ func init() {
 
 func NewPanel(ID string, width int, height int, colour *color.RGBA) *Panel {
 	p := Panel{}
-	p.BaseWidget = *NewBaseWidget(ID,width, height, p.HandleEvent)
+	p.BaseWidget = *NewBaseWidget(ID, width, height, p.HandleEvent)
 
 	if colour != nil {
 		p.panelColour = *colour
 	} else {
 		p.panelColour = defaultPanelColour
 	}
-
 	return &p
 }
 
@@ -59,10 +59,9 @@ func (p *Panel) ListPanels() []Panel {
 	return p.panels
 }
 
-func (p *Panel) GetCoords() (float64,float64) {
+func (p *Panel) GetCoords() (float64, float64) {
 	return p.X, p.Y
 }
-
 
 // AddWidget adds a widget to a panel and subscribes the widget
 // to a number of events (generated from the panel)
@@ -90,28 +89,28 @@ func (p *Panel) Draw(screen *ebiten.Image) error {
 
 // HandlEvent returns true if related to this panel. eg, mouse was in its borders etc.
 // Keyboard... well, will accept anyway (need to figure out focusing for that).
-func (p *Panel) HandleEvent(event events.IEvent) (bool, error) {
+func (p *Panel) HandleEvent(event events.IEvent) error {
 
-	inPanel := false
+	log.Debugf("PanelHandler for %s", p.ID)
 
 	eventType := event.EventType()
 	switch eventType {
 	case events.EventTypeButtonDown:
 		{
-			inPanel, _ = p.HandleMouseEvent(event)
+			_, _ = p.HandleMouseEvent(event)
 		}
 	case events.EventTypeButtonUp:
 		{
-			inPanel, _ = p.HandleMouseEvent(event)
+			_, _ = p.HandleMouseEvent(event)
 		}
 
 	case events.EventTypeKeyboard:
 		{
-			inPanel, _ = p.HandleKeyboardEvent(event)
+			_, _ = p.HandleKeyboardEvent(event)
 		}
 	}
 
-	return inPanel, nil
+	return nil
 }
 
 func (p *Panel) SetTopLevel(topLevel bool) {
@@ -125,10 +124,10 @@ func (p *Panel) HandleMouseEvent(event events.IEvent) (bool, error) {
 		p.hasFocus = true
 
 		/*
-		r := rand.Intn(255)
-		g := rand.Intn(255)
-		b := rand.Intn(255)
-		p.panelColour = color.RGBA{uint8(r),uint8(g),uint8(b),0xff} */
+			r := rand.Intn(255)
+			g := rand.Intn(255)
+			b := rand.Intn(255)
+			p.panelColour = color.RGBA{uint8(r),uint8(g),uint8(b),0xff} */
 	} else {
 		p.hasFocus = false
 	}
@@ -149,7 +148,6 @@ func (p *Panel) HandleKeyboardEvent(event events.IEvent) (bool, error) {
 	// only propagate to children if this panel had focus.
 	return p.hasFocus, nil
 }
-
 
 func (p *Panel) GetDeltaOffset() (float64, float64) {
 	return p.globalDX, p.globalDY

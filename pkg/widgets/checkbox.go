@@ -19,7 +19,7 @@ type CheckBox struct {
 	lastClickedTime time.Time
 }
 
-func NewCheckBox(ID string, emptyImage string, checkedImage string, x float64, y float64) *CheckBox {
+func NewCheckBox(ID string, emptyImage string, checkedImage string, handler func(event events.IEvent) error) *CheckBox {
 	cb := CheckBox{}
 
 	img1, err := loadImage(emptyImage)
@@ -34,16 +34,13 @@ func NewCheckBox(ID string, emptyImage string, checkedImage string, x float64, y
 	cb.checkedImage = img2
 
 	width, height := cb.emptyImage.Size()
-	cb.BaseWidget = *NewBaseWidget(ID, width, height, cb.HandleEvent)
-
+	cb.BaseWidget = *NewBaseWidget(ID, width, height, handler)
 	cb.checked = false
-	cb.eventHandler = cb.HandleEvent
 	cb.lastClickedTime = time.Now().UTC()
-
 	return &cb
 }
 
-func (b *CheckBox) HandleEvent(event events.IEvent) (bool, error) {
+func (b *CheckBox) HandleEvent(event events.IEvent) error {
 
 	eventType := event.EventType()
 	switch eventType {
@@ -63,7 +60,7 @@ func (b *CheckBox) HandleEvent(event events.IEvent) (bool, error) {
 			}
 		}
 	}
-	return false, nil
+	return nil
 }
 
 func (b *CheckBox) Draw(screen *ebiten.Image) error {

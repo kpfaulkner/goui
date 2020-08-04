@@ -22,16 +22,14 @@ func NewVPanel(ID string, width int, height int, colour *color.RGBA) *VPanel {
 	return &p
 }
 
-
 // AddWidget adds a widget to the panel, but each widget is below the next one.
 func (p *VPanel) AddWidget(w IWidget) error {
 	w.AddParentPanel(p)
 
 	// find X,Y for widget...
-  w.SetXY(p.X,p.YLoc)
-	_,height := w.GetSize()
+	w.SetXY(p.X, p.YLoc)
+	_, height := w.GetSize()
 	p.YLoc += height
 	p.widgets = append(p.widgets, w)
 	return nil
 }
-

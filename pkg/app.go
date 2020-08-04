@@ -124,7 +124,7 @@ func (w *Window) FindWidgetForInput(x float64, y float64) (*widgets.IWidget, err
 						if widget.ContainsCoords(x, y) {
 							// have match
 							w.FocusedWidget = &widget
-							return &widget,nil
+							return &widget, nil
 						}
 					}
 				}
@@ -135,17 +135,17 @@ func (w *Window) FindWidgetForInput(x float64, y float64) (*widgets.IWidget, err
 				//px,py := panel.GetCoords()
 				//xx := x - px
 				//yy := y - py
-				if widget.ContainsCoords(x,y) {
+				if widget.ContainsCoords(x, y) {
 					// have match
 					w.FocusedWidget = &widget
-					return &widget,nil
+					return &widget, nil
 				}
 			}
 		}
 	}
 
 	//return nil, errors.New("Unable to panel/widget that was clicked on....  impossible!!!")
-	return nil,nil
+	return nil, nil
 }
 
 /////////////////////// EBiten specifics below... /////////////////////////////////////////////
@@ -159,9 +159,7 @@ func (w *Window) Update(screen *ebiten.Image) error {
 		}
 
 		if usedWidget != nil {
-			me := events.NewMouseEvent(fmt.Sprintf("widget %s button down", (*usedWidget).GetID()), x,y, events.EventTypeButtonDown)
-			//w.EmitEvent(me)
-			//(*usedWidget).HandleEvent(me)
+			me := events.NewMouseEvent(fmt.Sprintf("widget %s button down", (*usedWidget).GetID()), x, y, events.EventTypeButtonDown)
 			(*usedWidget).HandleEvent(me)
 		}
 	} else {
@@ -175,7 +173,7 @@ func (w *Window) Update(screen *ebiten.Image) error {
 			}
 
 			if usedWidget != nil {
-				me := events.NewMouseEvent(fmt.Sprintf("widget %s button up", (*usedWidget).GetID()), x,y, events.EventTypeButtonUp)
+				me := events.NewMouseEvent(fmt.Sprintf("widget %s button up", (*usedWidget).GetID()), x, y, events.EventTypeButtonUp)
 				//w.EmitEvent(me)
 				//(*usedWidget).HandleEvent(me)
 				(*usedWidget).HandleEvent(me)
@@ -291,7 +289,7 @@ func (w *Window) Draw(screen *ebiten.Image) {
 
 	x, y := ebiten.CursorPosition()
 	defaultFontInfo := common.LoadFont("", 16, color.RGBA{0xff, 0xff, 0xff, 0xff})
-	text.Draw(screen, fmt.Sprintf("%d %d", x,y), defaultFontInfo.UIFont, 00, 500, color.White)
+	text.Draw(screen, fmt.Sprintf("%d %d", x, y), defaultFontInfo.UIFont, 00, 500, color.White)
 
 }
 

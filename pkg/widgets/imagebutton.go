@@ -2,6 +2,7 @@ package widgets
 
 import (
 	"github.com/hajimehoshi/ebiten"
+	"github.com/kpfaulkner/goui/pkg/events"
 	log "github.com/sirupsen/logrus"
 	_ "image/png"
 )
@@ -14,7 +15,7 @@ type ImageButton struct {
 	pressedImage    *ebiten.Image
 }
 
-func NewImageButton(ID string, pressedImageName string, nonPressedImageName string) *ImageButton {
+func NewImageButton(ID string, pressedImageName string, nonPressedImageName string, handler func(event events.IEvent) error) *ImageButton {
 	b := ImageButton{}
 
 	img1, err := loadImage(pressedImageName)
@@ -29,7 +30,7 @@ func NewImageButton(ID string, pressedImageName string, nonPressedImageName stri
 	b.nonPressedImage = img2
 
 	width, height := b.nonPressedImage.Size()
-	b.BaseButton = *NewBaseButton(ID, width, height, b.HandleEvent)
+	b.BaseButton = *NewBaseButton(ID, width, height, handler)
 	//b.eventHandler = b.HandleEvent
 	return &b
 }
