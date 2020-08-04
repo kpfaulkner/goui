@@ -30,6 +30,9 @@ func (m *MyApp) ButtonAction2(event events.IEvent) error {
 
 func (m *MyApp) CheckboxChanged(event events.IEvent) error {
 	log.Debugf("checkbox changed!!!")
+
+	cbe := event.(events.CheckBoxEvent)
+	log.Debugf("checkbox is %v", cbe.Checked)
 	return nil
 }
 
@@ -126,6 +129,13 @@ func main() {
 
 	button3 := widgets.NewTextButton("text button 1", "my button", 100, 40, nil, nil, nil, a.ButtonAction2)
 	panel.AddWidget(button3)
+
+	emptySpace2 := widgets.NewEmptySpace("empty space 2", 500,100)
+	panel.AddWidget(emptySpace2)
+
+
+	cb := widgets.NewCheckBox("my checkbox", "./images/emptycheckbox.png", "./images/checkedcheckbox.png", a.CheckboxChanged)
+  panel.AddWidget(cb)
 
 	app.AddPanel(panel)
 

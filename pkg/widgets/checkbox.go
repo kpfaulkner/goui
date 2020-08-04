@@ -56,6 +56,9 @@ func (b *CheckBox) HandleEvent(event events.IEvent) error {
 					b.hasFocus = true
 					// if already pressed, then skip it.. .otherwise lots of repeats.
 					b.checked = !b.checked
+
+					cbe := events.NewCheckBoxEvent(event.Name(), event.EventType(), b.checked)
+					b.eventHandler(cbe)
 				}
 			}
 		}
