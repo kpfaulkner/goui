@@ -114,12 +114,15 @@ func main() {
 	a := MyApp{}
 	app := pkg.NewWindow(600, 600, "my title", false)
 
-	panel := widgets.NewVPanel("panel3", 200, 200, nil)
+	panel := widgets.NewVPanel("panel3", 400, 400, nil)
 	button := widgets.NewImageButton("image button 1", "./images/pressedbutton.png", "./images/nonpressedbutton.png", a.ButtonAction1)
 	panel.AddWidget(button)
 
 	button2 := widgets.NewImageButton("image button 2", "./images/pressedbutton.png", "./images/nonpressedbutton.png", a.ButtonAction2)
 	panel.AddWidget(button2)
+
+	emptySpace := widgets.NewEmptySpace("empty space 1", 100,100)
+	panel.AddWidget(emptySpace)
 
 	button3 := widgets.NewTextButton("text button 1", "my button", 100, 40, nil, nil, nil, a.ButtonAction2)
 	panel.AddWidget(button3)
