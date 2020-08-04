@@ -58,7 +58,7 @@ func NewWindow(width int, height int, title string, haveMenuBar bool) Window {
 	w.incomingEvents = make(chan events.IEvent, 1000) // too much?
 
 	if w.haveMenuBar {
-		mb := *widgets.NewMenuBar("menubar", 0, 0, width, 30, &color.RGBA{0x71, 0x71, 0x71, 0xff})
+		mb := *widgets.NewMenuBar("menubar",  width, 30, &color.RGBA{0x71, 0x71, 0x71, 0xff})
 		mb.AddMenuHeading("test")
 		w.AddPanel(&mb)
 	}

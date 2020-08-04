@@ -36,7 +36,7 @@ type MenuBar struct {
 }
 
 // NewMenuBar creates the menubar panel. *has* to be located at 0,0 and full length of the window.
-func NewMenuBar(ID string, x float64, y float64, width int, height int, colour *color.RGBA) *MenuBar {
+func NewMenuBar(ID string, width int, height int, colour *color.RGBA) *MenuBar {
 	mb := MenuBar{}
 	mb.Panel = *NewPanel(ID, width, height, colour)
 	mb.menuPanels = make(map[string]Panel)
