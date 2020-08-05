@@ -7,6 +7,7 @@ const (
 	EventTypeButtonDown int = iota
 	EventTypeButtonUp
 	EventTypeKeyboard
+	EventTypeSetText
 
 	// events generated from widgets indicating a widget based event
 	// eg. image button pressed.

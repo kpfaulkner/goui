@@ -95,6 +95,13 @@ func (t *TextInput) HandleEvent(event events.IEvent) error {
 				t.stateChangedSinceLastDraw = true
 			}
 		}
+	case events.EventTypeSetText:
+		{
+			setTextEvent := event.(events.SetTextEvent)
+
+			t.text = setTextEvent.Text
+			t.stateChangedSinceLastDraw = true
+		}
 	}
 
 	return nil

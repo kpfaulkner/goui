@@ -145,12 +145,38 @@ func main() {
 	button2 := widgets.NewTextButton("text button 2", "my button2", 100, 40, nil, nil, nil, a.ButtonAction2)
 	hPanel.AddWidget(button2)
 
+	spacer := widgets.NewEmptySpace("empty", 100,10)
+	hPanel.AddWidget(spacer)
+	cb1 := widgets.NewCheckBox("my checkbox1", "./images/emptycheckbox.png", "./images/checkedcheckbox.png", a.CheckboxChanged)
+	hPanel.AddWidget(cb1)
+
 	panel.AddWidget(hPanel)
 
 	button3 := widgets.NewTextButton("text button 3", "my button3", 100, 40, nil, nil, nil, a.ButtonAction3)
 	panel.AddWidget(button3)
 
+	cb2 := widgets.NewCheckBox("my checkbox2", "./images/emptycheckbox.png", "./images/checkedcheckbox.png", a.CheckboxChanged)
+	panel.AddWidget(cb2)
 
+	f := common.LoadFont("", 16, color.RGBA{0xff, 0xff, 0xff, 0xff})
+	ti := widgets.NewTextInput("testinput1", 200, 20, &color.RGBA{0x55, 0x55, 0x55, 0xff}, &f, a.HandleTextInput)
+	panel.AddWidget(ti)
+
+
+	go func(){
+		fullText := "the quick brown fox jumps over the lazy dogs"
+		i := 0
+		for {
+			<-time.After(2 * time.Second)
+			if i + 10 >= len(fullText) {
+				i=0
+			}
+			subText := fullText[i:i+10]
+			te := events.NewSetTextEvent(subText)
+			ti.HandleEvent(te)
+			i++
+		}
+	}()
 
 	ebiten.SetRunnableInBackground(true)
 	ebiten.SetWindowResizable(true)
