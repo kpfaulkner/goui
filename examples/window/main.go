@@ -45,7 +45,7 @@ func (m *MyApp) HandleTextInput(event events.IEvent) error {
 }
 
 func addPanel(panelName string, width int, height int, win *pkg.Window, buttonAction1 func(event events.IEvent) error, buttonAction2 func(event events.IEvent) error) error {
-	panel := widgets.NewPanel(panelName, width, height, nil)
+	panel := widgets.NewPanel(panelName, nil)
 
 	button := widgets.NewTextButton("button1", "my button1", 100, 100, nil, nil, nil, buttonAction1)
 	panel.AddWidget(button)
@@ -73,7 +73,7 @@ func mainOLD() {
 
 	addPanel("panel2", 200, 200, &app, a.ButtonAction1, a.ButtonAction2)
 
-	panel := widgets.NewPanel("panel3", 200, 200, nil)
+	panel := widgets.NewPanel("panel3", nil)
 	button := widgets.NewImageButton("image button 1", "./images/pressedbutton.png", "./images/nonpressedbutton.png", a.ButtonAction1)
 	panel.AddWidget(button)
 
@@ -114,20 +114,26 @@ func main() {
 
 	log.SetLevel(log.DebugLevel)
 
+
 	a := MyApp{}
 	app := pkg.NewWindow(600, 600, "my title", false)
 
-	panel := widgets.NewVPanel("panel3", 400, 400, nil)
+	panel := widgets.NewVPanel("panel3", nil)
+
+	app.AddPanel(panel)
+
+	/*
 	button := widgets.NewImageButton("image button 1", "./images/pressedbutton.png", "./images/nonpressedbutton.png", a.ButtonAction1)
 	panel.AddWidget(button)
-
+*/
+	/*
 	button3 := widgets.NewTextButton("text button 1", "my button", 100, 40, nil, nil, nil, a.ButtonAction2)
 	panel.AddWidget(button3)
 
 	cb := widgets.NewCheckBox("my checkbox", "./images/emptycheckbox.png", "./images/checkedcheckbox.png", a.CheckboxChanged)
 	panel.AddWidget(cb)
-
-	hPanel := widgets.NewHPanel("hpanel1", 500, 50, &color.RGBA{0, 100, 0, 255})
+*/
+	hPanel := widgets.NewHPanel("hpanel1",&color.RGBA{0, 100, 0, 255})
 
 	button4 := widgets.NewTextButton("text button 2", "my button2", 100, 40, nil, nil, nil, a.ButtonAction2)
 	hPanel.AddWidget(button4)
@@ -137,9 +143,9 @@ func main() {
 	panel.AddWidget(hPanel)
 
 
-	app.AddPanel(panel)
 
 	ebiten.SetRunnableInBackground(true)
+	ebiten.SetWindowResizable(true)
 	app.MainLoop()
 
 }

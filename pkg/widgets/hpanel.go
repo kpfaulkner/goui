@@ -12,9 +12,9 @@ type HPanel struct {
 	XLoc float64
 }
 
-func NewHPanel(ID string, width int, height int, colour *color.RGBA) *HPanel {
+func NewHPanel(ID string, colour *color.RGBA) *HPanel {
 	p := HPanel{}
-	p.Panel = *NewPanel(ID, width, height, colour)
+	p.Panel = *NewPanel(ID, colour)
 	return &p
 }
 
@@ -24,8 +24,21 @@ func (p *HPanel) AddWidget(w IWidget) error {
 
 	// find X,Y for widget...
 	w.SetXY(p.XLoc, p.Y)
-	width, _ := w.GetSize()
+	width, height := w.GetSize()
+
+	// grow panel height if widget is taller.
+	if height > float64(p.Height) {
+		p.Height = int(height)
+		p.SetSize(p.Width,p.Height)
+	}
+
+	if p.XLoc + width > float64(p.Width) {
+		p.Width = int(p.XLoc + width)
+		p.SetSize(p.Width,p.Height)
+	}
+
 	p.XLoc += width
+
 	p.widgets = append(p.widgets, w)
 	return nil
 }

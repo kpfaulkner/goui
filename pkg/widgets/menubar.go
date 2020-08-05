@@ -1,11 +1,6 @@
 package widgets
 
-import (
-	"github.com/kpfaulkner/goui/pkg/events"
-	log "github.com/sirupsen/logrus"
-	"image/color"
-)
-
+/*
 type MenuItem struct {
 
 	// Text on button.
@@ -28,7 +23,7 @@ type MenuDescription struct {
 
 // MenuBar is just a custom panel....  (just an idea for now)
 type MenuBar struct {
-	Panel
+	VPanel
 
 	// panels of the menus that appear.
 	// key is menu ID
@@ -38,7 +33,7 @@ type MenuBar struct {
 // NewMenuBar creates the menubar panel. *has* to be located at 0,0 and full length of the window.
 func NewMenuBar(ID string, width int, height int, colour *color.RGBA) *MenuBar {
 	mb := MenuBar{}
-	mb.Panel = *NewPanel(ID, width, height, colour)
+	mb.Panel = *NewPanel(ID, colour)
 	mb.menuPanels = make(map[string]Panel)
 
 	return &mb
@@ -125,3 +120,7 @@ func (mb *MenuBar) HandleMouseEvent(event events.IEvent) error {
 	// should propagate to children nodes?
 	return nil
 }
+
+
+
+ */

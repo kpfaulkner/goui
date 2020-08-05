@@ -10,15 +10,14 @@ type VPanel struct {
 
 	// Y offset for next widget to be added.
 	YLoc float64
+
+	resizable bool
 }
 
-func init() {
-	defaultPanelColour = color.RGBA{0xff, 0x00, 0x00, 0xff}
-}
 
-func NewVPanel(ID string, width int, height int, colour *color.RGBA) *VPanel {
+func NewVPanel(ID string, colour *color.RGBA) *VPanel {
 	p := VPanel{}
-	p.Panel = *NewPanel(ID, width, height, colour)
+	p.Panel = *NewPanel(ID, colour)
 	return &p
 }
 
@@ -28,8 +27,21 @@ func (p *VPanel) AddWidget(w IWidget) error {
 
 	// find X,Y for widget...
 	w.SetXY(p.X, p.YLoc)
-	_, height := w.GetSize()
+	width, height := w.GetSize()
+
+	// grow panel height if widget is taller.
+	if p.YLoc + height > float64(p.Height) {
+		p.Height = int(p.YLoc + height)
+		p.SetSize(p.Width,p.Height)
+	}
+
+	if width > float64(p.Width) {
+		p.Width = int(width)
+		p.SetSize(p.Width,p.Height)
+	}
+
 	p.YLoc += height
+
 	p.widgets = append(p.widgets, w)
 	return nil
 }

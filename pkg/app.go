@@ -57,16 +57,18 @@ func NewWindow(width int, height int, title string, haveMenuBar bool) Window {
 	w.eventListeners = make(map[int][]chan events.IEvent)
 	w.incomingEvents = make(chan events.IEvent, 1000) // too much?
 
+	/*
 	if w.haveMenuBar {
 		mb := *widgets.NewMenuBar("menubar",  width, 30, &color.RGBA{0x71, 0x71, 0x71, 0xff})
 		mb.AddMenuHeading("test")
 		w.AddPanel(&mb)
-	}
+	} */
 	return w
 }
 
 func (w *Window) AddPanel(panel widgets.IPanel) error {
 	panel.SetTopLevel(true)
+  panel.SetSize(w.width, w.height)
 	w.panels = append(w.panels, panel)
 	return nil
 }
@@ -296,8 +298,24 @@ func (w *Window) Draw(screen *ebiten.Image) {
 
 }
 
+func (w *Window) reset(outsideWidth, outsideHeight int) error  {
+
+	return nil
+}
+
 func (w *Window) Layout(outsideWidth, outsideHeight int) (int, int) {
-	return w.width, w.height
+//  log.Debugf("LAYOUT %d %d", outsideWidth, outsideHeight)
+
+  if outsideWidth != w.width || outsideHeight != w.height {
+  	// trigger recalculation of any panels etc.
+
+  	// FIXME(kpfaulkner)  need to trigger resize!!!
+	  return outsideWidth, outsideHeight
+
+  }
+
+	return outsideWidth, outsideHeight
+	//return w.width, w.height
 }
 
 func (w *Window) MainLoop() error {

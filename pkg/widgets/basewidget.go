@@ -19,6 +19,8 @@ type BaseWidget struct {
 	Width  int
 	Height int
 
+
+
 	// widget disabled (and shouldn't be rendered.... OR.... greyed out?
 	Disabled bool
 
@@ -172,7 +174,6 @@ type IWidget interface {
 	Draw(screen *ebiten.Image) error
 	HandleEvent(event events.IEvent) error
 	GetData() (interface{}, error) // absolutely HATE the empty interface, but this will need to be extremely generic I suppose?
-
 	ContainsCoords(x float64, y float64) bool // contains co-ords... co-ords are based on immediate parents location/size.
 	GlobalToLocalCoords(x float64, y float64) (float64, float64)
 	AddParentPanel(parentPanel IPanel) error
