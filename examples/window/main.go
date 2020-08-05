@@ -28,6 +28,11 @@ func (m *MyApp) ButtonAction2(event events.IEvent) error {
 	return nil
 }
 
+func (m *MyApp) ButtonAction3(event events.IEvent) error {
+	log.Debugf("My button3 action!!!")
+	return nil
+}
+
 func (m *MyApp) CheckboxChanged(event events.IEvent) error {
 	log.Debugf("checkbox changed!!!")
 
@@ -135,12 +140,15 @@ func main() {
 */
 	hPanel := widgets.NewHPanel("hpanel1",&color.RGBA{0, 100, 0, 255})
 
-	button4 := widgets.NewTextButton("text button 2", "my button2", 100, 40, nil, nil, nil, a.ButtonAction2)
-	hPanel.AddWidget(button4)
-	button5 := widgets.NewTextButton("text button 3", "my button3", 100, 40, nil, nil, nil, a.ButtonAction2)
-	hPanel.AddWidget(button5)
+	button1 := widgets.NewTextButton("text button 1", "my button1", 100, 40, nil, nil, nil, a.ButtonAction1)
+	hPanel.AddWidget(button1)
+	button2 := widgets.NewTextButton("text button 2", "my button2", 100, 40, nil, nil, nil, a.ButtonAction2)
+	hPanel.AddWidget(button2)
 
 	panel.AddWidget(hPanel)
+
+	button3 := widgets.NewTextButton("text button 3", "my button3", 100, 40, nil, nil, nil, a.ButtonAction3)
+	panel.AddWidget(button3)
 
 
 
