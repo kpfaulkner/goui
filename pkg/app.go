@@ -309,6 +309,10 @@ func (w *Window) Layout(outsideWidth, outsideHeight int) (int, int) {
   if outsideWidth != w.width || outsideHeight != w.height {
   	// trigger recalculation of any panels etc.
 
+  	w.width = outsideWidth
+  	w.height = outsideHeight
+  	w.panels[0].SetSize(outsideWidth, outsideHeight)
+
   	// FIXME(kpfaulkner)  need to trigger resize!!!
 	  return outsideWidth, outsideHeight
 

@@ -162,12 +162,15 @@ func main() {
 	ti := widgets.NewTextInput("testinput1", 200, 20, &color.RGBA{0x55, 0x55, 0x55, 0xff}, &f, a.HandleTextInput)
 	panel.AddWidget(ti)
 
+	l := widgets.NewLabel("label", "my text", 200, 20, &color.RGBA{0x55, 0x55, 0x55, 0xff}, &f)
+	panel.AddWidget(l)
+
 
 	go func(){
 		fullText := "the quick brown fox jumps over the lazy dogs"
 		i := 0
 		for {
-			<-time.After(2 * time.Second)
+			<-time.After(500 * time.Millisecond)
 			if i + 10 >= len(fullText) {
 				i=0
 			}
