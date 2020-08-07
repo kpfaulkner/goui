@@ -33,6 +33,11 @@ func (m *MyApp) ButtonAction3(event events.IEvent) error {
 	return nil
 }
 
+func (m *MyApp) ToolBarItem1(event events.IEvent) error {
+	log.Debugf("toolbar!!!")
+	return nil
+}
+
 func (m *MyApp) CheckboxChanged(event events.IEvent) error {
 	log.Debugf("checkbox changed!!!")
 
@@ -73,7 +78,7 @@ func mainOLD() {
 
 	a := MyApp{}
 
-	app := pkg.NewWindow(600, 600, "my title", false)
+	app := pkg.NewWindow(600, 600, "my title", false, false)
 	addPanel("panel1", 200, 200, &app, a.ButtonAction1, a.ButtonAction2)
 
 	addPanel("panel2", 200, 200, &app, a.ButtonAction1, a.ButtonAction2)
@@ -121,9 +126,15 @@ func main() {
 
 
 	a := MyApp{}
-	app := pkg.NewWindow(600, 600, "my title", false)
+	app := pkg.NewWindow(600, 600, "my title", false, true)
 
+	tb := widgets.NewToolBar("my toolbar", nil)
+	tbi := widgets.NewToolbarItem("tbi", a.ToolBarItem1)
+
+	tb.AddToolBarItem(tbi)
 	panel := widgets.NewVPanel("panel3", nil)
+
+	panel.AddWidget(tb)
 
 	app.AddPanel(panel)
 

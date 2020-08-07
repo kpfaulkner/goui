@@ -28,6 +28,7 @@ type Window struct {
 	rightMouseButtonPressed bool
 
 	haveMenuBar bool
+	haveToolBar bool
 
 	// These are other widgets/components that are listening to THiS widget. Ie we will broadcast to them!
 	eventListeners map[int][]chan events.IEvent
@@ -39,7 +40,7 @@ type Window struct {
 	FocusedWidget *widgets.IWidget
 }
 
-func NewWindow(width int, height int, title string, haveMenuBar bool) Window {
+func NewWindow(width int, height int, title string, haveMenuBar bool, haveToolBar bool) Window {
 	w := Window{}
 	w.height = height
 	w.width = width
@@ -53,49 +54,66 @@ func NewWindow(width int, height int, title string, haveMenuBar bool) Window {
 	w.leftMouseButtonPressed = false
 	w.rightMouseButtonPressed = false
 	w.haveMenuBar = haveMenuBar
+	w.haveToolBar = haveToolBar
 
 	w.eventListeners = make(map[int][]chan events.IEvent)
 	w.incomingEvents = make(chan events.IEvent, 1000) // too much?
 
 	/*
-	if w.haveMenuBar {
-		mb := *widgets.NewMenuBar("menubar",  width, 30, &color.RGBA{0x71, 0x71, 0x71, 0xff})
-		mb.AddMenuHeading("test")
-		w.AddPanel(&mb)
-	} */
+		if w.haveMenuBar {
+			mb := *widgets.NewMenuBar("menubar",  width, 30, &color.RGBA{0x71, 0x71, 0x71, 0xff})
+			mb.AddMenuHeading("test")
+			w.AddPanel(&mb)
+		} */
+
+	// if have toolbar then add a vpanel in and populate toolbar at top most part of vpanel
+
+	/*
+	if w.haveToolBar {
+
+		// force toolpanel to have some dimension?
+		tb := widgets.NewToolBar("toolbar", &color.RGBA{0, 0, 0xff, 0xff})
+		tb.SetSize(w.width, 40)
+
+		vp := widgets.NewVPanel("main vpanel", nil)
+
+		vp.AddWidget(tb)
+		w.AddPanel(vp)
+	}*/
 	return w
 }
 
 func (w *Window) AddPanel(panel widgets.IPanel) error {
 	panel.SetTopLevel(true)
-  panel.SetSize(w.width, w.height)
+	panel.SetSize(w.width, w.height)
 	w.panels = append(w.panels, panel)
+
 	return nil
 }
 
-func (w *Window) FindWidgetRecursive( x float64, y float64, widget widgets.IWidget) widgets.IWidget {
+func (w *Window) FindWidgetRecursive(x float64, y float64, widget widgets.IWidget) widgets.IWidget {
 
 	if widget == nil {
 		return nil
 	}
 
 	// check recursive.
-	panel, ok := widget.( widgets.IPanel )
-  if ok {
-  	for _, ww := range panel.ListWidgets() {
-  		res := w.FindWidgetRecursive(x,y,ww)
-  		if res != nil {
-  			return res
-		  }
-	  }
-  } else {
-	  if widget.ContainsCoords(x, y) {
-		  // have match
-		  w.FocusedWidget = &widget
-		  return widget
-	  }
-  }
-  return nil
+	panel, ok := widget.(widgets.IPanel)
+	if ok {
+		for _, ww := range panel.ListWidgets() {
+			res := w.FindWidgetRecursive(x, y, ww)
+			if res != nil {
+				return res
+			}
+		}
+	} else {
+		if widget.ContainsCoords(x, y) {
+			// have match
+			w.FocusedWidget = &widget
+			return widget
+		}
+	}
+	return nil
 }
 
 // FindWidgetForInput
@@ -298,25 +316,25 @@ func (w *Window) Draw(screen *ebiten.Image) {
 
 }
 
-func (w *Window) reset(outsideWidth, outsideHeight int) error  {
+func (w *Window) reset(outsideWidth, outsideHeight int) error {
 
 	return nil
 }
 
 func (w *Window) Layout(outsideWidth, outsideHeight int) (int, int) {
-//  log.Debugf("LAYOUT %d %d", outsideWidth, outsideHeight)
+	//  log.Debugf("LAYOUT %d %d", outsideWidth, outsideHeight)
 
-  if outsideWidth != w.width || outsideHeight != w.height {
-  	// trigger recalculation of any panels etc.
+	if outsideWidth != w.width || outsideHeight != w.height {
+		// trigger recalculation of any panels etc.
 
-  	w.width = outsideWidth
-  	w.height = outsideHeight
-  	w.panels[0].SetSize(outsideWidth, outsideHeight)
+		w.width = outsideWidth
+		w.height = outsideHeight
+		w.panels[0].SetSize(outsideWidth, outsideHeight)
 
-  	// FIXME(kpfaulkner)  need to trigger resize!!!
-	  return outsideWidth, outsideHeight
+		// FIXME(kpfaulkner)  need to trigger resize!!!
+		return outsideWidth, outsideHeight
 
-  }
+	}
 
 	return outsideWidth, outsideHeight
 	//return w.width, w.height
