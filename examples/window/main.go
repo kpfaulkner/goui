@@ -128,11 +128,12 @@ func main() {
 	a := MyApp{}
 	app := pkg.NewWindow(600, 600, "my title", false, true)
 
-	tb := widgets.NewToolBar("my toolbar", nil)
+	tb := widgets.NewToolBar("my toolbar", &color.RGBA{0,0,0,0xff})
 	tbi := widgets.NewToolbarItem("tbi", a.ToolBarItem1)
 
 	tb.AddToolBarItem(tbi)
-	panel := widgets.NewVPanel("panel3", nil)
+	tb.SetSize(600,30)
+	panel := widgets.NewVPanel("panel3", &color.RGBA{0,0,0,0xff})
 
 	panel.AddWidget(tb)
 
