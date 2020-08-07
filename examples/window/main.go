@@ -92,6 +92,7 @@ func mainOLD() {
 
 	//cb.RegisterEventHandler(events.EventTypeButtonDown, a.CheckboxChanged)
 
+
 	f := common.LoadFont("", 16, color.RGBA{0xff, 0xff, 0xff, 0xff})
 	ti := widgets.NewTextInput("testinput1", 100, 20, &color.RGBA{0x55, 0x55, 0x55, 0xff}, &f, a.HandleTextInput)
 	panel.AddWidget(ti)
@@ -170,12 +171,14 @@ func main() {
 	cb2 := widgets.NewCheckBox("my checkbox2", "./images/emptycheckbox.png", "./images/checkedcheckbox.png", a.CheckboxChanged)
 	panel.AddWidget(cb2)
 
+
 	f := common.LoadFont("", 16, color.RGBA{0xff, 0xff, 0xff, 0xff})
 	ti := widgets.NewTextInput("testinput1", 200, 20, &color.RGBA{0x55, 0x55, 0x55, 0xff}, &f, a.HandleTextInput)
 	panel.AddWidget(ti)
 
 	l := widgets.NewLabel("label", "my text", 200, 20, &color.RGBA{0x55, 0x55, 0x55, 0xff}, &f)
 	panel.AddWidget(l)
+
 
 
 	go func(){

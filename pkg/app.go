@@ -40,6 +40,12 @@ type Window struct {
 	FocusedWidget *widgets.IWidget
 }
 
+var defaultFontInfo common.Font
+
+func init() {
+	defaultFontInfo = common.LoadFont("", 16, color.RGBA{0xff, 0xff, 0xff, 0xff})
+}
+
 func NewWindow(width int, height int, title string, haveMenuBar bool, haveToolBar bool) Window {
 	w := Window{}
 	w.height = height
@@ -311,7 +317,7 @@ func (w *Window) Draw(screen *ebiten.Image) {
 	}
 
 	x, y := ebiten.CursorPosition()
-	defaultFontInfo := common.LoadFont("", 16, color.RGBA{0xff, 0xff, 0xff, 0xff})
+	//defaultFontInfo := common.LoadFont("", 16, color.RGBA{0xff, 0xff, 0xff, 0xff})
 	text.Draw(screen, fmt.Sprintf("%d %d", x, y), defaultFontInfo.UIFont, 00, 500, color.White)
 
 }
