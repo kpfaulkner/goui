@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"github.com/hajimehoshi/ebiten"
 	"github.com/kpfaulkner/goui/pkg"
 	"github.com/kpfaulkner/goui/pkg/common"
@@ -66,55 +65,6 @@ func addPanel(panelName string, width int, height int, win *pkg.Window, buttonAc
 	win.AddPanel(panel)
 
 	return nil
-}
-
-func mainOLD() {
-
-	go func() {
-		log.Println(http.ListenAndServe("localhost:6060", nil))
-	}()
-
-	log.SetLevel(log.DebugLevel)
-
-	a := MyApp{}
-
-	app := pkg.NewWindow(600, 600, "my title", false, false)
-	addPanel("panel1", 200, 200, &app, a.ButtonAction1, a.ButtonAction2)
-
-	addPanel("panel2", 200, 200, &app, a.ButtonAction1, a.ButtonAction2)
-
-	panel := widgets.NewPanel("panel3", nil)
-	button := widgets.NewImageButton("image button 1", "./images/pressedbutton.png", "./images/nonpressedbutton.png", a.ButtonAction1)
-	panel.AddWidget(button)
-
-	cb := widgets.NewCheckBox("checkbox1", "./images/emptycheckbox.png", "./images/checkedcheckbox.png", a.ButtonAction2)
-	panel.AddWidget(cb)
-
-	//cb.RegisterEventHandler(events.EventTypeButtonDown, a.CheckboxChanged)
-
-
-	f := common.LoadFont("", 16, color.RGBA{0xff, 0xff, 0xff, 0xff})
-	ti := widgets.NewTextInput("testinput1", 100, 20, &color.RGBA{0x55, 0x55, 0x55, 0xff}, &f, a.HandleTextInput)
-	panel.AddWidget(ti)
-
-	app.AddPanel(panel)
-
-	go func() {
-		for {
-			time.Sleep(2 * time.Second)
-			data, _ := ti.GetData()
-			sData := data.(string)
-			fmt.Printf("text is %s\n", sData)
-
-			data2, _ := cb.GetData()
-			cbData := data2.(bool)
-			fmt.Printf("checkbox is %v\n", cbData)
-		}
-	}()
-
-	ebiten.SetRunnableInBackground(true)
-	app.MainLoop()
-
 }
 
 func main() {
