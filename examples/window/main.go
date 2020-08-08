@@ -90,17 +90,6 @@ func main() {
 
 	app.AddPanel(panel)
 
-	/*
-	button := widgets.NewImageButton("image button 1", "./images/pressedbutton.png", "./images/nonpressedbutton.png", a.ButtonAction1)
-	panel.AddWidget(button)
-*/
-	/*
-	button3 := widgets.NewTextButton("text button 1", "my button", 100, 40, nil, nil, nil, a.ButtonAction2)
-	panel.AddWidget(button3)
-
-	cb := widgets.NewCheckBox("my checkbox", "./images/emptycheckbox.png", "./images/checkedcheckbox.png", a.CheckboxChanged)
-	panel.AddWidget(cb)
-*/
 	hPanel := widgets.NewHPanel("hpanel1",&color.RGBA{0, 100, 0, 255})
 
 	button1 := widgets.NewTextButton("text button 1", "my button1", 100, 40, nil, nil, nil, a.ButtonAction1)
@@ -110,7 +99,7 @@ func main() {
 
 	spacer := widgets.NewEmptySpace("empty", 100,10)
 	hPanel.AddWidget(spacer)
-	cb1 := widgets.NewCheckBox("my checkbox1", "./images/emptycheckbox.png", "./images/checkedcheckbox.png", a.CheckboxChanged)
+	cb1 := widgets.NewCheckBox("my checkbox1", "cb1", a.CheckboxChanged)
 	hPanel.AddWidget(cb1)
 
 	panel.AddWidget(hPanel)
@@ -118,8 +107,10 @@ func main() {
 	button3 := widgets.NewTextButton("text button 3", "my button3", 100, 40, nil, nil, nil, a.ButtonAction3)
 	panel.AddWidget(button3)
 
-	cb2 := widgets.NewCheckBox("my checkbox2", "./images/emptycheckbox.png", "./images/checkedcheckbox.png", a.CheckboxChanged)
+	cb2 := widgets.NewCheckBox("my checkbox2", "checkbox 2", a.CheckboxChanged)
 	panel.AddWidget(cb2)
+	cb3 := widgets.NewCheckBox("my checkbox3", "checkbox 3", a.CheckboxChanged)
+	panel.AddWidget(cb3)
 
 
 	f := common.LoadFont("", 16, color.RGBA{0xff, 0xff, 0xff, 0xff})
