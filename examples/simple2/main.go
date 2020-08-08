@@ -56,18 +56,11 @@ func (m *MyApp) CheckboxChanged(event events.IEvent) error {
 	return nil
 }
 
-func (m *MyApp) SetupUI() error {
+func (m *MyApp) SetupRestOfUI(vpanel *widgets.VPanel) error {
 
-	tb := widgets.NewToolBar("toolbar1", &color.RGBA{0, 0, 0, 0xff})
-	tbi1 := widgets.NewToolbarItem("tbi1", m.ToolBarItem1)
-	tbi2 := widgets.NewToolbarItem("tbi2", m.ToolBarItem2)
-	tb.AddToolBarItem(tbi1)
-	tb.AddToolBarItem(tbi2)
-	tb.SetSize(800, 30) // should calculate this!
 
-	vpanel := widgets.NewVPanel("main vpanel", &color.RGBA{0, 0, 0, 0xff})
-	vpanel.AddWidget(tb)
-	m.window.AddPanel(vpanel)
+	vpanel2 := widgets.NewVPanel("vpanel2", nil)
+	vpanel.AddWidget(vpanel2)
 
 	hPanel := widgets.NewHPanel("hpanel1", &color.RGBA{0, 100, 0, 255})
 
@@ -79,19 +72,27 @@ func (m *MyApp) SetupUI() error {
 	hPanel.AddWidget(button4)
 	button5 := widgets.NewTextButton("text button 5", "my button5", true, 0, 0, nil, nil, nil, m.ButtonActionGeneric)
 	hPanel.AddWidget(button5)
+
+	vpanel2.AddWidget(hPanel)
+
+
+	hPanel2 := widgets.NewHPanel("hpanel2", &color.RGBA{50, 50, 0, 255})
+
 	button2 := widgets.NewTextButton("text button 2", "my button2", false, 100, 40, nil, nil, nil, m.ButtonAction2)
-	hPanel.AddWidget(button2)
+	hPanel2.AddWidget(button2)
 
 	//spacer := widgets.NewEmptySpace("empty", 100,10)
 	//hPanel.AddWidget(spacer)
 	cb1 := widgets.NewCheckBox("my checkbox1", "my lovely checkbox", m.CheckboxChanged)
-	hPanel.AddWidget(cb1)
-	vpanel.AddWidget(hPanel)
+	hPanel2.AddWidget(cb1)
+	vpanel2.AddWidget(hPanel2)
 
 	return nil
 }
 
-func (m *MyApp) SetupOuterUI() error {
+// SetupOutPanel.
+// Then returns VPanel that the rest of the interface can go into.
+func (m *MyApp) SetupOuterUI() *widgets.VPanel {
 
 	toolbar := widgets.NewToolBar("toolbar1", &color.RGBA{0, 0, 0, 0xff})
 	tbi1 := widgets.NewToolbarItem("tbi1", m.ToolBarItem1)
@@ -106,25 +107,14 @@ func (m *MyApp) SetupOuterUI() error {
 	vpanel.AddWidget(toolbar)
 	m.window.AddPanel(vpanel)
 
-	hPanel := widgets.NewHPanel("hpanel1", &color.RGBA{0, 100, 0, 255})
+	return vpanel
 
-	button1 := widgets.NewTextButton("text button 1", "my button1", true, 0, 0, nil, nil, nil, m.ButtonAction1)
-	hPanel.AddWidget(button1)
-	button2 := widgets.NewTextButton("text button 2", "my button2", false, 100, 40, nil, nil, nil, m.ButtonAction2)
-	hPanel.AddWidget(button2)
-
-	//spacer := widgets.NewEmptySpace("empty", 100,10)
-	//hPanel.AddWidget(spacer)
-	cb1 := widgets.NewCheckBox("my checkbox1", "my lovely checkbox", m.CheckboxChanged)
-	hPanel.AddWidget(cb1)
-	vpanel.AddWidget(hPanel)
-
-	return nil
 }
 
 func (m *MyApp) Run() error {
 
-	m.SetupUI()
+	vpanel := m.SetupOuterUI()
+	m.SetupRestOfUI(vpanel)
 
 	ebiten.SetRunnableInBackground(true)
 	ebiten.SetWindowResizable(true)

@@ -15,11 +15,8 @@ type BaseWidget struct {
 	// This is always relative to the parent widget.
 	X float64
 	Y float64
-
 	Width  int
 	Height int
-
-
 
 	// widget disabled (and shouldn't be rendered.... OR.... greyed out?
 	Disabled bool

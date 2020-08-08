@@ -74,7 +74,7 @@ func (b *CheckBox) setupCheckboxImage() error {
 	b.rectImage,_ = ebiten.NewImage(b.Width, b.Height, ebiten.FilterDefault)
 	b.rectImage.Fill( color.Black)
 
-	text.Draw(b.rectImage, b.text, b.fontInfo.UIFont, w + 10, 20, color.RGBA{0,0xff,0,0xff})
+	text.Draw(b.rectImage, b.text, b.fontInfo.UIFont, w + 5, 15, color.RGBA{0,0xff,0,0xff})
 
 	return nil
 }
