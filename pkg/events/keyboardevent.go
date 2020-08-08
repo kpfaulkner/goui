@@ -7,11 +7,11 @@ type KeyboardEvent struct {
 	Character ebiten.Key // yeah yeah, shouldn't really be a string.
 }
 
-func NewKeyboardEvent(key ebiten.Key) KeyboardEvent {
+func NewKeyboardEvent(key ebiten.Key, widgetID string) KeyboardEvent {
 	e := KeyboardEvent{}
 	e.eventType = EventTypeKeyboard
 	e.Character = key
-
+	e.widgetID = widgetID
 	return e
 }
 

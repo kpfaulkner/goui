@@ -188,7 +188,7 @@ func (w *Window) Update(screen *ebiten.Image) error {
 		}
 
 		if usedWidget != nil {
-			me := events.NewMouseEvent(fmt.Sprintf("widget %s button down", (*usedWidget).GetID()), x, y, events.EventTypeButtonDown)
+			me := events.NewMouseEvent(fmt.Sprintf("widget %s button down", (*usedWidget).GetID()), x, y, events.EventTypeButtonDown, (*usedWidget).GetID())
 			(*usedWidget).HandleEvent(me)
 		}
 	} else {
@@ -202,7 +202,7 @@ func (w *Window) Update(screen *ebiten.Image) error {
 			}
 
 			if usedWidget != nil {
-				me := events.NewMouseEvent(fmt.Sprintf("widget %s button up", (*usedWidget).GetID()), x, y, events.EventTypeButtonUp)
+				me := events.NewMouseEvent(fmt.Sprintf("widget %s button up", (*usedWidget).GetID()), x, y, events.EventTypeButtonUp,(*usedWidget).GetID())
 				//w.EmitEvent(me)
 				//(*usedWidget).HandleEvent(me)
 				(*usedWidget).HandleEvent(me)
@@ -228,7 +228,7 @@ func (w *Window) Update(screen *ebiten.Image) error {
 
 		if usedWidget != nil {
 			//ke := events.NewMouseEvent(x,y, events.EventTypeKeyboard)
-			ke := events.NewKeyboardEvent(ebiten.Key(inp[0])) // only send first one?
+			ke := events.NewKeyboardEvent(ebiten.Key(inp[0]), (*usedWidget).GetID()) // only send first one?
 			//w.EmitEvent(me)
 			(*usedWidget).HandleEvent(ke)
 		}
@@ -244,7 +244,7 @@ func (w *Window) Update(screen *ebiten.Image) error {
 
 		if usedWidget != nil {
 			//ke := events.NewMouseEvent(x,y, events.EventTypeKeyboard)
-			ke := events.NewKeyboardEvent(ebiten.KeyBackspace)
+			ke := events.NewKeyboardEvent(ebiten.KeyBackspace, (*usedWidget).GetID())
 			//w.EmitEvent(me)
 			//(*usedWidget).HandleEvent(ke)
 			(*usedWidget).HandleEvent(ke)

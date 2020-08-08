@@ -14,6 +14,7 @@ import (
 var (
 	defaultNonPressedButtonColour color.RGBA
 	defaultPressedButtonColour    color.RGBA
+	defaultBorderColour    color.RGBA
 )
 
 // TextButton is a button that just has a background colour, text and text colour.
@@ -31,6 +32,8 @@ type TextButton struct {
 func init() {
 	defaultNonPressedButtonColour = color.RGBA{0x8A, 0x85, 0x81, 0xff}
 	defaultPressedButtonColour = color.RGBA{0x78, 0x75, 0x72, 0xff}
+	defaultBorderColour = color.RGBA{0,0,0xff, 0xff}
+
 }
 
 // NewTextButton. Button will have specified dimensions of width and height, useImageForSize is true.
@@ -53,8 +56,8 @@ func NewTextButton(ID string, text string, useImageforSize bool, width int, heig
 	heightToUse := 0
 	if useImageforSize {
 		bounds, _ := font.BoundString(b.fontInfo.UIFont, b.buttonText)
-		widthToUse = (bounds.Max.X - bounds.Min.X).Ceil()
-		heightToUse = (bounds.Max.Y - bounds.Min.Y).Ceil()
+		widthToUse = (bounds.Max.X - bounds.Min.X).Ceil() + 5
+		heightToUse = (bounds.Max.Y - bounds.Min.Y).Ceil() + 5
 	} else {
 		widthToUse = width
 		heightToUse = height
@@ -74,11 +77,7 @@ func NewTextButton(ID string, text string, useImageforSize bool, width int, heig
 		b.nonPressedBackgroundColour = defaultNonPressedButtonColour
 	}
 
-
-
-
-
-	b.generateButtonImage(b.pressedBackgroundColour, b.nonPressedBackgroundColour)
+	b.generateButtonImage(b.pressedBackgroundColour, defaultBorderColour)
 
 	// vert pos is where does text go within button. Assuming we want it centred (for now)
 	// Need to just find something visually appealing.
@@ -94,7 +93,7 @@ func (b *TextButton) generateButtonImage(colour color.RGBA, border color.RGBA) e
 	emptyImage, _ := ebiten.NewImage(b.Width, b.Height, ebiten.FilterDefault)
 	_ = emptyImage.Fill(colour)
 
-	ebitenutil.DrawLine(emptyImage, 0, 0, 0, float64(b.Width), border)
+	ebitenutil.DrawLine(emptyImage, 0, 0, float64(b.Width),0, border)
 	ebitenutil.DrawLine(emptyImage, 0, float64(b.Width), float64(b.Width), float64(b.Height), border)
 	ebitenutil.DrawLine(emptyImage, float64(b.Width), float64(b.Height), 0, float64(b.Height), border)
 	ebitenutil.DrawLine(emptyImage, 0, float64(b.Height), 0, 0, border)
@@ -110,11 +109,11 @@ func (b *TextButton) Draw(screen *ebiten.Image) error {
 	// if state changed since last draw, recreate colour etc.
 	if b.stateChangedSinceLastDraw {
 		if b.pressed {
-			b.generateButtonImage(b.pressedBackgroundColour, b.nonPressedBackgroundColour)
+			b.generateButtonImage(b.pressedBackgroundColour, defaultBorderColour)
 		} else {
-			b.generateButtonImage(b.nonPressedBackgroundColour, b.pressedBackgroundColour)
+			b.generateButtonImage(b.nonPressedBackgroundColour, defaultBorderColour)
 		}
-		text.Draw(b.rectImage, b.buttonText, b.fontInfo.UIFont, 00, b.vertPos, color.Black)
+		text.Draw(b.rectImage, b.buttonText, b.fontInfo.UIFont, 2, b.vertPos, color.Black)
 		b.stateChangedSinceLastDraw = false
 	}
 

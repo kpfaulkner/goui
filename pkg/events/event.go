@@ -22,14 +22,20 @@ type IEventHandler interface {
 }
 
 type IEvent interface {
-	Name() string
+	Name() string     // some event specific text.
+	WidgetID() string // ID of widget generating this event! Unsure if this will be required or not. Suspect not.
 	EventType() int
 	Action() error
 }
 
 type Event struct {
 	eventName string
+	widgetID  string
 	eventType int
+}
+
+func (e Event) WidgetID() string {
+	return e.widgetID
 }
 
 func NewEvent(eventType int) Event {
