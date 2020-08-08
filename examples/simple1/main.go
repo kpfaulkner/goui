@@ -64,9 +64,9 @@ func main() {
 
 	hPanel := widgets.NewHPanel("hpanel1",&color.RGBA{0, 100, 0, 255})
 
-	button1 := widgets.NewTextButton("text button 1", "my button1", 100, 40, nil, nil, nil, a.ButtonAction1)
+	button1 := widgets.NewTextButton("text button 1", "my button1", true, 0,0, nil, nil, nil, a.ButtonAction1)
 	hPanel.AddWidget(button1)
-	button2 := widgets.NewTextButton("text button 2", "my button2", 100, 40, nil, nil, nil, a.ButtonAction2)
+	button2 := widgets.NewTextButton("text button 2", "my button2", false, 100, 40, nil, nil, nil, a.ButtonAction2)
 	hPanel.AddWidget(button2)
 
 	//spacer := widgets.NewEmptySpace("empty", 100,10)

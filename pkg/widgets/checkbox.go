@@ -65,7 +65,6 @@ func (b *CheckBox) setupCheckboxImage() error {
 
 	w,h := b.emptyImage.Size()
 	bounds, _ := font.BoundString(b.fontInfo.UIFont, b.text)
-
 	totalWidth := w + (bounds.Max.X - bounds.Min.X).Ceil() + 10  // 10 pixels between image and text?
 	totalHeight := math.Max(float64(h), float64((bounds.Max.Y - bounds.Min.Y).Ceil()))
 

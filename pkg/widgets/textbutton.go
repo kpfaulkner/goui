@@ -33,12 +33,34 @@ func init() {
 	defaultPressedButtonColour = color.RGBA{0x78, 0x75, 0x72, 0xff}
 }
 
-func NewTextButton(ID string, text string, width int, height int,
+// NewTextButton. Button will have specified dimensions of width and height, useImageForSize is true.
+// Then take the size from the contained text
+func NewTextButton(ID string, text string, useImageforSize bool, width int, height int,
 	nonPressedBackgroundColour *color.RGBA,
 	pressedBackgroundColour *color.RGBA, fontInfo *common.Font, handler func(event events.IEvent) error) *TextButton {
 
 	b := TextButton{}
-	b.BaseButton = *NewBaseButton(ID, width, height, handler)
+	b.buttonText = text
+
+	// font to use.
+	if fontInfo != nil {
+		b.fontInfo = *fontInfo
+	} else {
+		b.fontInfo = defaultFontInfo
+	}
+
+	widthToUse := 0
+	heightToUse := 0
+	if useImageforSize {
+		bounds, _ := font.BoundString(b.fontInfo.UIFont, b.buttonText)
+		widthToUse = (bounds.Max.X - bounds.Min.X).Ceil()
+		heightToUse = (bounds.Max.Y - bounds.Min.Y).Ceil()
+	} else {
+		widthToUse = width
+		heightToUse = height
+	}
+
+	b.BaseButton = *NewBaseButton(ID, widthToUse, heightToUse, handler)
 
 	if pressedBackgroundColour != nil {
 		b.pressedBackgroundColour = *pressedBackgroundColour
@@ -52,19 +74,15 @@ func NewTextButton(ID string, text string, width int, height int,
 		b.nonPressedBackgroundColour = defaultNonPressedButtonColour
 	}
 
-	b.buttonText = text
 
-	if fontInfo != nil {
-		b.fontInfo = *fontInfo
-	} else {
-		b.fontInfo = defaultFontInfo
-	}
+
+
 
 	b.generateButtonImage(b.pressedBackgroundColour, b.nonPressedBackgroundColour)
 
 	// vert pos is where does text go within button. Assuming we want it centred (for now)
 	// Need to just find something visually appealing.
-	b.vertPos = (height - (height-int(b.fontInfo.SizeInPixels))/2) - 2
+	b.vertPos = (b.Height - (b.Height-int(b.fontInfo.SizeInPixels))/2) - 2
 
 	// just go off and listen for all events.
 	//go b.ListenToIncomingEvents()
