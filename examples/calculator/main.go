@@ -27,8 +27,8 @@ type Calculator struct {
 	currentValue float64
 	operation    int
 	window       pkg.Window
-	inputWidget *widgets.TextInput
-	fontInfo common.Font
+	inputWidget  *widgets.TextInput
+	fontInfo     common.Font
 }
 
 func NewCalculator() *Calculator {
@@ -119,7 +119,6 @@ func (m *Calculator) NumberButtonAction(event events.IEvent) error {
 
 func (m *Calculator) AddButton(event events.IEvent) error {
 
-
 	m.operation = Add
 	num, _ := strconv.ParseFloat(m.currentInput, 64)
 	m.currentValue = num
@@ -156,67 +155,66 @@ func (m *Calculator) DivideButton(event events.IEvent) error {
 	return nil
 }
 
-func createNumberButton(text string, handler func(event events.IEvent) error) widgets.TextButton {
-	tb := widgets.NewTextButton(text, text, false, 80, 80, nil, nil, nil, handler)
+func (m *Calculator) createNumberButton(text string, handler func(event events.IEvent) error) widgets.TextButton {
+	tb := widgets.NewTextButton(text, text, false, 80, 80, nil, nil, &m.fontInfo, handler)
 	return *tb
 }
 
 // SetupUI.
 func (m *Calculator) SetupUI() *widgets.VPanel {
 
-	vPanel := widgets.NewVPanel("rowsofbuttons", &color.RGBA{0,0,0,0xff})
+	vPanel := widgets.NewVPanel("rowsofbuttons", &color.RGBA{0, 0, 0, 0xff})
 
-	textEntry := widgets.NewTextInput("textinput", 400, 50, &color.RGBA{0,0,0,0xff}, &m.fontInfo, nil)
+	textEntry := widgets.NewTextInput("textinput", 400, 50, &color.RGBA{0, 0, 0, 0xff}, &m.fontInfo, nil)
 	m.inputWidget = textEntry
 	vPanel.AddWidget(textEntry)
 
 	hPanel1 := widgets.NewHPanel("first row", nil)
-	sevenButton := createNumberButton("7", m.NumberButtonAction)
+	sevenButton := m.createNumberButton("7", m.NumberButtonAction)
 	hPanel1.AddWidget(&sevenButton)
-	eightButton := createNumberButton("8", m.NumberButtonAction)
+	eightButton := m.createNumberButton("8", m.NumberButtonAction)
 	hPanel1.AddWidget(&eightButton)
-	nineButton := createNumberButton("9", m.NumberButtonAction)
+	nineButton := m.createNumberButton("9", m.NumberButtonAction)
 	hPanel1.AddWidget(&nineButton)
-	addButton := createNumberButton("+", m.AddButton)
+	addButton := m.createNumberButton("+", m.AddButton)
 	hPanel1.AddWidget(&addButton)
 	vPanel.AddWidget(hPanel1)
 
 	hPanel2 := widgets.NewHPanel("second row", nil)
-	fourButton := createNumberButton("4", m.NumberButtonAction)
+	fourButton := m.createNumberButton("4", m.NumberButtonAction)
 	hPanel2.AddWidget(&fourButton)
-	fiveButton := createNumberButton("5", m.NumberButtonAction)
+	fiveButton := m.createNumberButton("5", m.NumberButtonAction)
 	hPanel2.AddWidget(&fiveButton)
-	sixButton := createNumberButton("6", m.NumberButtonAction)
+	sixButton := m.createNumberButton("6", m.NumberButtonAction)
 	hPanel2.AddWidget(&sixButton)
-	subButton := createNumberButton("-", m.SubtractButton)
+	subButton := m.createNumberButton("-", m.SubtractButton)
 	hPanel2.AddWidget(&subButton)
 	vPanel.AddWidget(hPanel2)
 
 	hPanel3 := widgets.NewHPanel("third row", nil)
-	oneButton := createNumberButton("1", m.NumberButtonAction)
+	oneButton := m.createNumberButton("1", m.NumberButtonAction)
 	hPanel3.AddWidget(&oneButton)
-	twoButton := createNumberButton("2", m.NumberButtonAction)
+	twoButton := m.createNumberButton("2", m.NumberButtonAction)
 	hPanel3.AddWidget(&twoButton)
-	threeButton := createNumberButton("3", m.NumberButtonAction)
+	threeButton := m.createNumberButton("3", m.NumberButtonAction)
 	hPanel3.AddWidget(&threeButton)
-	multiplyButton := createNumberButton("*", m.MultiplyButton)
+	multiplyButton := m.createNumberButton("*", m.MultiplyButton)
 	hPanel3.AddWidget(&multiplyButton)
 	vPanel.AddWidget(hPanel3)
 
 	hPanel4 := widgets.NewHPanel("fourth row", nil)
-	zeroButton := createNumberButton("0", m.NumberButtonAction)
+	zeroButton := m.createNumberButton("0", m.NumberButtonAction)
 	hPanel4.AddWidget(&zeroButton)
-	dotButton := createNumberButton(".", m.NumberButtonAction)
+	dotButton := m.createNumberButton(".", m.NumberButtonAction)
 	hPanel4.AddWidget(&dotButton)
-	equalsButton := createNumberButton("=", m.EqualsButton)
+	equalsButton := m.createNumberButton("=", m.EqualsButton)
 	hPanel4.AddWidget(&equalsButton)
-	divideButton := createNumberButton("/", m.DivideButton)
+	divideButton := m.createNumberButton("/", m.DivideButton)
 	hPanel4.AddWidget(&divideButton)
-	clearButton := createNumberButton("C", m.ClearButton)
+	clearButton := m.createNumberButton("C", m.ClearButton)
 	hPanel4.AddWidget(&clearButton)
 
 	vPanel.AddWidget(hPanel4)
-
 
 	m.window.AddPanel(vPanel)
 
