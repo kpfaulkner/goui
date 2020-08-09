@@ -6,6 +6,7 @@ import (
 	"github.com/kpfaulkner/goui/pkg/events"
 	"github.com/kpfaulkner/goui/pkg/widgets"
 	log "github.com/sirupsen/logrus"
+	"image/color"
 	_ "net/http/pprof"
 	"strconv"
 )
@@ -49,6 +50,12 @@ func (m *Calculator) ClearButton(event events.IEvent) error {
 	log.Debugf("ClearButton : %s!!!", event.WidgetID())
 	m.currentValue = 0
 	m.currentInput = ""
+	m.operation = None
+
+	// update UI
+	te := events.NewSetTextEvent(m.currentInput)
+	m.inputWidget.HandleEvent(te)
+
 	return nil
 }
 
@@ -153,13 +160,12 @@ func createNumberButton(text string, handler func(event events.IEvent) error) wi
 	return *tb
 }
 
-// SetupOutPanel.
-// Then returns VPanel that the rest of the interface can go into.
-func (m *Calculator) SetupOuterUI() *widgets.VPanel {
+// SetupUI.
+func (m *Calculator) SetupUI() *widgets.VPanel {
 
 	vPanel := widgets.NewVPanel("rowsofbuttons", nil)
 
-	textEntry := widgets.NewTextInput("textinput", 100, 20, nil, nil, nil)
+	textEntry := widgets.NewTextInput("textinput", 100, 20, &color.RGBA{0,0,0,0xff}, nil, nil)
 	m.inputWidget = textEntry
 	vPanel.AddWidget(textEntry)
 
@@ -205,10 +211,11 @@ func (m *Calculator) SetupOuterUI() *widgets.VPanel {
 	hPanel4.AddWidget(&equalsButton)
 	divideButton := createNumberButton("/", m.DivideButton)
 	hPanel4.AddWidget(&divideButton)
-	vPanel.AddWidget(hPanel4)
-
 	clearButton := createNumberButton("C", m.ClearButton)
 	hPanel4.AddWidget(&clearButton)
+
+	vPanel.AddWidget(hPanel4)
+
 
 	m.window.AddPanel(vPanel)
 
@@ -218,9 +225,7 @@ func (m *Calculator) SetupOuterUI() *widgets.VPanel {
 
 func (m *Calculator) Run() error {
 
-	_ = m.SetupOuterUI()
-
-	ebiten.SetRunnableInBackground(true)
+	_ = m.SetupUI()
 	ebiten.SetWindowResizable(true)
 	m.window.MainLoop()
 
