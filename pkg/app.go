@@ -26,6 +26,8 @@ type Window struct {
 
 	leftMouseButtonPressed  bool
 	rightMouseButtonPressed bool
+  mouseX int
+	mouseY int
 
 	haveMenuBar bool
 	haveToolBar bool
@@ -38,6 +40,16 @@ type Window struct {
 
 	// widget that has focus...  I think that will do?
 	FocusedWidget *widgets.IWidget
+
+	// app level mouse + keyboard handlers.
+	// Sometimes we want the app to get the event and not just a specific widget.
+	// Example, if making a calculator app and I type '1' on the keyboard, I want the
+	// app to react even though the last widget I clicked on might have been a '9'.
+	// I this a hack or should I be having events propagate to all parents regardless?
+	keyboardHandler func(event events.KeyboardEvent) error
+	mouseHandler    func(event events.MouseEvent) error
+
+
 }
 
 var defaultFontInfo common.Font
@@ -75,18 +87,28 @@ func NewWindow(width int, height int, title string, haveMenuBar bool, haveToolBa
 	// if have toolbar then add a vpanel in and populate toolbar at top most part of vpanel
 
 	/*
-	if w.haveToolBar {
+		if w.haveToolBar {
 
-		// force toolpanel to have some dimension?
-		tb := widgets.NewToolBar("toolbar", &color.RGBA{0, 0, 0xff, 0xff})
-		tb.SetSize(w.width, 40)
+			// force toolpanel to have some dimension?
+			tb := widgets.NewToolBar("toolbar", &color.RGBA{0, 0, 0xff, 0xff})
+			tb.SetSize(w.width, 40)
 
-		vp := widgets.NewVPanel("main vpanel", nil)
+			vp := widgets.NewVPanel("main vpanel", nil)
 
-		vp.AddWidget(tb)
-		w.AddPanel(vp)
-	}*/
+			vp.AddWidget(tb)
+			w.AddPanel(vp)
+		}*/
 	return w
+}
+
+func (w *Window) AddKeyboardHandler(handler func(event events.KeyboardEvent) error) error {
+	w.keyboardHandler = handler
+	return nil
+}
+
+func (w *Window) AddMouseHandler(handler func(event events.MouseEvent) error) error {
+	w.mouseHandler = handler
+	return nil
 }
 
 func (w *Window) AddPanel(panel widgets.IPanel) error {
@@ -142,76 +164,61 @@ func (w *Window) FindWidgetForInput(x float64, y float64) (*widgets.IWidget, err
 	return nil, nil
 }
 
-// FindWidgetForInput
-// Need to make recursive for panels in panels etc... but just leave pretty linear for now.
-func (w *Window) FindWidgetForInputOLD(x float64, y float64) (*widgets.IWidget, error) {
-
-	// all things are panels at this level.
-	for _, panel := range w.panels {
-		if panel.ContainsCoords(x, y) {
-
-			for _, subPanel := range panel.ListPanels() {
-				if subPanel.ContainsCoords(x, y) {
-					for _, widget := range subPanel.ListWidgets() {
-						if widget.ContainsCoords(x, y) {
-							// have match
-							w.FocusedWidget = &widget
-							return &widget, nil
-						}
-					}
-				}
-			}
-
-			// check widgets in panel.
-			for _, widget := range panel.ListWidgets() {
-				if widget.ContainsCoords(x, y) {
-					// have match
-					w.FocusedWidget = &widget
-					return &widget, nil
-				}
-			}
-		}
-	}
-
-	//return nil, errors.New("Unable to panel/widget that was clicked on....  impossible!!!")
-	return nil, nil
-}
 
 /////////////////////// EBiten specifics below... /////////////////////////////////////////////
 func (w *Window) Update(screen *ebiten.Image) error {
+
+	x, y := ebiten.CursorPosition()
 	if ebiten.IsMouseButtonPressed(ebiten.MouseButtonLeft) {
-		w.leftMouseButtonPressed = true
-		x, y := ebiten.CursorPosition()
-		usedWidget, err := w.FindWidgetForInput(float64(x), float64(y))
-		if err != nil {
-			log.Errorf("Unable to find widget for click!! %s", err.Error())
-		}
 
-		if usedWidget != nil {
-			me := events.NewMouseEvent(fmt.Sprintf("widget %s button down", (*usedWidget).GetID()), x, y, events.EventTypeButtonDown, (*usedWidget).GetID())
-			(*usedWidget).HandleEvent(me)
-		}
-	} else {
-		if w.leftMouseButtonPressed {
-			w.leftMouseButtonPressed = false
-
-			x, y := ebiten.CursorPosition()
+		// only react to mouse button down if we're not already aware of it.
+		if !w.leftMouseButtonPressed {
+			w.leftMouseButtonPressed = true
 			usedWidget, err := w.FindWidgetForInput(float64(x), float64(y))
 			if err != nil {
 				log.Errorf("Unable to find widget for click!! %s", err.Error())
 			}
 
 			if usedWidget != nil {
-				me := events.NewMouseEvent(fmt.Sprintf("widget %s button up", (*usedWidget).GetID()), x, y, events.EventTypeButtonUp,(*usedWidget).GetID())
+				me := events.NewMouseEvent(fmt.Sprintf("widget %s button down", (*usedWidget).GetID()), x, y, events.EventTypeButtonDown, (*usedWidget).GetID())
+				(*usedWidget).HandleEvent(me)
+			}
+
+			if w.mouseHandler != nil {
+				me := events.NewMouseEvent("button down", x, y, events.EventTypeButtonDown, "")
+				w.mouseHandler(me)
+			}
+		}
+	} else {
+		if w.leftMouseButtonPressed {
+			w.leftMouseButtonPressed = false
+			usedWidget, err := w.FindWidgetForInput(float64(x), float64(y))
+			if err != nil {
+				log.Errorf("Unable to find widget for click!! %s", err.Error())
+			}
+
+			if usedWidget != nil {
+				me := events.NewMouseEvent(fmt.Sprintf("widget %s button up", (*usedWidget).GetID()), x, y, events.EventTypeButtonUp, (*usedWidget).GetID())
 				//w.EmitEvent(me)
 				//(*usedWidget).HandleEvent(me)
 				(*usedWidget).HandleEvent(me)
 			}
 
-			// it *WAS* pressed previous frame... but isn't now... this means released!!!
-			//x, y := ebiten.CursorPosition()
-			//me := events.NewMouseEvent(x, y, events.EventTypeButtonUp)
-			//w.EmitEvent(me)
+			if w.mouseHandler != nil {
+				me := events.NewMouseEvent("button upXX", x, y, events.EventTypeButtonUp,"")
+				w.mouseHandler(me)
+			}
+		}
+	}
+
+	// check if mouse has moved
+	if x != w.mouseX || y != w.mouseY {
+		w.mouseX = x
+		w.mouseY = y
+		// call app level mouse event handler
+		if w.mouseHandler != nil {
+			me := events.NewMouseEvent("mouse movement", x, y, events.EventTypeMouseMove,"")
+			w.mouseHandler(me)
 		}
 	}
 
@@ -232,6 +239,12 @@ func (w *Window) Update(screen *ebiten.Image) error {
 			//w.EmitEvent(me)
 			(*usedWidget).HandleEvent(ke)
 		}
+
+		// go to app level handler. hack?
+		if w.keyboardHandler != nil {
+			ke := events.NewKeyboardEvent(ebiten.Key(inp[0]), "") // only send first one?
+			w.keyboardHandler(ke)
+		}
 	}
 
 	// If the backspace key is pressed, remove one character.
@@ -248,6 +261,12 @@ func (w *Window) Update(screen *ebiten.Image) error {
 			//w.EmitEvent(me)
 			//(*usedWidget).HandleEvent(ke)
 			(*usedWidget).HandleEvent(ke)
+		}
+
+		// go to app level handler. hack?
+		if w.keyboardHandler != nil {
+			ke := events.NewKeyboardEvent(ebiten.KeyBackspace, "") // only send first one?
+			w.keyboardHandler(ke)
 		}
 	}
 

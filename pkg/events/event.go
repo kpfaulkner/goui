@@ -6,6 +6,7 @@ const (
 	// eg, mouse clicked, key pressed on keyboard etc.
 	EventTypeButtonDown int = iota
 	EventTypeButtonUp
+	EventTypeMouseMove
 	EventTypeKeyboard
 	EventTypeSetText
 

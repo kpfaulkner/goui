@@ -5,6 +5,7 @@ import (
 	"github.com/kpfaulkner/goui/pkg/events"
 	log "github.com/sirupsen/logrus"
 	"image/color"
+	"math/rand"
 )
 
 var defaultPanelColour color.RGBA
@@ -136,11 +137,11 @@ func (p *Panel) HandleMouseEvent(event events.IEvent) (bool, error) {
 	if inPanel {
 		p.hasFocus = true
 
-		/*
+
 			r := rand.Intn(255)
 			g := rand.Intn(255)
 			b := rand.Intn(255)
-			p.panelColour = color.RGBA{uint8(r),uint8(g),uint8(b),0xff} */
+			p.panelColour = color.RGBA{uint8(r),uint8(g),uint8(b),0xff}
 	} else {
 		p.hasFocus = false
 	}

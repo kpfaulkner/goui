@@ -20,7 +20,36 @@ func NewMyApp() *MyApp {
 	a := MyApp{}
 
 	a.window = pkg.NewWindow(800, 600, "simple app 1", false, false)
+	a.window.AddKeyboardHandler(a.AppKeyHandler)
+	a.window.AddMouseHandler(a.AppMouseHandler)
 	return &a
+}
+
+func (m *MyApp) AppKeyHandler(event events.KeyboardEvent) error {
+	log.Debugf("app key handler %s", string(event.Character))
+	return nil
+}
+
+func (m *MyApp) AppMouseHandler(event events.MouseEvent) error {
+
+	switch event.EventType() {
+	case events.EventTypeButtonDown:
+		{
+			log.Debugf("app mouse handler button down")
+		}
+
+	case events.EventTypeButtonUp:
+		{
+			log.Debugf("app mouse handler button up")
+		}
+
+	case events.EventTypeMouseMove:
+		{
+			log.Debugf("app mouse handler, x: %0.f , y: %0.f", event.X, event.Y)
+		}
+	}
+
+	return nil
 }
 
 func (m *MyApp) ButtonAction1(event events.IEvent) error {
@@ -37,7 +66,6 @@ func (m *MyApp) ButtonActionGeneric(event events.IEvent) error {
 	log.Debugf("Generic button for widget : %s!!!", event.WidgetID())
 	return nil
 }
-
 
 func (m *MyApp) ToolBarItem1(event events.IEvent) error {
 	log.Debugf("toolbar item1")
@@ -58,7 +86,6 @@ func (m *MyApp) CheckboxChanged(event events.IEvent) error {
 
 func (m *MyApp) SetupRestOfUI(vpanel *widgets.VPanel) error {
 
-
 	vpanel2 := widgets.NewVPanel("vpanel2", nil)
 	vpanel.AddWidget(vpanel2)
 
@@ -74,7 +101,6 @@ func (m *MyApp) SetupRestOfUI(vpanel *widgets.VPanel) error {
 	hPanel.AddWidget(button5)
 
 	vpanel2.AddWidget(hPanel)
-
 
 	hPanel2 := widgets.NewHPanel("hpanel2", &color.RGBA{50, 50, 0, 255})
 
