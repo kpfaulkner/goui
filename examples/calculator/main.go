@@ -1,8 +1,8 @@
 package main
 
 import (
-	"github.com/hajimehoshi/ebiten"
 	"github.com/kpfaulkner/goui/pkg"
+	"github.com/kpfaulkner/goui/pkg/common"
 	"github.com/kpfaulkner/goui/pkg/events"
 	"github.com/kpfaulkner/goui/pkg/widgets"
 	log "github.com/sirupsen/logrus"
@@ -28,6 +28,7 @@ type Calculator struct {
 	operation    int
 	window       pkg.Window
 	inputWidget *widgets.TextInput
+	fontInfo common.Font
 }
 
 func NewCalculator() *Calculator {
@@ -37,7 +38,7 @@ func NewCalculator() *Calculator {
 	a.window.AddKeyboardHandler(a.AppKeyHandler)
 	a.currentValue = 0
 	a.operation = None
-
+	a.fontInfo = common.LoadFont("", 32, color.RGBA{0xff, 0xff, 0xff, 0xff})
 	return &a
 }
 
@@ -156,16 +157,16 @@ func (m *Calculator) DivideButton(event events.IEvent) error {
 }
 
 func createNumberButton(text string, handler func(event events.IEvent) error) widgets.TextButton {
-	tb := widgets.NewTextButton(text, text, false, 20, 20, nil, nil, nil, handler)
+	tb := widgets.NewTextButton(text, text, false, 80, 80, nil, nil, nil, handler)
 	return *tb
 }
 
 // SetupUI.
 func (m *Calculator) SetupUI() *widgets.VPanel {
 
-	vPanel := widgets.NewVPanel("rowsofbuttons", nil)
+	vPanel := widgets.NewVPanel("rowsofbuttons", &color.RGBA{0,0,0,0xff})
 
-	textEntry := widgets.NewTextInput("textinput", 100, 20, &color.RGBA{0,0,0,0xff}, nil, nil)
+	textEntry := widgets.NewTextInput("textinput", 400, 50, &color.RGBA{0,0,0,0xff}, &m.fontInfo, nil)
 	m.inputWidget = textEntry
 	vPanel.AddWidget(textEntry)
 
@@ -226,7 +227,7 @@ func (m *Calculator) SetupUI() *widgets.VPanel {
 func (m *Calculator) Run() error {
 
 	_ = m.SetupUI()
-	ebiten.SetWindowResizable(true)
+	//ebiten.SetWindowResizable(true)
 	m.window.MainLoop()
 
 	return nil
