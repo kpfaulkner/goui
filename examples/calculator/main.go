@@ -128,30 +128,31 @@ func (m *Calculator) AddButton(event events.IEvent) error {
 	return nil
 }
 
-func (m *Calculator) SubtractButton(event events.IEvent) error {
-	m.operation = Subtract
+func (m *Calculator) parseNumber(n string) error {
 	num, _ := strconv.ParseFloat(m.currentInput, 64)
 	m.currentValue = num
 	m.currentInput = ""
+	return nil
+}
+
+func (m *Calculator) SubtractButton(event events.IEvent) error {
 	log.Debugf("SubtractButton")
+	m.operation = Subtract
+	m.parseNumber(m.currentInput)
 	return nil
 }
 
 func (m *Calculator) MultiplyButton(event events.IEvent) error {
-	m.operation = Multiply
-	num, _ := strconv.ParseFloat(m.currentInput, 64)
-	m.currentValue = num
-	m.currentInput = ""
 	log.Debugf("MultiplyButton")
+	m.operation = Multiply
+	m.parseNumber(m.currentInput)
 	return nil
 }
 
 func (m *Calculator) DivideButton(event events.IEvent) error {
-	m.operation = Divide
-	num, _ := strconv.ParseFloat(m.currentInput, 64)
-	m.currentValue = num
-	m.currentInput = ""
 	log.Debugf("DivideButton")
+	m.operation = Divide
+	m.parseNumber(m.currentInput)
 	return nil
 }
 
