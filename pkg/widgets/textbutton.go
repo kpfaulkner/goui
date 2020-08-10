@@ -27,6 +27,7 @@ type TextButton struct {
 	uiFont                     font.Face
 	Rect                       image.Rectangle
 	vertPos                    int
+	textIndent  int
 }
 
 func init() {
@@ -58,9 +59,16 @@ func NewTextButton(ID string, text string, useImageforSize bool, width int, heig
 		bounds, _ := font.BoundString(b.fontInfo.UIFont, b.buttonText)
 		widthToUse = (bounds.Max.X - bounds.Min.X).Ceil() + 5
 		heightToUse = (bounds.Max.Y - bounds.Min.Y).Ceil() + 5
+		b.textIndent = 2
 	} else {
 		widthToUse = width
 		heightToUse = height
+
+		bounds, _ := font.BoundString(b.fontInfo.UIFont, b.buttonText)
+		textWidth := (bounds.Max.X - bounds.Min.X).Ceil()
+		textHeight := (bounds.Max.Y - bounds.Min.Y).Ceil()
+		b.textIndent = (widthToUse - textWidth) /2
+		b.vertPos = (height - (height-int(textHeight))/2) - 2
 	}
 
 	b.BaseButton = *NewBaseButton(ID, widthToUse, heightToUse, handler)
@@ -113,7 +121,9 @@ func (b *TextButton) Draw(screen *ebiten.Image) error {
 		} else {
 			b.generateButtonImage(b.nonPressedBackgroundColour, defaultBorderColour)
 		}
-		text.Draw(b.rectImage, b.buttonText, b.fontInfo.UIFont, 2, b.vertPos, color.Black)
+
+
+		text.Draw(b.rectImage, b.buttonText, b.fontInfo.UIFont, b.textIndent, b.vertPos, color.Black)
 		b.stateChangedSinceLastDraw = false
 	}
 
