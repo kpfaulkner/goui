@@ -84,7 +84,7 @@ func (m *Calculator) applyOperation(num1 float64, num2 float64) float64 {
 		}
 	case Multiply:
 		{
-			return num1 * num1
+			return num1 * num2
 		}
 	case Equals:
 		{
