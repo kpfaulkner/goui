@@ -32,12 +32,6 @@ type Window struct {
 	haveMenuBar bool
 	haveToolBar bool
 
-	// These are other widgets/components that are listening to THiS widget. Ie we will broadcast to them!
-	eventListeners map[int][]chan events.IEvent
-
-	// incoming events to THIS widget (ie stuff we're listening to!)
-	incomingEvents chan events.IEvent
-
 	// widget that has focus...  I think that will do?
 	FocusedWidget *widgets.IWidget
 
@@ -74,30 +68,6 @@ func NewWindow(width int, height int, title string, haveMenuBar bool, haveToolBa
 	w.haveMenuBar = haveMenuBar
 	w.haveToolBar = haveToolBar
 
-	w.eventListeners = make(map[int][]chan events.IEvent)
-	w.incomingEvents = make(chan events.IEvent, 1000) // too much?
-
-	/*
-		if w.haveMenuBar {
-			mb := *widgets.NewMenuBar("menubar",  width, 30, &color.RGBA{0x71, 0x71, 0x71, 0xff})
-			mb.AddMenuHeading("test")
-			w.AddPanel(&mb)
-		} */
-
-	// if have toolbar then add a vpanel in and populate toolbar at top most part of vpanel
-
-	/*
-		if w.haveToolBar {
-
-			// force toolpanel to have some dimension?
-			tb := widgets.NewToolBar("toolbar", &color.RGBA{0, 0, 0xff, 0xff})
-			tb.SetSize(w.width, 40)
-
-			vp := widgets.NewVPanel("main vpanel", nil)
-
-			vp.AddWidget(tb)
-			w.AddPanel(vp)
-		}*/
 	return w
 }
 

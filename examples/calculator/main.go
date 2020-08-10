@@ -214,7 +214,6 @@ func (m *Calculator) SetupUI() *widgets.VPanel {
 	hPanel4.AddWidget(&divideButton)
 	clearButton := m.createNumberButton("C", m.ClearButton)
 	hPanel4.AddWidget(&clearButton)
-
 	vPanel.AddWidget(hPanel4)
 
 	m.window.AddPanel(vPanel)
