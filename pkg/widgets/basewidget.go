@@ -13,8 +13,8 @@ type BaseWidget struct {
 
 	// Location of top left of widget.
 	// This is always relative to the parent widget.
-	X float64
-	Y float64
+	X      float64
+	Y      float64
 	Width  int
 	Height int
 
@@ -125,7 +125,7 @@ func (b *BaseWidget) GlobalToLocalCoords(x float64, y float64) (float64, float64
 
 			populated, dx, dy := (b.parentPanel).GetDeltaOffset()
 			if !populated {
-				b.parentPanel.GlobalToLocalCoords(x,y)
+				b.parentPanel.GlobalToLocalCoords(x, y)
 			}
 			populated, dx, dy = (b.parentPanel).GetDeltaOffset()
 			b.globalDX = dx + b.X
@@ -170,7 +170,7 @@ func (b *BaseWidget) GetSize() (float64, float64) {
 type IWidget interface {
 	Draw(screen *ebiten.Image) error
 	HandleEvent(event events.IEvent) error
-	GetData() (interface{}, error) // absolutely HATE the empty interface, but this will need to be extremely generic I suppose?
+	GetData() (interface{}, error)            // absolutely HATE the empty interface, but this will need to be extremely generic I suppose?
 	ContainsCoords(x float64, y float64) bool // contains co-ords... co-ords are based on immediate parents location/size.
 	GlobalToLocalCoords(x float64, y float64) (float64, float64)
 	AddParentPanel(parentPanel IPanel) error

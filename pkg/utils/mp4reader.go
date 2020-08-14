@@ -8,7 +8,7 @@ import (
 
 // ExtractImage, stolen from https://stackoverflow.com/questions/57838025/get-frame-from-video-bytes
 // Great idea!
-func ExtractImage(fileBytes []byte){
+func ExtractImage(fileBytes []byte) {
 
 	// command line args, path, and command
 	command := "ffmpeg"
@@ -19,7 +19,7 @@ func ExtractImage(fileBytes []byte){
 
 	cmd := exec.Command(command,
 		"-ss", frameExtractionTime,
-		"-i", "-",  // to read from stdin
+		"-i", "-", // to read from stdin
 		"-vframes", vframes,
 		"-q:v", qv,
 		output)
@@ -31,4 +31,3 @@ func ExtractImage(fileBytes []byte){
 	_ = cmd.Start()
 	_ = cmd.Wait()
 }
-

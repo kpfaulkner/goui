@@ -9,7 +9,7 @@ const (
 	EventTypeMouseMove
 	EventTypeKeyboard
 	EventTypeSetText
-	EventTypeDeselect   // used for checkboxes/radiobuttons etc.
+	EventTypeDeselect // used for checkboxes/radiobuttons etc.
 
 	// events generated from widgets indicating a widget based event
 	// eg. image button pressed.

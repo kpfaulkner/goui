@@ -14,8 +14,8 @@ import (
 )
 
 const (
-	checkedImage = "images/checkedcheckbox.png"
-	emptyImage   = "images/emptycheckbox.png"
+	defaultCheckedImage   = "images/checkedcheckbox.png"
+	defaultUncheckedImage = "images/emptycheckbox.png"
 )
 
 type CheckBox struct {
@@ -34,18 +34,28 @@ func init() {
 	defaultFontInfo = common.LoadFont("", 16, color.RGBA{0xff, 0xff, 0xff, 0xff})
 }
 
-func NewCheckBox(ID string, text string, handler func(event events.IEvent) error) *CheckBox {
+func NewCheckBox(ID string, text string, checkedImage string, uncheckedImage string, handler func(event events.IEvent) error) *CheckBox {
 	cb := CheckBox{}
 
-	img1, err := loadImage(emptyImage)
+	uncheckedImg := defaultUncheckedImage
+	checkedImg := defaultCheckedImage
+	if checkedImage != "" {
+		checkedImg = checkedImage
+	}
+
+	if uncheckedImage != "" {
+		uncheckedImg = uncheckedImage
+	}
+
+	img1, err := loadImage(uncheckedImg)
 	if err != nil {
-		log.Fatalf("Unable to load image %s", emptyImage)
+		log.Fatalf("Unable to load image %s", uncheckedImg)
 	}
 	cb.emptyImage = img1
 
-	img2, err := loadImage(checkedImage)
+	img2, err := loadImage(checkedImg)
 	if err != nil {
-		log.Fatalf("Unable to load image %s", checkedImage)
+		log.Fatalf("Unable to load image %s", checkedImg)
 	}
 	cb.checkedImage = img2
 

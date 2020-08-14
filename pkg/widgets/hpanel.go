@@ -29,12 +29,12 @@ func (p *HPanel) AddWidget(w IWidget) error {
 	// grow panel height if widget is taller.
 	if height > float64(p.Height) {
 		p.Height = int(height)
-		p.SetSize(p.Width,p.Height)
+		p.SetSize(p.Width, p.Height)
 	}
 
-	if p.XLoc + width > float64(p.Width) {
+	if p.XLoc+width > float64(p.Width) {
 		p.Width = int(p.XLoc + width)
-		p.SetSize(p.Width,p.Height)
+		p.SetSize(p.Width, p.Height)
 	}
 
 	p.XLoc += width

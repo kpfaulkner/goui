@@ -8,7 +8,6 @@ import (
 // EmptySpace lame way to put spaces in panels..
 type EmptySpace struct {
 	BaseWidget
-
 }
 
 func NewEmptySpace(ID string, width int, height int) *EmptySpace {

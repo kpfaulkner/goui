@@ -26,8 +26,8 @@ type Window struct {
 
 	leftMouseButtonPressed  bool
 	rightMouseButtonPressed bool
-  mouseX int
-	mouseY int
+	mouseX                  int
+	mouseY                  int
 
 	haveMenuBar bool
 	haveToolBar bool
@@ -42,8 +42,6 @@ type Window struct {
 	// I this a hack or should I be having events propagate to all parents regardless?
 	keyboardHandler func(event events.KeyboardEvent) error
 	mouseHandler    func(event events.MouseEvent) error
-
-
 }
 
 var defaultFontInfo common.Font
@@ -134,7 +132,6 @@ func (w *Window) FindWidgetForInput(x float64, y float64) (*widgets.IWidget, err
 	return nil, nil
 }
 
-
 /////////////////////// EBiten specifics below... /////////////////////////////////////////////
 func (w *Window) Update(screen *ebiten.Image) error {
 
@@ -175,7 +172,7 @@ func (w *Window) Update(screen *ebiten.Image) error {
 			}
 
 			if w.mouseHandler != nil {
-				me := events.NewMouseEvent("button upXX", x, y, events.EventTypeButtonUp,"")
+				me := events.NewMouseEvent("button upXX", x, y, events.EventTypeButtonUp, "")
 				w.mouseHandler(me)
 			}
 		}
@@ -187,7 +184,7 @@ func (w *Window) Update(screen *ebiten.Image) error {
 		w.mouseY = y
 		// call app level mouse event handler
 		if w.mouseHandler != nil {
-			me := events.NewMouseEvent("mouse movement", x, y, events.EventTypeMouseMove,"")
+			me := events.NewMouseEvent("mouse movement", x, y, events.EventTypeMouseMove, "")
 			w.mouseHandler(me)
 		}
 	}

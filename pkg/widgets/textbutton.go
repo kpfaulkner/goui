@@ -14,7 +14,7 @@ import (
 var (
 	defaultNonPressedButtonColour color.RGBA
 	defaultPressedButtonColour    color.RGBA
-	defaultBorderColour    color.RGBA
+	defaultBorderColour           color.RGBA
 )
 
 // TextButton is a button that just has a background colour, text and text colour.
@@ -27,13 +27,13 @@ type TextButton struct {
 	uiFont                     font.Face
 	Rect                       image.Rectangle
 	vertPos                    int
-	textIndent  int
+	textIndent                 int
 }
 
 func init() {
 	defaultNonPressedButtonColour = color.RGBA{0x8A, 0x85, 0x81, 0xff}
 	defaultPressedButtonColour = color.RGBA{0x78, 0x75, 0x72, 0xff}
-	defaultBorderColour = color.RGBA{0,0,0xff, 0xff}
+	defaultBorderColour = color.RGBA{0, 0, 0xff, 0xff}
 
 }
 
@@ -67,7 +67,7 @@ func NewTextButton(ID string, text string, useImageforSize bool, width int, heig
 		bounds, _ := font.BoundString(b.fontInfo.UIFont, b.buttonText)
 		textWidth := (bounds.Max.X - bounds.Min.X).Ceil()
 		textHeight := (bounds.Max.Y - bounds.Min.Y).Ceil()
-		b.textIndent = (widthToUse - textWidth) /2
+		b.textIndent = (widthToUse - textWidth) / 2
 		b.vertPos = (height - (height-int(textHeight))/2) - 2
 	}
 
@@ -101,7 +101,7 @@ func (b *TextButton) generateButtonImage(colour color.RGBA, border color.RGBA) e
 	emptyImage, _ := ebiten.NewImage(b.Width, b.Height, ebiten.FilterDefault)
 	_ = emptyImage.Fill(colour)
 
-	ebitenutil.DrawLine(emptyImage, 0, 0, float64(b.Width),0, border)
+	ebitenutil.DrawLine(emptyImage, 0, 0, float64(b.Width), 0, border)
 	ebitenutil.DrawLine(emptyImage, 0, float64(b.Width), float64(b.Width), float64(b.Height), border)
 	ebitenutil.DrawLine(emptyImage, float64(b.Width), float64(b.Height), 0, float64(b.Height), border)
 	ebitenutil.DrawLine(emptyImage, 0, float64(b.Height), 0, 0, border)
@@ -121,7 +121,6 @@ func (b *TextButton) Draw(screen *ebiten.Image) error {
 		} else {
 			b.generateButtonImage(b.nonPressedBackgroundColour, defaultBorderColour)
 		}
-
 
 		text.Draw(b.rectImage, b.buttonText, b.fontInfo.UIFont, b.textIndent, b.vertPos, color.Black)
 		b.stateChangedSinceLastDraw = false

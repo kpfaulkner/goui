@@ -14,7 +14,6 @@ type VPanel struct {
 	resizable bool
 }
 
-
 func NewVPanel(ID string, colour *color.RGBA) *VPanel {
 	p := VPanel{}
 	p.Panel = *NewPanel(ID, colour)
@@ -30,14 +29,14 @@ func (p *VPanel) AddWidget(w IWidget) error {
 	width, height := w.GetSize()
 
 	// grow panel height if widget is taller.
-	if p.YLoc + height > float64(p.Height) {
+	if p.YLoc+height > float64(p.Height) {
 		p.Height = int(p.YLoc + height)
-		p.SetSize(p.Width,p.Height)
+		p.SetSize(p.Width, p.Height)
 	}
 
 	if width > float64(p.Width) {
 		p.Width = int(width)
-		p.SetSize(p.Width,p.Height)
+		p.SetSize(p.Width, p.Height)
 	}
 
 	p.YLoc += height

@@ -11,7 +11,7 @@ import (
 )
 
 const (
-	selectedImage = "images/radopbuttonselected.png"
+	selectedImage    = "images/radopbuttonselected.png"
 	notSelectedImage = "images/radiobuttonnotselected.png"
 )
 
@@ -23,12 +23,10 @@ type RadioButtonGroup struct {
 
 	vertical bool
 	// image for the checkbox
-	notSelectedImage   *ebiten.Image
-	selectedImage *ebiten.Image
+	notSelectedImage *ebiten.Image
+	selectedImage    *ebiten.Image
 	fontInfo         common.Font
-	lastClickedTime time.Time
-
-
+	lastClickedTime  time.Time
 }
 
 func init() {
@@ -37,23 +35,23 @@ func init() {
 
 func NewRadioButtonGroup(ID string, vertical bool, handler func(event events.IEvent) error) *RadioButtonGroup {
 	rb := RadioButtonGroup{}
-  rb.vertical = vertical
+	rb.vertical = vertical
 
-  /*
-	img1, err := loadImage(notSelectedImage)
-	if err != nil {
-		log.Fatalf("Unable to load image %s", notSelectedImage)
-	}
-	rb.notSelectedImage = img1
+	/*
+		img1, err := loadImage(notSelectedImage)
+		if err != nil {
+			log.Fatalf("Unable to load image %s", notSelectedImage)
+		}
+		rb.notSelectedImage = img1
 
-	img2, err := loadImage(selectedImage)
-	if err != nil {
-		log.Fatalf("Unable to load image %s", selectedImage)
-	}
+		img2, err := loadImage(selectedImage)
+		if err != nil {
+			log.Fatalf("Unable to load image %s", selectedImage)
+		}
 
-	rb.selectedImage = img2
+		rb.selectedImage = img2
 
-   */
+	*/
 	rb.Panel = *NewPanel(ID, nil)
 
 	// create VPanel or HPanel
@@ -81,25 +79,24 @@ func (rb *RadioButtonGroup) HandleEvent(event events.IEvent) error {
 	case events.EventTypeButtonDown:
 		{
 			// deselect any button that is NOT part of the event.
-		  for _,w := range rb.subPanel.ListWidgets() {
+			for _, w := range rb.subPanel.ListWidgets() {
 
-		  	// if widget is nOT the one passed in with origin event.
-		  	if event.WidgetID() != w.GetID() {
-				  ev := events.NewDeselectEvent(event.WidgetID())
-				  w.HandleEvent(ev)
-			  }
-		  }
+				// if widget is nOT the one passed in with origin event.
+				if event.WidgetID() != w.GetID() {
+					ev := events.NewDeselectEvent(event.WidgetID())
+					w.HandleEvent(ev)
+				}
+			}
 		}
 	}
 	return nil
 }
 
-
 // AddRadioButton adds a new radio button to the radio button group.
 // temporarily just trying the checkbox here.
 func (rb *RadioButtonGroup) AddRadioButton(buttonText string) error {
 
-	cb := NewCheckBox("cb-" + buttonText, buttonText, rb.HandleEvent )
+	cb := NewCheckBox("cb-"+buttonText, buttonText, "images/radiobuttonselected.png", "images/radiobuttonnotselected.png", rb.HandleEvent)
 	rb.subPanel.AddWidget(cb)
 	return nil
 }

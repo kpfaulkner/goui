@@ -72,7 +72,7 @@ func (m *MyApp) SetupUI() error {
 
 	//spacer := widgets.NewEmptySpace("empty", 100,10)
 	//hPanel.AddWidget(spacer)
-	cb1 := widgets.NewCheckBox("my checkbox1", "my lovely checkbox", m.CheckboxChanged)
+	cb1 := widgets.NewCheckBox("my checkbox1", "my lovely checkbox", "", "", m.CheckboxChanged)
 	hPanel.AddWidget(cb1)
 	vpanel.AddWidget(hPanel)
 
