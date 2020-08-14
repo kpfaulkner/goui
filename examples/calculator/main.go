@@ -118,13 +118,9 @@ func (m *Calculator) NumberButtonAction(event events.IEvent) error {
 }
 
 func (m *Calculator) AddButton(event events.IEvent) error {
-
-	m.operation = Add
-	num, _ := strconv.ParseFloat(m.currentInput, 64)
-	m.currentValue = num
-	m.currentInput = ""
 	log.Debugf("AddButton")
-
+	m.operation = Add
+	m.parseNumber(m.currentInput)
 	return nil
 }
 

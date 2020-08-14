@@ -55,11 +55,9 @@ func (m *MyApp) HandleTextInput(event events.IEvent) error {
 
 func addPanel(panelName string, width int, height int, win *pkg.Window, buttonAction1 func(event events.IEvent) error, buttonAction2 func(event events.IEvent) error) error {
 	panel := widgets.NewPanel(panelName, nil)
-
-	button := widgets.NewTextButton("button1", "my button1", 100, 100, nil, nil, nil, buttonAction1)
+	button := widgets.NewTextButton("button1", "my button1", false, 100, 100, nil, nil, nil, buttonAction1)
 	panel.AddWidget(button)
-
-	button2 := widgets.NewTextButton("button2", "my button2", 100, 100, nil, nil, nil, buttonAction2)
+	button2 := widgets.NewTextButton("button2", "my button2", true, 100, 100, nil, nil, nil, buttonAction2)
 	panel.AddWidget(button2)
 
 	win.AddPanel(panel)
@@ -92,9 +90,9 @@ func main() {
 
 	hPanel := widgets.NewHPanel("hpanel1",&color.RGBA{0, 100, 0, 255})
 
-	button1 := widgets.NewTextButton("text button 1", "my button1", 100, 40, nil, nil, nil, a.ButtonAction1)
-	hPanel.AddWidget(button1)
-	button2 := widgets.NewTextButton("text button 2", "my button2", 100, 40, nil, nil, nil, a.ButtonAction2)
+	button := widgets.NewTextButton("button1", "my button1", false, 100, 100, nil, nil, nil, a.ButtonAction1)
+	hPanel.AddWidget(button)
+	button2 := widgets.NewTextButton("button2", "my button2", false, 100, 100, nil, nil, nil, a.ButtonAction2)
 	hPanel.AddWidget(button2)
 
 	spacer := widgets.NewEmptySpace("empty", 100,10)
@@ -104,7 +102,7 @@ func main() {
 
 	panel.AddWidget(hPanel)
 
-	button3 := widgets.NewTextButton("text button 3", "my button3", 100, 40, nil, nil, nil, a.ButtonAction3)
+	button3 := widgets.NewTextButton("etxt button 3", "my button3", false, 100, 100, nil, nil, nil, a.ButtonAction3)
 	panel.AddWidget(button3)
 
 	cb2 := widgets.NewCheckBox("my checkbox2", "checkbox 2", a.CheckboxChanged)
