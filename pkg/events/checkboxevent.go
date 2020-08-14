@@ -5,11 +5,12 @@ type CheckBoxEvent struct {
 	Checked bool
 }
 
-func NewCheckBoxEvent(name string, eventType int, checked bool) CheckBoxEvent {
+func NewCheckBoxEvent(name string, eventType int, checked bool, widgetID string) CheckBoxEvent {
 	e := CheckBoxEvent{}
 	e.eventName = name
 	e.eventType = eventType
 	e.Checked = checked
+	e.widgetID = widgetID
 	return e
 }
 
