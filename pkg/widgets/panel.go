@@ -2,6 +2,7 @@ package widgets
 
 import (
 	"github.com/hajimehoshi/ebiten"
+	"github.com/hajimehoshi/ebiten/ebitenutil"
 	"github.com/kpfaulkner/goui/pkg/events"
 	log "github.com/sirupsen/logrus"
 	"image/color"
@@ -31,6 +32,8 @@ type IPanel interface {
 type Panel struct {
 	BaseWidget
 
+	hasBorder bool
+
 	// panel can contain panels.
 	panels []Panel
 
@@ -38,6 +41,7 @@ type Panel struct {
 	widgets []IWidget
 
 	panelColour color.RGBA
+	borderColour color.RGBA
 
 	// DynamicSize is for when we based sizes off window/panels etc. ie everything is
 	// proportional as opposed to absolute.
@@ -45,10 +49,10 @@ type Panel struct {
 }
 
 func init() {
-	defaultPanelColour = color.RGBA{0xff, 0x00, 0x00, 0xff}
+	defaultPanelColour = color.RGBA{0x00, 0x00, 0x00, 0xff}
 }
 
-func NewPanel(ID string, colour *color.RGBA) *Panel {
+func NewPanel(ID string, colour *color.RGBA, borderColour *color.RGBA) *Panel {
 	p := Panel{}
 
 	p.DynamicSize = true
@@ -58,6 +62,14 @@ func NewPanel(ID string, colour *color.RGBA) *Panel {
 		p.panelColour = *colour
 	} else {
 		p.panelColour = defaultPanelColour
+	}
+
+	if borderColour != nil {
+		p.borderColour = *borderColour
+		p.hasBorder = true
+	} else {
+		p.borderColour = color.RGBA{0,0,0xff,0xff}
+		p.hasBorder = false  // yes contradictory... set default colour but no border flag. WIP.
 	}
 	return &p
 }
@@ -85,14 +97,29 @@ func (p *Panel) AddWidget(w IWidget) error {
 	return nil
 }
 
+func (p *Panel) generateBorder(border color.RGBA) error {
+
+	ebitenutil.DrawLine(p.rectImage, 0, 0, float64(p.Width), 0, border)
+	ebitenutil.DrawLine(p.rectImage, float64(p.Width), 0, float64(p.Width), float64(p.Height), border)
+	ebitenutil.DrawLine(p.rectImage, float64(p.Width), float64(p.Height), 0, float64(p.Height), border)
+	ebitenutil.DrawLine(p.rectImage, 0, float64(p.Height), 0, 0, border)
+	return nil
+}
+
+
 // Draw renders all the widgets inside the panel (and the panel itself.. .if there is anything to it?)
 func (p *Panel) Draw(screen *ebiten.Image) error {
 
 	// colour background of panel first, just so we can see it.
 	_ = p.rectImage.Fill(p.panelColour)
 
+
 	for _, w := range p.widgets {
 		w.Draw(p.rectImage)
+	}
+
+	if p.hasBorder {
+		p.generateBorder( p.borderColour)
 	}
 
 	op := &ebiten.DrawImageOptions{}

@@ -2,12 +2,12 @@ package widgets
 
 import (
 	"github.com/hajimehoshi/ebiten"
+	"github.com/hajimehoshi/ebiten/ebitenutil"
 	"github.com/kpfaulkner/goui/pkg/common"
 	"github.com/kpfaulkner/goui/pkg/events"
 	log "github.com/sirupsen/logrus"
 	"image/color"
 	_ "image/png"
-	"time"
 )
 
 const (
@@ -22,37 +22,17 @@ type RadioButtonGroup struct {
 	subPanel IPanel
 
 	vertical bool
-	// image for the checkbox
-	notSelectedImage *ebiten.Image
-	selectedImage    *ebiten.Image
 	fontInfo         common.Font
-	lastClickedTime  time.Time
 }
 
 func init() {
 	defaultFontInfo = common.LoadFont("", 16, color.RGBA{0xff, 0xff, 0xff, 0xff})
 }
 
-func NewRadioButtonGroup(ID string, vertical bool, handler func(event events.IEvent) error) *RadioButtonGroup {
+func NewRadioButtonGroup(ID string, vertical bool, border bool, handler func(event events.IEvent) error) *RadioButtonGroup {
 	rb := RadioButtonGroup{}
 	rb.vertical = vertical
-
-	/*
-		img1, err := loadImage(notSelectedImage)
-		if err != nil {
-			log.Fatalf("Unable to load image %s", notSelectedImage)
-		}
-		rb.notSelectedImage = img1
-
-		img2, err := loadImage(selectedImage)
-		if err != nil {
-			log.Fatalf("Unable to load image %s", selectedImage)
-		}
-
-		rb.selectedImage = img2
-
-	*/
-	rb.Panel = *NewPanel(ID, nil)
+	rb.Panel = *NewPanel(ID, nil, &color.RGBA{0,0,0xff,0xff})
 
 	// create VPanel or HPanel
 	// Add as a widget, this will auto handle rendering etc.
@@ -67,7 +47,6 @@ func NewRadioButtonGroup(ID string, vertical bool, handler func(event events.IEv
 		rb.subPanel = hp
 	}
 
-	rb.lastClickedTime = time.Now().UTC()
 	return &rb
 }
 
@@ -95,8 +74,21 @@ func (rb *RadioButtonGroup) HandleEvent(event events.IEvent) error {
 // AddRadioButton adds a new radio button to the radio button group.
 // temporarily just trying the checkbox here.
 func (rb *RadioButtonGroup) AddRadioButton(buttonText string) error {
-
 	cb := NewCheckBox("cb-"+buttonText, buttonText, "images/radiobuttonselected.png", "images/radiobuttonnotselected.png", rb.HandleEvent)
 	rb.subPanel.AddWidget(cb)
 	return nil
 }
+
+func (rb *RadioButtonGroup) generateButtonImage(colour color.RGBA, border color.RGBA) error {
+	emptyImage, _ := ebiten.NewImage(rb.Width, rb.Height, ebiten.FilterDefault)
+	_ = emptyImage.Fill(colour)
+
+	ebitenutil.DrawLine(emptyImage, 0, 0, float64(rb.Width), 0, border)
+	ebitenutil.DrawLine(emptyImage, 0, float64(rb.Width), float64(rb.Width), float64(rb.Height), border)
+	ebitenutil.DrawLine(emptyImage, float64(rb.Width), float64(rb.Height), 0, float64(rb.Height), border)
+	ebitenutil.DrawLine(emptyImage, 0, float64(rb.Height), 0, 0, border)
+
+	rb.rectImage = emptyImage
+	return nil
+}
+

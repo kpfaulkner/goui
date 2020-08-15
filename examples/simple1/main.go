@@ -76,11 +76,17 @@ func (m *MyApp) SetupUI() error {
 	hPanel.AddWidget(cb1)
 	vpanel.AddWidget(hPanel)
 
-	rbg := widgets.NewRadioButtonGroup("rbg1", true, nil)
+	rbg := widgets.NewRadioButtonGroup("rbg1", true, true, nil)
 	rbg.AddRadioButton("radio1")
 	rbg.AddRadioButton("radio2")
 	rbg.AddRadioButton("radio3")
 	vpanel.AddWidget(rbg)
+
+	rbg2 := widgets.NewRadioButtonGroup("rbg2", false,true, nil)
+	rbg2.AddRadioButton("radio4")
+	rbg2.AddRadioButton("radio5")
+	rbg2.AddRadioButton("radio6")
+	vpanel.AddWidget(rbg2)
 	return nil
 }
 

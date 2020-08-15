@@ -14,7 +14,7 @@ type HPanel struct {
 
 func NewHPanel(ID string, colour *color.RGBA) *HPanel {
 	p := HPanel{}
-	p.Panel = *NewPanel(ID, colour)
+	p.Panel = *NewPanel(ID, colour,nil)
 	return &p
 }
 

@@ -16,7 +16,7 @@ type VPanel struct {
 
 func NewVPanel(ID string, colour *color.RGBA) *VPanel {
 	p := VPanel{}
-	p.Panel = *NewPanel(ID, colour)
+	p.Panel = *NewPanel(ID, colour,nil)
 	return &p
 }
 
