@@ -24,12 +24,12 @@ Simple calculator
 
 
 
-<img src="docs\images\calculator.png" alt="calculator" style="zoom:25%;" />
+<img src="docs\images\calculator.png" alt="calculator" />
 
 
 
 Simple widget test
-<img src="docs\images\simple1.png" alt="simple1" style="zoom:25%;" />
+<img src="docs\images\simple1.png" alt="simple1"/>
 
 
 
