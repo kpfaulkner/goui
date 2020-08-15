@@ -1,6 +1,6 @@
 # UI library for creating desktop applications
 
-Based off ebiten
+Core graphics components powered by Ebiten (fantastic lib!!!)
 
 
 ## Design/thoughts
@@ -8,7 +8,6 @@ Based off ebiten
 These will change a lot. I have *NO* experience in designing a UI library (and this will probably show :P )
 There are few great looking GO UI libraries but most (not all) are based on CGo. This will be a pure Go library for
 those who require it.
-
 
 
 ## Widgets/Panels:
@@ -20,11 +19,11 @@ those who require it.
 - List
 - DropboxCombo
 - MenuBar
-- ToolBar
+- ToolBar : Basics done.
 - TextInput : DONE
 - Horizontal Panels : DONE
 - Vertical Panels : DONE
-- Radio Buttons
+- Radio Buttons : Mostly complete
 - Add scroll bars to widgets (text input?) or panels?
 
 ## Optimisations
