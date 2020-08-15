@@ -25,13 +25,12 @@ There are various examples in the [examples directory](https://github.com/kpfaul
 
 Simple calculator
 
-
-
 <img src="docs\images\calculator.png" alt="calculator" />
 
 
 
 Simple widget test
+
 <img src="docs\images\simple1.png" alt="simple1"/>
 
 
