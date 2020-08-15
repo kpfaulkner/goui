@@ -13,6 +13,9 @@ There is already a few UI libraries/frameworks available for Go. The most mature
 
 These will change a lot. I have *NO* experience in designing a UI library (and this will probably show :P )
 
+## Documentation
+Still lacking...   since the core widgets are still being developed. Best option right now is to look through the examples (see below)
+
 ## Examples
 
 There are various examples in the [examples directory](https://github.com/kpfaulkner/goui/tree/master/examples) . As new widgets are created, the plan is to include at least one piece of sample code in the examples directory. Due to the young age of this project the look/feel is still being established so not a lot of effort has been put towards purely aesthetic side of things. This doesn't mean that you cannot customise how items looks. For example ImageButtons can be customised to have their own "pressed" and "non-pressed" states. The default look/themes aren't established yet.
