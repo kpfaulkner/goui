@@ -1,8 +1,6 @@
 package widgets
 
 import (
-	"github.com/hajimehoshi/ebiten"
-	"github.com/hajimehoshi/ebiten/ebitenutil"
 	"github.com/kpfaulkner/goui/pkg/common"
 	"github.com/kpfaulkner/goui/pkg/events"
 	log "github.com/sirupsen/logrus"
@@ -78,17 +76,3 @@ func (rb *RadioButtonGroup) AddRadioButton(buttonText string) error {
 	rb.subPanel.AddWidget(cb)
 	return nil
 }
-
-func (rb *RadioButtonGroup) generateButtonImage(colour color.RGBA, border color.RGBA) error {
-	emptyImage, _ := ebiten.NewImage(rb.Width, rb.Height, ebiten.FilterDefault)
-	_ = emptyImage.Fill(colour)
-
-	ebitenutil.DrawLine(emptyImage, 0, 0, float64(rb.Width), 0, border)
-	ebitenutil.DrawLine(emptyImage, 0, float64(rb.Width), float64(rb.Width), float64(rb.Height), border)
-	ebitenutil.DrawLine(emptyImage, float64(rb.Width), float64(rb.Height), 0, float64(rb.Height), border)
-	ebitenutil.DrawLine(emptyImage, 0, float64(rb.Height), 0, 0, border)
-
-	rb.rectImage = emptyImage
-	return nil
-}
-
