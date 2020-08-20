@@ -51,41 +51,26 @@ func (m *MyApp) CheckboxChanged(event events.IEvent) error {
 
 func (m *MyApp) SetupUI() error {
 
+	// modified so its exactly fitting a 800x600 window :)
+	vpanel1 := widgets.NewVPanelWithSize("fixedvpanel1", 800,600, &color.RGBA{0, 100, 0, 0xff})
+
 	tb := widgets.NewToolBar("toolbar1", &color.RGBA{0, 0, 0, 0xff})
 	tbi1 := widgets.NewToolbarItem("tbi1", m.ToolBarItem1)
 	tbi2 := widgets.NewToolbarItem("tbi2", m.ToolBarItem2)
 	tb.AddToolBarItem(tbi1)
 	tb.AddToolBarItem(tbi2)
 	tb.SetSize(800, 30) // should calculate this!
+	vpanel1.AddWidget(tb)
 
-	vpanel := widgets.NewVPanel("main vpanel", &color.RGBA{0, 0, 0, 0xff})
-	vpanel.AddWidget(tb)
-	m.window.AddPanel(vpanel)
+	//vpanel2 := widgets.NewVPanelWithSize("fixedvpanel2", 800,570, &color.RGBA{0, 0, 100, 0xff})
+	vpanel2 := widgets.NewVPanelWithSize("fixedvpanel2", 800,540, &color.RGBA{0, 0, 100, 0xff})
+	vpanel1.AddWidget(vpanel2)
 
-	hPanel := widgets.NewHPanel("hpanel1", &color.RGBA{0, 100, 0, 255})
+	ti := widgets.NewTextInput("textinput",800,30,nil,nil,nil)
+	vpanel1.AddWidget(ti)
 
-	button1 := widgets.NewTextButton("text button 1", "my button1", true, 0, 0, nil, nil, nil, m.ButtonAction1)
-	hPanel.AddWidget(button1)
-	button2 := widgets.NewTextButton("text button 2", "my button2", false, 100, 40, nil, nil, nil, m.ButtonAction2)
-	hPanel.AddWidget(button2)
+	m.window.AddPanel(vpanel1)
 
-	//spacer := widgets.NewEmptySpace("empty", 100,10)
-	//hPanel.AddWidget(spacer)
-	cb1 := widgets.NewCheckBox("my checkbox1", "my lovely checkbox", "", "", m.CheckboxChanged)
-	hPanel.AddWidget(cb1)
-	vpanel.AddWidget(hPanel)
-
-	rbg := widgets.NewRadioButtonGroup("rbg1", true, true, nil)
-	rbg.AddRadioButton("radio1")
-	rbg.AddRadioButton("radio2")
-	rbg.AddRadioButton("radio3")
-	vpanel.AddWidget(rbg)
-
-	rbg2 := widgets.NewRadioButtonGroup("rbg2", false,true, nil)
-	rbg2.AddRadioButton("radio4")
-	rbg2.AddRadioButton("radio5")
-	rbg2.AddRadioButton("radio6")
-	vpanel.AddWidget(rbg2)
 	return nil
 }
 

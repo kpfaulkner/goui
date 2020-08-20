@@ -110,21 +110,24 @@ func (p *Panel) generateBorder(border color.RGBA) error {
 // Draw renders all the widgets inside the panel (and the panel itself.. .if there is anything to it?)
 func (p *Panel) Draw(screen *ebiten.Image) error {
 
-	// colour background of panel first, just so we can see it.
-	_ = p.rectImage.Fill(p.panelColour)
+	// only draw if have dimensions
+	if p.Width > 0 && p.Height > 0 {
+		// colour background of panel first, just so we can see it.
+		_ = p.rectImage.Fill(p.panelColour)
 
+		for _, w := range p.widgets {
+			w.Draw(p.rectImage)
+		}
 
-	for _, w := range p.widgets {
-		w.Draw(p.rectImage)
+		if p.hasBorder {
+			p.generateBorder(p.borderColour)
+		}
+
+		op := &ebiten.DrawImageOptions{}
+		op.GeoM.Translate(p.X, p.Y)
+		_ = screen.DrawImage(p.rectImage, op)
 	}
 
-	if p.hasBorder {
-		p.generateBorder( p.borderColour)
-	}
-
-	op := &ebiten.DrawImageOptions{}
-	op.GeoM.Translate(p.X, p.Y)
-	_ = screen.DrawImage(p.rectImage, op)
 	return nil
 }
 

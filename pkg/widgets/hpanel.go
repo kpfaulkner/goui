@@ -15,7 +15,15 @@ type HPanel struct {
 func NewHPanel(ID string, colour *color.RGBA) *HPanel {
 	p := HPanel{}
 	p.Panel = *NewPanel(ID, colour,nil)
+	p.DynamicSize = true
 	return &p
+}
+
+func NewHPanelWithSize(ID string, width int, height int, colour *color.RGBA) *HPanel {
+	p := NewHPanel(ID, colour)
+	p.SetSize(width, height)
+	p.DynamicSize = false
+	return p
 }
 
 // AddWidget adds a widget to the panel, but each widget is to the right of the previous one.
@@ -26,17 +34,18 @@ func (p *HPanel) AddWidget(w IWidget) error {
 	w.SetXY(p.XLoc, p.Y)
 	width, height := w.GetSize()
 
-	// grow panel height if widget is taller.
-	if height > float64(p.Height) {
-		p.Height = int(height)
-		p.SetSize(p.Width, p.Height)
-	}
+	if p.DynamicSize {
+		// grow panel height if widget is taller.
+		if height > float64(p.Height) {
+			p.Height = int(height)
+			p.SetSize(p.Width, p.Height)
+		}
 
-	if p.XLoc+width > float64(p.Width) {
-		p.Width = int(p.XLoc + width)
-		p.SetSize(p.Width, p.Height)
+		if p.XLoc+width > float64(p.Width) {
+			p.Width = int(p.XLoc + width)
+			p.SetSize(p.Width, p.Height)
+		}
 	}
-
 	p.XLoc += width
 
 	p.widgets = append(p.widgets, w)

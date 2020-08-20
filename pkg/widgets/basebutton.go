@@ -35,7 +35,10 @@ func (b *BaseButton) HandleEvent(event events.IEvent) error {
 			// check click is in button boundary.
 			if b.ContainsCoords(mouseEvent.X, mouseEvent.Y) {
 				log.Debugf("BaseButton::HandleEvent Down %s", b.ID)
-				b.eventHandler(event)
+
+				if b.eventHandler != nil {
+					b.eventHandler(event)
+				}
 				b.hasFocus = true
 				// if already pressed, then skip it.. .otherwise lots of repeats.
 				if !b.pressed {
