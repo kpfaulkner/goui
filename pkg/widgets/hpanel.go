@@ -14,7 +14,7 @@ type HPanel struct {
 
 func NewHPanel(ID string, colour *color.RGBA) *HPanel {
 	p := HPanel{}
-	p.Panel = *NewPanel(ID, colour,nil)
+	p.Panel = *NewPanel(ID, colour, nil)
 	p.DynamicSize = true
 	return &p
 }
@@ -24,6 +24,12 @@ func NewHPanelWithSize(ID string, width int, height int, colour *color.RGBA) *HP
 	p.SetSize(width, height)
 	p.DynamicSize = false
 	return p
+}
+
+func (p *HPanel) ClearWidgets() error {
+	p.widgets = []IWidget{}
+	p.XLoc = 0
+	return nil
 }
 
 // AddWidget adds a widget to the panel, but each widget is to the right of the previous one.

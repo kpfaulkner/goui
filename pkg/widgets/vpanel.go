@@ -16,7 +16,7 @@ type VPanel struct {
 
 func NewVPanel(ID string, colour *color.RGBA) *VPanel {
 	p := VPanel{}
-	p.Panel = *NewPanel(ID, colour,nil)
+	p.Panel = *NewPanel(ID, colour, nil)
 	p.DynamicSize = true
 	return &p
 }
@@ -28,6 +28,11 @@ func NewVPanelWithSize(ID string, width int, height int, colour *color.RGBA) *VP
 	return p
 }
 
+func (p *VPanel) ClearWidgets() error {
+	p.widgets = []IWidget{}
+	p.YLoc = 0
+	return nil
+}
 
 // AddWidget adds a widget to the panel, but each widget is below the next one.
 func (p *VPanel) AddWidget(w IWidget) error {

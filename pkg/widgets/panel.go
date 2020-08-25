@@ -41,7 +41,7 @@ type Panel struct {
 	// all widgets.... see if we can be super generic here.
 	widgets []IWidget
 
-	panelColour color.RGBA
+	panelColour  color.RGBA
 	borderColour color.RGBA
 
 	// DynamicSize is for when we based sizes off window/panels etc. ie everything is
@@ -69,8 +69,8 @@ func NewPanel(ID string, colour *color.RGBA, borderColour *color.RGBA) *Panel {
 		p.borderColour = *borderColour
 		p.hasBorder = true
 	} else {
-		p.borderColour = color.RGBA{0,0,0xff,0xff}
-		p.hasBorder = false  // yes contradictory... set default colour but no border flag. WIP.
+		p.borderColour = color.RGBA{0, 0, 0xff, 0xff}
+		p.hasBorder = false // yes contradictory... set default colour but no border flag. WIP.
 	}
 	return &p
 }
@@ -106,7 +106,6 @@ func (p *Panel) generateBorder(border color.RGBA) error {
 	ebitenutil.DrawLine(p.rectImage, 0, float64(p.Height), 0, 0, border)
 	return nil
 }
-
 
 // Draw renders all the widgets inside the panel (and the panel itself.. .if there is anything to it?)
 func (p *Panel) Draw(screen *ebiten.Image) error {

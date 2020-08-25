@@ -39,7 +39,7 @@ func (m *MyApp) SetupUI() error {
 
 	vPanel.AddWidget(hPanel)
 
-	imageButton := widgets.NewImageButton("ib1", "images/pressedbutton.png", "images/nonpressedbutton.png",nil )
+	imageButton := widgets.NewImageButton("ib1", "images/pressedbutton.png", "images/nonpressedbutton.png", nil)
 	vPanel.AddWidget(imageButton)
 
 	return nil

@@ -54,7 +54,7 @@ func (m *MyApp) HandleTextInput(event events.IEvent) error {
 }
 
 func addPanel(panelName string, width int, height int, win *pkg.Window, buttonAction1 func(event events.IEvent) error, buttonAction2 func(event events.IEvent) error) error {
-	panel := widgets.NewPanel(panelName, nil,nil)
+	panel := widgets.NewPanel(panelName, nil, nil)
 	button := widgets.NewTextButton("button1", "my button1", false, 100, 100, nil, nil, nil, buttonAction1)
 	panel.AddWidget(button)
 	button2 := widgets.NewTextButton("button2", "my button2", true, 100, 100, nil, nil, nil, buttonAction2)

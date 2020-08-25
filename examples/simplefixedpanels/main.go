@@ -52,7 +52,7 @@ func (m *MyApp) CheckboxChanged(event events.IEvent) error {
 func (m *MyApp) SetupUI() error {
 
 	// modified so its exactly fitting a 800x600 window :)
-	vpanel1 := widgets.NewVPanelWithSize("fixedvpanel1", 800,600, &color.RGBA{0, 100, 0, 0xff})
+	vpanel1 := widgets.NewVPanelWithSize("fixedvpanel1", 800, 600, &color.RGBA{0, 100, 0, 0xff})
 
 	tb := widgets.NewToolBar("toolbar1", &color.RGBA{0, 0, 0, 0xff})
 	tbi1 := widgets.NewToolbarItem("tbi1", m.ToolBarItem1)
@@ -62,14 +62,14 @@ func (m *MyApp) SetupUI() error {
 	tb.SetSize(800, 30) // should calculate this!
 	vpanel1.AddWidget(tb)
 
-	vpanel2 := widgets.NewVPanelWithSize("fixedvpanel2", 800,540, &color.RGBA{0, 0, 100, 0xff})
+	vpanel2 := widgets.NewVPanelWithSize("fixedvpanel2", 800, 540, &color.RGBA{0, 0, 100, 0xff})
 	vpanel1.AddWidget(vpanel2)
 
-	ti := widgets.NewTextInput("textinput",800,30,nil,nil,nil)
+	ti := widgets.NewTextInput("textinput", 800, 30, nil, nil, nil)
 	vpanel1.AddWidget(ti)
 
-	button1 := widgets.NewTextButton("tb1","my button", false, 100,30,nil,nil,nil,nil )
-  vpanel2.AddWidget(button1)
+	button1 := widgets.NewTextButton("tb1", "my button", false, 100, 30, nil, nil, nil, nil)
+	vpanel2.AddWidget(button1)
 	m.window.AddPanel(vpanel1)
 
 	return nil

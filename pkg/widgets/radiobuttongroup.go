@@ -20,7 +20,7 @@ type RadioButtonGroup struct {
 	subPanel IPanel
 
 	vertical bool
-	fontInfo         common.Font
+	fontInfo common.Font
 }
 
 func init() {
@@ -30,7 +30,7 @@ func init() {
 func NewRadioButtonGroup(ID string, vertical bool, border bool, handler func(event events.IEvent) error) *RadioButtonGroup {
 	rb := RadioButtonGroup{}
 	rb.vertical = vertical
-	rb.Panel = *NewPanel(ID, nil, &color.RGBA{0,0,0xff,0xff})
+	rb.Panel = *NewPanel(ID, nil, &color.RGBA{0, 0, 0xff, 0xff})
 
 	// create VPanel or HPanel
 	// Add as a widget, this will auto handle rendering etc.
