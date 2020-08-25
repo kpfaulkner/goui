@@ -25,6 +25,7 @@ type IPanel interface {
 	GetDeltaOffset() (bool, float64, float64)
 	GlobalToLocalCoords(x float64, y float64) (float64, float64)
 	AddParentPanel(parentPanel IPanel) error
+	ClearWidgets() error
 }
 
 // Panel has a position, width and height.
@@ -194,6 +195,11 @@ func (p *Panel) HandleKeyboardEvent(event events.IEvent) (bool, error) {
 
 func (p *Panel) GetDeltaOffset() (bool, float64, float64) {
 	return p.populatedGlobalDelta, p.globalDX, p.globalDY
+}
+
+func (p *Panel) ClearWidgets() error {
+	p.widgets = []IWidget{}
+	return nil
 }
 
 func (p *Panel) SetSize(width int, height int) error {
